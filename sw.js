@@ -1,7 +1,7 @@
 /* Service worker da Manutencao R2: abre sem internet e mantem o app atualizado.
    HTML: rede primeiro (sempre a versao nova), cache se estiver offline.
-   Bibliotecas e icones: cache primeiro. API do Supabase: nunca em cache. */
-const CACHE = 'r2-manutencao-v1';
+   Bibliotecas e icones: cache primeiro. API do Supabase e Google Drive: nunca em cache. */
+const CACHE = 'r2-manutencao-v2';
 const BASE = [
   './', './index.html', './manifest.json', './icon-192.png', './icon-512.png',
   './stilo-centro.html','./stilo-borges.html','./stilo-vita.html','./stilo-garden.html','./chateau.html','./golden.html','./pedras-altas.html',
@@ -19,6 +19,8 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.hostname.endsWith('supabase.co')) return;
+  // Fotos e script do Drive: sempre direto da rede (lista sempre atualizada, sem encher o celular)
+  if (url.hostname === 'script.google.com' || url.hostname === 'drive.google.com' || url.hostname.endsWith('googleusercontent.com')) return;
   const ehPagina = req.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/');
   if (ehPagina && url.origin === location.origin) {
     e.respondWith(fetch(req).then(r => { if (r.ok) { const cp = r.clone(); caches.open(CACHE).then(c => c.put(req, cp)); } return r; })
