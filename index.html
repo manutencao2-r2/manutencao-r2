@@ -515,6 +515,7 @@ async function executeAction(action,d){
   if(action==='saveChecklistEstado') return saveChecklistEstado(d);
   if(action==='saveChecklistLote') return saveChecklistLote(d);
   if(action==='registrarAtividade') return registrarAtividade(d);
+  if(action==='updateObsAtividade') return updateObsAtividade(d);
   if(action==='addCompra')        return addCompra(d);
   if(action==='updateCompraStatus') return updateCompraStatus(d);
   if(action==='deleteCompra')     return deleteCompra(d);
@@ -742,6 +743,11 @@ async function registrarAtividade(d){
       tipo:'atividade_recorrente',descricao:'Atividade: '+(d.atividade||''),pontos:ptsAtiv,referencia:id});
   }
   return {ok:true,id:id};
+}
+
+async function updateObsAtividade(d){
+  await sbPatch('registros_atividades?id=eq.'+encodeURIComponent(d.id),{obs:d.obs||''});
+  return {ok:true};
 }
 
 /* ---- COMPRAS ---- */
@@ -1760,6 +1766,7 @@ function renderAtiv() {
     return '<div class="ativ-card">'+
       '<div class="anome">'+esc(nm)+'</div>'+
       '<div class="aul">'+(!ul?'Nunca registrado':fmtDT(ul.feito_em)+' por '+esc(ul.feito_por||'-'))+'</div>'+
+      (ul&&ul.obs?'<div style="font-size:12px;color:#555;background:#F5F7F5;border-left:3px solid #2D6A4F;border-radius:4px;padding:5px 8px;margin:4px 0;white-space:pre-wrap"><strong>OBS:</strong> '+esc(ul.obs)+'</div>':'')+
       (ch?'<div style="font-size:11px;color:#2D6A4F;font-weight:600">'+ch+'x hoje</div>':'')+
       '<button class="btn sm" data-nm="'+esc(nm)+'" onclick="regAtivEl(this)"><i class="ti ti-check"></i> Registrar feito</button>'+
     '</div>';
@@ -1778,9 +1785,12 @@ function renderAtiv() {
     var fopts='<option value="todas">Todas</option>'+ativs.map(function(n){return '<option value="'+esc(n)+'"'+(filtro===n?' selected':'')+'>'+esc(n)+'</option>';}).join('');
     conteudo='<div class="between" style="margin-bottom:9px"><select style="width:auto" onchange="ST.ativF=this.value;render()">'+fopts+'</select></div>'+
       (rFilt.length?'<div class="ativ-log">'+rFilt.slice(0,50).map(function(r){
-        return '<div class="ativ-row"><div style="flex:1;font-weight:600">'+esc(r.atividade||'')+'</div>'+
+        return '<div class="ativ-row" style="flex-wrap:wrap"><div style="flex:1;font-weight:600">'+esc(r.atividade||'')+'</div>'+
           '<div style="min-width:110px;color:#2D6A4F">'+esc(r.feito_por||'-')+'</div>'+
-          '<div style="font-size:11px;color:#6b7770">'+fmtDT(r.feito_em)+'</div></div>';
+          '<div style="font-size:11px;color:#6b7770">'+fmtDT(r.feito_em)+'</div>'+
+          '<button class="btn sm sec" data-rid="'+esc(r.id)+'" onclick="editObsAtivEl(this)" title="'+(r.obs?'Editar OBS':'Adicionar OBS')+'" style="margin-left:8px"><i class="ti ti-'+(r.obs?'notes':'message-plus')+'"></i> OBS</button>'+
+          (r.obs?'<div style="flex-basis:100%;font-size:12px;color:#555;margin-top:4px;white-space:pre-wrap"><strong>OBS:</strong> '+esc(r.obs)+'</div>':'')+
+          '</div>';
       }).join('')+'</div>':'<div style="color:#6b7770">Nenhum registro.</div>');
   } else {
     conteudo=renderAtivGraficos(ativs,regs);
@@ -1909,12 +1919,31 @@ function setAtivPer(el){
 function regAtivEl(el){regAtiv(el.getAttribute('data-nm'));}
 function regAtiv(nm){
   if(!reqUser())return;
-  var btn=event&&event.target?event.target.closest('button'):null;
-  if(btn){btn.disabled=true;btn.textContent='Salvando...';}
-  ST.ckPend++;
-  call('registrarAtividade',{atividade:nm,feito_por:ST.user,obs:''},function(){
-    ST.ckPend=Math.max(0,ST.ckPend-1);reload();
-  },function(){ST.ckPend=Math.max(0,ST.ckPend-1);});
+  openModal('Registrar: '+esc(nm),
+    '<div style="font-size:13px;color:#6b7770;margin-bottom:10px">Feito por <strong>'+esc(ST.user)+'</strong> agora. A observacao e opcional.</div>'+
+    '<label>OBS</label><textarea id="ativ-obs" rows="4" maxlength="1000" placeholder="Ex: Caldeira 2 com pressao baixa, avisar fornecedor" style="width:100%;resize:vertical"></textarea>',
+    [{l:'Cancelar',c:'sec',f:closeModal},{l:'Registrar feito',c:'',f:function(){
+      var obs=(document.getElementById('ativ-obs').value||'').trim();
+      closeModal();
+      ST.ckPend++;
+      call('registrarAtividade',{atividade:nm,feito_por:ST.user,obs:obs},function(){
+        ST.ckPend=Math.max(0,ST.ckPend-1);reload();
+      },function(){ST.ckPend=Math.max(0,ST.ckPend-1);});
+    }}]);
+  setTimeout(function(){var t=document.getElementById('ativ-obs');if(t)t.focus();},50);
+}
+function editObsAtivEl(el){
+  var id=el.getAttribute('data-rid');
+  var r=(ST.data.registrosAtividades||[]).find(function(x){return x.id===id;});
+  if(!r)return;
+  openModal('OBS: '+esc(r.atividade||''),
+    '<div style="font-size:13px;color:#6b7770;margin-bottom:10px">Registrado por <strong>'+esc(r.feito_por||'-')+'</strong> em '+fmtDT(r.feito_em)+'.</div>'+
+    '<label>OBS</label><textarea id="ativ-obs-ed" rows="4" maxlength="1000" style="width:100%;resize:vertical">'+esc(r.obs||'')+'</textarea>',
+    [{l:'Cancelar',c:'sec',f:closeModal},{l:'Salvar',c:'',f:function(){
+      var obs=(document.getElementById('ativ-obs-ed').value||'').trim();
+      closeModal();
+      call('updateObsAtividade',{id:id,obs:obs},reload);
+    }}]);
 }
 
 function ckRef(t){
