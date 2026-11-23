@@ -486,7 +486,7 @@ var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-23.13';
+var R2_VERSAO = '2026-11-23.14';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -1473,12 +1473,7 @@ function renderCh() {
     '</div><div style="margin-top:9px"><label>Descricao</label><textarea id="ch-ds"></textarea></div>'+
     '<div style="margin-top:10px"><button class="btn" onclick="criarCh()"><i class="ti ti-plus"></i> Criar chamado</button></div></div></details>'+
 
-    '<div class="kvtoggle">'+
-    '<div class="kvtoggle">'+
-      '<button class="'+(ST.chView==="kanban"?"active":"")+' kanban-btn" id="vbtn-kanban" onclick="setChViewEl(this)"><i class="ti ti-layout-kanban"></i> Kanban</button>'+
-      '<button class="'+(ST.chView==="lista"?"active":"")+' lista-btn" id="vbtn-lista" onclick="setChViewEl(this)"><i class="ti ti-list"></i> Lista</button>'+
-
-    (ST.chView==='kanban' ? renderKanban(todos) : renderListaCh(todos));
+    renderKanban(todos);
 }
 
 function renderKanban(todos) {
