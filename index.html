@@ -312,7 +312,7 @@ var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-23.2';
+var R2_VERSAO = '2026-11-23.3';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -4528,6 +4528,7 @@ async function r2pCarregar(){
       r2pGet('r2_usuarios?select=hotel,id')
     ]);
     R2P.dados={chamados:res[0],ativs:res[1],gastos:res[2],lancs:res[3],cfg:res[4],usuarios:res[5],em:new Date()};
+    try{ R2P.uso=await r2pRpc('r2_uso_banco',{}); }catch(e){ R2P.uso={erro:e.message}; }
   }catch(e){R2P.erro=e.message;}
   R2P.carregando=false;
   r2pRenderDash();r2pRenderHoteis();
@@ -4602,6 +4603,8 @@ function r2pRenderDash(){
     kpi('ti-clock','Tempo médio',r2pFmtH(r2pMedia(tot.t)),'solução · últimos 30 dias')+
     kpi('ti-cash','Gastos do mês',r2pFmtR(tot.g),pctG==null?'sem orçamento lançado':pctG+'% do orçamento',pctG!=null&&pctG>100?'red':'')+
   '</div>';
+
+  h+=r2pCardBanco();
 
   // Tabela por hotel
   h+='<div class="r2p-card"><h3><i class="ti ti-table"></i> Situação por hotel</h3><div style="overflow-x:auto"><table class="r2p-tbl"><thead><tr>'+
@@ -4758,6 +4761,49 @@ async function r2pExcluirConta(i){
 async function r2pConfirmaExcluir(i){
   try{ await r2pRpc('r2_portal_conta_excluir',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem,c_login:R2P.contas[i].login}); r2pListarAcessos('Acesso excluído.'); }
   catch(e){ var er=document.getElementById('r2p-xer'); er.style.display='block'; er.textContent=e.message; }
+}
+
+
+/* ---------- Controle de memoria do Supabase ---------- */
+function r2pMB(b){ var mb=(Number(b)||0)/1048576; return mb<10?mb.toFixed(2).replace('.',','):mb.toFixed(1).replace('.',','); }
+function r2pTam(b){ b=Number(b)||0; if(b<1048576){ var kb=b/1024; return (kb<10?kb.toFixed(1):Math.round(kb)).toString().replace('.',',')+' KB'; } return r2pMB(b)+' MB'; }
+function r2pCardBanco(){
+  var u=R2P.uso;
+  var cab='<h3><i class="ti ti-database"></i> Uso do banco de dados (Supabase)</h3>';
+  if(!u) return '<div class="r2p-card">'+cab+'<div class="r2p-empty">Carregando...</div></div>';
+  if(u.erro) return '<div class="r2p-card">'+cab+'<div class="r2p-empty">Não foi possível ler o uso do banco: '+r2pEsc(u.erro)+'</div></div>';
+  var tot=Number(u.total_bytes)||0, lim=Number(u.limite_bytes)||524288000;
+  var pct=Math.min(100,tot*100/lim), pctTxt=pct.toFixed(1).replace('.',',');
+  var cor=pct>=90?'#c0392b':pct>=80?'#e6a100':'#2D6A4F';
+  var alerta=pct>=90?'<div style="margin-top:12px;background:#fde2e1;border:1px solid #c0392b;color:#c0392b;border-radius:8px;padding:9px 12px;font-size:13px"><b>Atenção:</b> o banco passou de 90% do limite grátis. Planeje limpar registros antigos ou mudar de plano.</div>':
+    pct>=80?'<div style="margin-top:12px;background:#FFF1DB;border:1px solid #e6a100;color:#9a5b00;border-radius:8px;padding:9px 12px;font-size:13px">O banco passou de 80% do limite grátis. Fique de olho.</div>':'';
+  var dados=(u.tabelas||[]).reduce(function(s,t){return s+(Number(t.bytes)||0);},0);
+  var nomeT={r2_chamados:'Chamados',r2_registros_atividades:'Atividades',r2_pontos:'Pontos (ranking)',r2_checklist:'Checklist',r2_checklist_itens:'Itens de checklist',r2_config:'Configurações',r2_usuarios:'Usuários',r2_equipe:'Equipe',r2_lembretes:'Lembretes',r2_compras:'Compras',r2_treinamentos:'Treinamentos',r2_quiz_perguntas:'Quiz (perguntas)',r2_quiz_respostas:'Quiz (respostas)',r2_gastos:'Orçamentos',r2_lancamentos_gastos:'Lançamentos de gastos',r2_projetos:'Projetos',r2_projetos_aptos:'Projetos por apto',r2_hoteis:'Hotéis',r2_portal_contas:'Acessos do Dashboard'};
+  var tabs=(u.tabelas||[]).slice(0,8);
+  var maxT=Math.max.apply(null,tabs.map(function(t){return Number(t.bytes)||0;}).concat([1]));
+  var nomeH={};R2_HOTEIS.forEach(function(x){nomeH[x.slug]=x.nome.replace('Laghetto ','');});
+  var hot={};(u.hoteis||[]).forEach(function(x){hot[x.hotel]=x;});
+  var maxH=Math.max.apply(null,R2_HOTEIS.map(function(x){return hot[x.slug]?Number(hot[x.slug].bytes)||0:0;}).concat([1]));
+  function barra(rot,val,max,sub,c){return '<div class="r2p-bar" style="grid-template-columns:130px 1fr 110px"><span>'+rot+'</span><div class="tr"><span style="width:'+(val*100/max)+'%;background:'+(c||'#2D6A4F')+'"></span></div><b style="text-align:right;white-space:nowrap">'+sub+'</b></div>';}
+  return '<div class="r2p-card">'+cab+
+    '<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:6px;font-size:13px">'+
+      '<span><b style="font-size:22px;color:#0A2A22">'+r2pMB(tot)+' MB</b> <span style="color:#6b7770">de '+Math.round(lim/1048576)+' MB do plano grátis</span></span>'+
+      '<b style="color:'+cor+';font-size:15px">'+pctTxt+'%</b></div>'+
+    '<div style="height:16px;background:#EEF2EF;border-radius:8px;overflow:hidden;position:relative">'+
+      '<div style="height:100%;width:'+Math.max(pct,0.6)+'%;background:'+cor+';border-radius:8px;transition:width .4s"></div>'+
+      '<div style="position:absolute;top:0;bottom:0;left:80%;border-left:2px dashed rgba(230,161,0,.7)" title="80%"></div>'+
+      '<div style="position:absolute;top:0;bottom:0;left:90%;border-left:2px dashed rgba(192,57,43,.7)" title="90%"></div>'+
+    '</div>'+
+    '<div style="display:flex;justify-content:space-between;font-size:11px;color:#6b7770;margin-top:4px"><span>Tabelas da manutenção: '+r2pTam(dados)+' · estrutura do próprio Supabase: '+r2pTam(Math.max(tot-dados,0))+'</span><span>alerta em 80% e 90%</span></div>'+
+    alerta+
+    '<div class="r2p-two" style="margin-top:16px">'+
+      '<div><div style="font-size:12px;font-weight:700;color:#6b7770;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Por hotel</div>'+
+        R2_HOTEIS.map(function(x){var o=hot[x.slug]||{bytes:0,linhas:0};return barra(r2pEsc(nomeH[x.slug]),Number(o.bytes)||0,maxH,r2pTam(o.bytes)+' <span style="font-weight:400;color:#6b7770">· '+(Number(o.linhas)||0)+' reg.</span>');}).join('')+'</div>'+
+      '<div><div style="font-size:12px;font-weight:700;color:#6b7770;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Maiores tabelas</div>'+
+        tabs.map(function(t){return barra(r2pEsc(nomeT[t.tabela]||t.tabela),Number(t.bytes)||0,maxT,r2pTam(t.bytes),'#1B4332');}).join('')+'</div>'+
+    '</div>'+
+    '<div style="font-size:11px;color:#6b7770;margin-top:10px">Plano grátis do Supabase: 500 MB de banco. O projeto pausa após 7 dias sem uso e não tem backup automático.</div>'+
+  '</div>';
 }
 
 function r2pRenderHoteis(){
