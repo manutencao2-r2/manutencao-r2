@@ -233,6 +233,119 @@ details.col>.body{padding:0 15px 15px}
   .bar-row{grid-template-columns:100px 1fr 32px}
 }
 
+/* ===== MODO CAMPO (celular) ===== */
+#campo-root{display:none}
+body.campo-on #campo-root{display:flex;position:fixed;inset:0;z-index:250;flex-direction:column;background:#F2F5F2;font-family:'DM Sans',system-ui,sans-serif;color:#1d2b24}
+body.campo-on .app{display:none!important}
+body.campo-on #mroot .modal-bg{z-index:400;align-items:flex-end;padding:0}
+body.campo-on #mroot .modal{border-radius:16px 16px 0 0;padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+.cp-hero{position:relative;background:linear-gradient(135deg,#0A2A22 0%,#1B4332 55%,#2D6A4F 100%);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 18px 22px;border-radius:0 0 22px 22px;flex-shrink:0;box-shadow:0 4px 14px rgba(10,42,34,.18)}
+.cp-hk{font-size:11px;font-weight:700;letter-spacing:.12em;color:#A1E19C;padding-right:110px}
+.cp-ht{font:700 26px/1.15 'DM Sans',sans-serif;margin-top:6px}
+.cp-hs{font-size:13px;color:rgba(255,255,255,.75);margin-top:4px;text-transform:none}
+.cp-hs::first-letter{text-transform:uppercase}
+.cp-hrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cp-hbtn{background:#fff;color:#0A2A22;border:none;border-radius:12px;padding:9px 14px;font:700 14px 'DM Sans',sans-serif;display:flex;align-items:center;gap:4px;margin-top:6px}
+.cp-hero .cp-st{position:absolute;top:calc(12px + env(safe-area-inset-top));right:14px}
+.cp-body{flex:1;overflow:auto;padding:16px 14px 24px;-webkit-overflow-scrolling:touch}
+.cp-nav{display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid #DDE6DF;padding:6px 4px calc(6px + env(safe-area-inset-bottom));flex-shrink:0;box-shadow:0 -2px 10px rgba(10,42,34,.05)}
+.cp-nav button{background:none;border:none;color:#7d8a83;display:flex;flex-direction:column;align-items:center;gap:3px;font:600 11px 'DM Sans',sans-serif;padding:4px 2px}
+.cp-ni{position:relative;display:flex;align-items:center;justify-content:center;width:52px;height:30px;border-radius:15px}
+.cp-ni i{font-size:22px}
+.cp-ni em{position:absolute;top:-3px;right:2px;background:#c0392b;color:#fff;font:700 10px 'DM Sans',sans-serif;font-style:normal;min-width:17px;height:17px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.cp-nav button.on{color:#0A2A22}
+.cp-nav button.on .cp-ni{background:#D7F0D5}
+.cp-seg{display:flex;background:#fff;border:1px solid #DDE6DF;border-radius:12px;padding:3px;margin-bottom:12px}
+.cp-seg button{flex:1;border:none;background:none;padding:10px 4px;border-radius:9px;font:600 13px 'DM Sans',sans-serif;color:#1B4332}
+.cp-seg button.on{background:#1B4332;color:#fff}
+.cp-card{background:#fff;border:1px solid #E3EAE5;border-radius:16px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(10,42,34,.06)}
+.cp-card.urg{border-left:5px solid #c0392b}
+.cp-card:active{background:#F5F9F5}
+.cp-row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cp-loc{font-size:18px;color:#0A2A22}
+.cp-area{font-size:13px;color:#6b7770;margin-top:2px}
+.cp-desc{font-size:14px;margin-top:6px;color:#2b3a33;white-space:pre-wrap}
+.cp-meta{display:flex;gap:12px;font-size:12px;color:#6b7770;margin-top:8px}
+.cp-pr{color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.cp-vazio{text-align:center;color:#6b7770;padding:50px 20px;font-size:14px}
+.cp-vazio i{font-size:42px;display:block;margin-bottom:8px;color:#A9C2AF}
+.cp-big{min-height:48px;font-size:15px!important;justify-content:center}
+.cp-form label{display:block;font-size:13px;font-weight:700;color:#1B4332;margin:14px 0 6px}
+.cp-form input,.cp-form textarea{width:100%;font-size:16px!important;padding:12px!important;border:1px solid #C9D6CD!important;border-radius:10px!important;background:#fff}
+.cp-chips{display:flex;flex-wrap:wrap;gap:8px}
+.cp-chips button{border:1px solid #C9D6CD;background:#fff;color:#1B4332;border-radius:20px;padding:10px 14px;font:600 14px 'DM Sans',sans-serif}
+.cp-chips button.on{background:#1B4332;color:#fff;border-color:#1B4332}
+.cp-fotos{display:flex;flex-wrap:wrap;gap:8px}
+.cp-fotos img{width:84px;height:84px;object-fit:cover;border-radius:10px;border:1px solid #DDE6DF;display:block}
+.cp-th{position:relative}
+.cp-th button{position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;border:none;background:#c0392b;color:#fff;font-size:15px;line-height:1}
+.cp-addf{width:84px;height:84px;border:2px dashed #A9C2AF;border-radius:10px;display:flex!important;align-items:center;justify-content:center;font-size:30px;color:#2D6A4F;margin:0!important;background:#fff}
+.cp-fpend{width:84px;height:84px;border-radius:10px;background:#FFF1DB;color:#9a5b00;font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.cp-fpend i{font-size:22px}
+.cp-aviso{background:#FFF1DB;color:#9a5b00;border-radius:10px;padding:10px;font-size:13px}
+.cp-prog{height:10px;background:#E0E8E2;border-radius:6px;overflow:hidden}
+.cp-prog span{display:block;height:100%;background:#2F8F5B;border-radius:6px}
+.cp-ck{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:1px solid #DDE6DF;border-radius:12px;padding:14px;margin-bottom:8px;font:500 15px 'DM Sans',sans-serif;color:#1d2b24}
+.cp-ck i{font-size:26px;color:#A9C2AF;flex-shrink:0}
+.cp-ck.on{background:#EEF8EE;border-color:#A1E19C}
+.cp-ck.on i{color:#2F8F5B}
+.cp-ck.on span{text-decoration:line-through;color:#6b7770}
+.cp-ck small{display:block;font-size:11px;text-decoration:none;color:#2F8F5B}
+body.campo-on .modal{max-height:88vh;overflow:auto}
+.kc-fotos{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.kc-fotos img{width:90px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #E0E8E2}
+.cp-kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.cp-kpi{text-align:left;border:1px solid #E3EAE5;background:#fff;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:2px;font-family:'DM Sans',sans-serif;box-shadow:0 1px 3px rgba(10,42,34,.06)}
+.cp-kpi i{font-size:22px;width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.cp-kpi b{font-size:28px;line-height:1;color:#0A2A22}
+.cp-kpi span{font-size:12.5px;color:#5d6b64;font-weight:600}
+.cp-kpi.k1 i{background:#E3F0E6;color:#1B4332}
+.cp-kpi.k2 i{background:#FBE4E1;color:#c0392b}
+.cp-kpi.k3 i{background:#DFF3E4;color:#2F8F5B}
+.cp-kpi.k4 i{background:#FCEBD3;color:#B8741A}
+.cp-cta{width:100%;min-height:54px;border-radius:14px!important;font-size:16px!important;margin-bottom:12px;background:linear-gradient(135deg,#1B4332,#2D6A4F)!important;box-shadow:0 4px 12px rgba(27,67,50,.25)}
+.cp-resumo{width:100%;display:flex;align-items:center;gap:12px;text-align:left;font-family:'DM Sans',sans-serif}
+.cp-resumo>i:first-child{font-size:22px;color:#1B4332;background:#E3F0E6;width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.cp-resumo span{flex:1}.cp-resumo b{display:block;font-size:15px;color:#0A2A22}.cp-resumo small{font-size:12.5px;color:#6b7770}
+.cp-resumo>i:last-child{color:#A9C2AF;font-size:20px}
+.cp-sec{font:700 12px 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#5d6b64;margin:18px 4px 10px}
+.cp-vz-s{padding:22px;background:#fff;border:1px dashed #C9D6CD;border-radius:16px}
+.cp-pills{display:flex;gap:8px;overflow-x:auto;margin:0 -14px 12px;padding:0 14px 2px;scrollbar-width:none}
+.cp-pills::-webkit-scrollbar{display:none}
+.cp-pills button{flex-shrink:0;border:1px solid #C9D6CD;background:#fff;color:#1B4332;border-radius:20px;padding:9px 14px;font:600 13px 'DM Sans',sans-serif;white-space:nowrap}
+.cp-pills button em{font-style:normal;background:#E3F0E6;border-radius:10px;padding:1px 7px;margin-left:3px;font-size:12px}
+.cp-pills button.on{background:#1B4332;color:#fff;border-color:#1B4332}
+.cp-pills button.on em{background:rgba(255,255,255,.2)}
+.cp-busca{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #DDE6DF;border-radius:14px;padding:0 12px;margin-bottom:12px}
+.cp-busca i{color:#7d8a83;font-size:19px}
+.cp-busca input{flex:1;border:none;outline:none;font-size:16px;padding:12px 0;background:none}
+.cp-tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px}
+.cp-tag.ab{background:#FCEBD3;color:#8a5410}.cp-tag.and{background:#DCEBFA;color:#1d4f80}.cp-tag.ok{background:#DFF3E4;color:#1f6b40}
+.cp-meta{align-items:center;flex-wrap:wrap}
+.cp-dica{background:#E3F0E6;color:#1B4332;border-radius:12px;padding:10px 12px;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.cp-at{display:flex;align-items:center;gap:12px}
+.cp-at.feito{border-color:#A1E19C;background:#F6FCF5}
+.cp-atx{flex:1;min-width:0}.cp-atx>b{font-size:15.5px;color:#0A2A22}
+.cp-feito{flex-shrink:0;border:none;background:#1B4332;color:#fff;border-radius:14px;width:68px;height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:700 13px 'DM Sans',sans-serif}
+.cp-feito i{font-size:22px}
+.cp-feito:active{background:#2F8F5B}
+.cp-pcard .cp-row span b{display:block;font-size:17px;color:#0A2A22}
+.cp-pcard .cp-row span small{font-size:12.5px;color:#6b7770}
+.cp-pcard strong{font-size:30px;color:#1B4332}
+.cp-pcard .cp-prog{margin-top:10px}
+.cp-ck{border-radius:14px}
+.cp-perfil{display:flex;align-items:center;gap:14px}
+.cp-av{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#1B4332,#2D6A4F);color:#fff;font:700 22px 'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cp-perfil b{display:block;font-size:17px;color:#0A2A22}.cp-perfil small{font-size:13px;color:#6b7770}
+.cp-grp{background:#fff;border:1px solid #E3EAE5;border-radius:16px;overflow:hidden}
+.cp-mi{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:none;border:none;border-bottom:1px solid #EEF2EF;padding:14px 16px;font-family:'DM Sans',sans-serif}
+.cp-mi:last-child{border-bottom:none}
+.cp-mi>i:first-child{font-size:21px;color:#1B4332;width:38px;height:38px;border-radius:11px;background:#E3F0E6;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cp-mi span{flex:1}.cp-mi b{display:block;font-size:15px;color:#0A2A22}.cp-mi small{font-size:12px;color:#6b7770}
+.cp-mi>i:last-child{color:#A9C2AF;font-size:19px}
+.cp-mi.sair b,.cp-mi.sair>i:first-child{color:#c0392b}.cp-mi.sair>i:first-child{background:#FBE4E1}
+.cp-ver{text-align:center;font-size:11.5px;color:#9aa69f;margin-top:18px}
+
 /* R2 */
 body.r2-portal-mode .app, body.r2-portal-mode #login-screen, body.r2-portal-mode #loading{display:none !important}
 </style>
@@ -293,6 +406,7 @@ body.r2-portal-mode .app, body.r2-portal-mode #login-screen, body.r2-portal-mode
     <div id="content" class="content"></div>
   </div>
 </div>
+<div id="campo-root"></div>
 <div id="mroot"></div>
 <script>
 /* ===== R2 - contexto do hotel (Regional 2 Laghetto) ===== */
@@ -329,7 +443,7 @@ var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-23.5';
+var R2_VERSAO = '2026-11-23.6';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -343,7 +457,7 @@ function r2VerificarVersao(){
     location.reload();
   }).catch(function(){});
 }
-window.addEventListener('load',function(){ setTimeout(r2VerificarVersao,1500); setInterval(r2VerificarVersao,5*60000); });
+window.addEventListener('load',function(){ if('serviceWorker' in navigator && location.protocol!=='file:'){ navigator.serviceWorker.register('./sw.js').catch(function(){}); } setTimeout(r2VerificarVersao,1500); setInterval(r2VerificarVersao,5*60000); });
 document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') r2VerificarVersao(); });
 /* Toda chamada REST vai para as tabelas r2_* filtradas pelo hotel atual */
 function r2Path(method, path){
@@ -402,6 +516,14 @@ function iniciarRealtime(){
 }
 
 function notificarUrgente(chamado){
+  if(chamado&&chamado.criadoPor===ST.user) return;
+  try{
+    if(document.hidden&&'Notification' in window&&Notification.permission==='granted'&&navigator.serviceWorker){
+      navigator.serviceWorker.ready.then(function(reg){ reg.showNotification('Chamado URGENTE - '+R2_NOME.replace('Laghetto ',''),{
+        body:(chamado.local||'-')+' · '+(chamado.areaTecnica||'')+(chamado.descricao?'\n'+chamado.descricao:''),
+        icon:'icon-192.png',badge:'icon-192.png',vibrate:[300,100,300,100,300],tag:'urgente-'+chamado.id,requireInteraction:true,data:{url:location.href}}); });
+    }
+  }catch(e){}
   // Vibrar no celular
   if(navigator.vibrate) navigator.vibrate([300,100,300,100,300]);
   // Som de alerta
@@ -535,8 +657,8 @@ function call(action,data,cb,errCb){
 }
 
 async function executeAction(action,d){
-  if(action==='bootstrap')        return bootstrap();
-  if(action==='getAll')           return getAll();
+  if(action==='bootstrap')        return campoGetAll();
+  if(action==='getAll')           return campoGetAll();
   if(action==='addChamado')       return addChamado(d);
   if(action==='addChamadoProgramado') return addChamadoProgramado(d);
   if(action==='toggleChamado')    return toggleChamado(d);
@@ -1005,6 +1127,7 @@ function entrarNoSistema(){
   render();
   // Iniciar Realtime para chamados
   iniciarRealtime();
+  try{ campoIniciar(); }catch(e){ console.error('campo',e); }
   // Autorefresh leve a cada 5 min para lembretes, compras, atividades
   // Sem autorefresh - usar botao atualizar ou Realtime
 }
@@ -1018,6 +1141,7 @@ function popularLoginSelect(){
   }
 }
 function fazerLogout(){
+  if(window.CAMPO&&CAMPO.on) campoSair();
   localStorage.removeItem(R2K('lg_uid'));
   localStorage.removeItem(R2K('lg_user'));
   ST.user='';
@@ -1127,6 +1251,7 @@ function toggleSb(){
 }
 
 function render() {
+  if(window.CAMPO&&CAMPO.on){ try{campoRender();}catch(e){console.error(e);} }
   if(ST.page === 'equipe_dp'){ renderEquipeDP(); return; }
   if(!ST.data) return;
   var c=document.getElementById('content');
@@ -1408,6 +1533,7 @@ function abrirKcard(id){
       '<div><label>Status</label><span class="badge '+(ch.status==='Concluido'?'concluido':'aberto')+'">'+esc(ch.status)+'</span></div>'+
     '</div>'+
     (ch.descricao?'<div style="margin-bottom:10px"><label>Descricao</label><div style="background:#F5F7F5;padding:8px;border-radius:6px;font-size:13px">'+esc(ch.descricao)+'</div></div>':'')+
+    (campoFotosDe(ch).length?'<div><label>Fotos</label><div class="kc-fotos">'+campoFotosDe(ch).map(function(u){return '<a href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" loading="lazy" alt="Foto do chamado"></a>';}).join('')+'</div></div>':'')+
     '<div style="margin-bottom:10px"><label>Aberto por</label> <strong>'+esc(ch.criadoPor||'-')+'</strong> '+tempoDecorrido(ch.criadoEm)+'</div>'+
     '<div><label>Atribuir tecnico</label><select id="kc-tec">'+tecOpts+'</select></div>',
     [{l:'Fechar',c:'sec',f:closeModal},
@@ -3994,6 +4120,411 @@ function renderStorageCard(){
 
 
 
+/* =====================================================================
+   MODO CAMPO - tela simplificada para celular (PWA)
+   Chamados | Novo | Atividades | Checklist
+   Fotos no Supabase Storage, alerta de urgente, funciona sem internet
+   (fila local que envia quando a conexao volta)
+   ===================================================================== */
+var CAMPO = {on:false, aba:'inicio', filtro:'pendentes', busca:'', fotosNovo:[], fila:[], enviando:false, ckTipo:'diario'};
+var FOTO_BUCKET = 'r2-fotos';
+
+function campoQuer(){
+  if(!R2_HOTEL) return false;
+  var pref=null; try{pref=localStorage.getItem(R2K('modo'));}catch(e){}
+  if(pref==='completo') return false;
+  if(pref==='campo') return true;
+  var standalone = window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches);
+  var celular = Math.min(screen.width, window.innerWidth) <= 820 && ('ontouchstart' in window || navigator.maxTouchPoints>0);
+  return !!(standalone || celular);
+}
+function campoIniciar(){
+  campoCarregarFila();
+  window.addEventListener('online', function(){ campoStatus(); campoEnviarFila(); });
+  window.addEventListener('offline', campoStatus);
+  setInterval(campoEnviarFila, 30000);
+  if(campoQuer()) campoLigar(); else campoBotaoNoCompleto();
+  campoEnviarFila();
+}
+function campoLigar(){
+  CAMPO.on=true; document.body.classList.add('campo-on');
+  try{localStorage.setItem(R2K('modo'),'campo');}catch(e){}
+  campoRender();
+}
+function campoDesligar(){
+  CAMPO.on=false; document.body.classList.remove('campo-on');
+  try{localStorage.setItem(R2K('modo'),'completo');}catch(e){}
+  document.getElementById('campo-root').innerHTML='';
+  campoBotaoNoCompleto(); render();
+}
+function campoBotaoNoCompleto(){
+  var act=document.querySelector('.topbar .actions');
+  if(!act||document.getElementById('btn-campo')) return;
+  var b=document.createElement('button');
+  b.id='btn-campo'; b.className='btn sec sm'; b.title='Tela de campo (celular)';
+  b.innerHTML='<i class="ti ti-device-mobile"></i>'; b.onclick=campoLigar;
+  act.insertBefore(b, act.firstChild);
+}
+function campoSair(){ CAMPO.on=false; document.body.classList.remove('campo-on'); var r=document.getElementById('campo-root'); if(r) r.innerHTML=''; }
+
+/* ---------- dados em cache (para abrir sem internet) ---------- */
+async function campoGetAll(){
+  try{
+    var d=await getAll();
+    try{ localStorage.setItem(R2K('cache'), JSON.stringify(d)); localStorage.setItem(R2K('cache_em'), new Date().toISOString()); }catch(e){}
+    ST.offline=false;
+    campoAplicarFilaLocal(d);
+    return d;
+  }catch(e){
+    var c=null; try{ c=JSON.parse(localStorage.getItem(R2K('cache'))||'null'); }catch(x){}
+    if(c){ ST.offline=true; campoAplicarFilaLocal(c); return c; }
+    throw e;
+  }
+}
+/* reaplica no dado carregado o que ainda esta na fila (nao some da tela) */
+function campoAplicarFilaLocal(d){
+  CAMPO.fila.forEach(function(op){
+    if(op.fn==='novoChamado' && !(d.chamados||[]).some(function(c){return c.id===op.d.chamado.id;})) d.chamados.unshift(Object.assign({},op.d.chamado,{_pend:true}));
+    if(op.fn==='patchChamado'){ var c=(d.chamados||[]).find(function(x){return x.id===op.d.id;}); if(c) Object.assign(c,op.d.upd,{_pend:true}); }
+    if(op.fn==='foto'){ var c2=(d.chamados||[]).find(function(x){return x.id===op.d.chamadoId;}); if(c2){ c2._fotosPend=(c2._fotosPend||0)+1; } }
+    if(op.fn==='atividade' && !(d.registrosAtividades||[]).some(function(r){return r.id===op.d.reg.id;})) d.registrosAtividades.unshift(Object.assign({},op.d.reg,{_pend:true}));
+  });
+}
+
+/* ---------- fila offline ---------- */
+function campoCarregarFila(){ try{ CAMPO.fila=JSON.parse(localStorage.getItem(R2K('fila'))||'[]'); }catch(e){ CAMPO.fila=[]; } }
+function campoSalvarFila(){
+  try{ localStorage.setItem(R2K('fila'), JSON.stringify(CAMPO.fila)); }
+  catch(e){ alert('Memória do celular cheia: envie os dados pendentes (conecte à internet) antes de tirar mais fotos.'); }
+  campoStatus();
+}
+function campoEnfileirar(fn,d){ CAMPO.fila.push({id:uid(),fn:fn,d:d,em:new Date().toISOString()}); campoSalvarFila(); campoEnviarFila(); }
+function campoErroRede(e){ return !navigator.onLine || e instanceof TypeError || /Failed to fetch|NetworkError|Load failed/i.test(String(e&&e.message)); }
+async function campoEnviarFila(){
+  if(CAMPO.enviando||!CAMPO.fila.length||!navigator.onLine) { campoStatus(); return; }
+  CAMPO.enviando=true; campoStatus();
+  var mudou=false;
+  while(CAMPO.fila.length){
+    var op=CAMPO.fila[0];
+    try{ await CAMPO_FN[op.fn](op.d); CAMPO.fila.shift(); campoSalvarFila(); mudou=true; }
+    catch(e){
+      if(campoErroRede(e)) break;
+      console.error('Fila: descartado',op,e); op.tent=(op.tent||0)+1;
+      if(op.tent>=3){ CAMPO.fila.shift(); campoSalvarFila(); } else break;
+    }
+  }
+  CAMPO.enviando=false; campoStatus();
+  if(mudou) reload();
+}
+var CAMPO_FN = {
+  novoChamado: async function(d){
+    var ex=await sbGet('chamados?id=eq.'+encodeURIComponent(d.chamado.id)+'&select=id');
+    if(!ex||!ex.length){
+      var c=Object.assign({},d.chamado); delete c._pend; delete c._fotosPend;
+      await sbPost('chamados',c);
+      if(d.pts) await registrarPontos(d.pts);
+    }
+  },
+  patchChamado: async function(d){
+    await sbPatch('chamados?id=eq.'+encodeURIComponent(d.id), d.upd);
+    if(d.pts) await registrarPontos(d.pts);
+  },
+  foto: async function(d){
+    var bin=Uint8Array.from(atob(d.b64), function(c){return c.charCodeAt(0);});
+    var r=await fetch(SUPA_URL+'/storage/v1/object/'+FOTO_BUCKET+'/'+d.caminho,{method:'POST',
+      headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'image/jpeg'},body:bin});
+    if(!r.ok){ var t=await r.text(); throw new Error('Foto ['+r.status+'] '+t.slice(0,120)); }
+    var url=SUPA_URL+'/storage/v1/object/public/'+FOTO_BUCKET+'/'+d.caminho;
+    var atual=await sbGet('chamados?id=eq.'+encodeURIComponent(d.chamadoId)+'&select=fotos');
+    var lista=[]; try{ lista=JSON.parse((atual&&atual[0]&&atual[0].fotos)||'[]'); }catch(e){}
+    if(lista.indexOf(url)<0) lista.push(url);
+    await sbPatch('chamados?id=eq.'+encodeURIComponent(d.chamadoId),{fotos:JSON.stringify(lista)});
+  },
+  atividade: async function(d){
+    var ex=await sbGet('registros_atividades?id=eq.'+encodeURIComponent(d.reg.id)+'&select=id');
+    if(!ex||!ex.length){ var r=Object.assign({},d.reg); delete r._pend; await sbPost('registros_atividades',r); if(d.pts) await registrarPontos(d.pts); }
+  },
+  checklist: async function(d){ await saveChecklistEstado(d); }
+};
+function campoPts(chave,padrao){ var p=(ST.data&&ST.data.config&&ST.data.config.pontuacoes)||{}; return p[chave]!=null?Number(p[chave]):padrao; }
+
+/* ---------- fotos ---------- */
+function campoComprimir(file){
+  return new Promise(function(ok,erro){
+    var img=new Image(), url=URL.createObjectURL(file);
+    img.onload=function(){
+      var max=1280, w=img.width, h=img.height, k=Math.min(1,max/Math.max(w,h));
+      var cv=document.createElement('canvas'); cv.width=Math.round(w*k); cv.height=Math.round(h*k);
+      cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+      URL.revokeObjectURL(url);
+      ok(cv.toDataURL('image/jpeg',0.72));
+    };
+    img.onerror=function(){ URL.revokeObjectURL(url); erro(new Error('Não foi possível ler a foto')); };
+    img.src=url;
+  });
+}
+function campoFotosDe(c){ var l=[]; try{ l=JSON.parse(c.fotos||'[]'); }catch(e){} return Array.isArray(l)?l:[]; }
+function campoEnfileirarFoto(chamadoId,dataUrl){
+  campoEnfileirar('foto',{chamadoId:chamadoId,caminho:R2_HOTEL+'/'+chamadoId+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,6)+'.jpg',b64:dataUrl.split(',')[1]});
+}
+
+/* ---------- status / cabecalho ---------- */
+function campoStatus(){
+  var el=document.getElementById('campo-status'); if(!el) return;
+  var n=CAMPO.fila.length, on=navigator.onLine;
+  el.className='cp-st '+(on?(n?'pend':'ok'):'off');
+  el.innerHTML=on?(n?(CAMPO.enviando?'Enviando '+n+'...':n+' para enviar'):'Online'):'Sem internet'+(n?' · '+n:'');
+}
+function campoMenu(){ campoAba('mais'); }
+function campoAlertas(){
+  if(!('Notification' in window)){ alert('Este celular não suporta notificações pelo navegador. O alerta aparece na tela com o app aberto.'); return; }
+  Notification.requestPermission().then(function(p){
+    if(p==='granted'){ if(navigator.vibrate) navigator.vibrate(200); alert('Alertas ativados. Chamados urgentes vão vibrar e notificar enquanto o app estiver aberto ou em segundo plano.'); }
+    else alert('Permissão negada. Ative as notificações deste site nas configurações do navegador.');
+    campoRender();
+  });
+}
+function campoTestarAlerta(){
+  if(navigator.vibrate) navigator.vibrate([200,100,200]);
+  try{ var ac=new (window.AudioContext||window.webkitAudioContext)(), o=ac.createOscillator(), g=ac.createGain(); o.frequency.value=880; o.connect(g); g.connect(ac.destination); g.gain.value=.2; o.start(); o.stop(ac.currentTime+.35); }catch(e){}
+  if('Notification' in window&&Notification.permission==='granted'&&navigator.serviceWorker){
+    navigator.serviceWorker.ready.then(function(r){ r.showNotification('Teste de alerta',{body:R2_NOME+' · os chamados urgentes vão aparecer assim.',icon:'icon-192.png',tag:'teste'}); }).catch(function(){});
+  }
+}
+
+/* ---------- render ---------- */
+function campoPrimeiroNome(){ var n=String(ST.user||'').trim().split(/\s+/)[0]||''; return n.length<=3?n.toUpperCase():n.charAt(0).toUpperCase()+n.slice(1).toLowerCase(); }
+function campoHoras(c){ return (Date.now()-new Date(c.criadoEm).getTime())/36e5; }
+function campoPend(c){ return c.status==='Aberto'||c.status==='Andamento'; }
+function campoRender(){
+  if(!CAMPO.on||!ST.data) return;
+  var root=document.getElementById('campo-root');
+  if(['inicio','chamados','checklist','atividades','mais','novo'].indexOf(CAMPO.aba)<0) CAMPO.aba='inicio';
+  var abas=[['inicio','Início','ti-home'],['chamados','Chamados','ti-clipboard-list'],['checklist','Checklist','ti-checkup-list'],['atividades','Atividades','ti-repeat'],['mais','Mais','ti-dots']];
+  var nAb=(ST.data.chamados||[]).filter(campoPend).length;
+  var a=CAMPO.aba, hotel=esc(R2_NOME.toUpperCase());
+  var data=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  var tit={chamados:['Chamados','Toque em um chamado para ver e concluir'],checklist:['Checklist','Marque o que já foi verificado'],atividades:['Atividades','Registre com 1 toque'],mais:['Mais','Perfil, alertas e opções'],novo:['Novo chamado','Preencha e envie, mesmo sem internet']}[a];
+  var acao=a==='chamados'?'<button class="cp-hbtn" onclick="campoAba(\'novo\')"><i class="ti ti-plus"></i> Novo</button>':a==='novo'?'<button class="cp-hbtn" onclick="campoAba(\'chamados\')"><i class="ti ti-x"></i> Cancelar</button>':'';
+  var hero=a==='inicio'
+    ?'<div class="cp-hk">'+hotel+'</div><div class="cp-ht">Olá, '+esc(campoPrimeiroNome())+'</div><div class="cp-hs">Manutenção · '+esc(data)+'</div>'
+    :'<div class="cp-hk">'+hotel+'</div><div class="cp-hrow"><div class="cp-ht">'+tit[0]+'</div>'+acao+'</div><div class="cp-hs">'+tit[1]+'</div>';
+  var corpo=a==='novo'?campoNovo():a==='atividades'?campoAtividades():a==='checklist'?campoChecklist():a==='mais'?campoMais():a==='chamados'?campoChamados():campoInicio();
+  root.innerHTML=
+    '<header class="cp-hero"><span id="campo-status" class="cp-st"></span>'+hero+'</header>'+
+    '<div class="cp-body">'+corpo+'</div>'+
+    '<nav class="cp-nav">'+abas.map(function(x){var on=a===x[0]||(a==='novo'&&x[0]==='chamados');return '<button class="'+(on?'on':'')+'" onclick="campoAba(\''+x[0]+'\')"><span class="cp-ni"><i class="ti '+x[2]+'"></i>'+(x[0]==='chamados'&&nAb?'<em>'+nAb+'</em>':'')+'</span><span>'+x[1]+'</span></button>';}).join('')+'</nav>';
+  campoStatus();
+}
+function campoAba(a){ CAMPO.aba=a; campoRender(); var b=document.querySelector('.cp-body'); if(b) b.scrollTop=0; }
+function campoIrFiltro(f){ CAMPO.filtro=f; CAMPO.busca=''; campoAba('chamados'); }
+
+function campoBadgeP(p){ var c={Urgente:'#c0392b',Alta:'#B8741A',Media:'#4F7A43',Baixa:'#6F7C75'}[p]||'#6F7C75'; return '<span class="cp-pr" style="background:'+c+'">'+esc(p==='Media'?'Média':p||'-')+'</span>'; }
+function campoCardChamado(c){
+  var nf=campoFotosDe(c).length+(c._fotosPend||0);
+  var st=c.status==='Andamento'?'<span class="cp-tag and">Em andamento</span>':c.status==='Concluido'?'<span class="cp-tag ok">Concluído</span>':'<span class="cp-tag ab">Aberto</span>';
+  return '<div class="cp-card cp-ch'+(c.prioridade==='Urgente'&&c.status!=='Concluido'?' urg':'')+'" onclick="campoDetalhe(\''+esc(c.id)+'\')">'+
+    '<div class="cp-row"><b class="cp-loc">'+esc(c.local||'-')+'</b>'+campoBadgeP(c.prioridade)+'</div>'+
+    '<div class="cp-area">'+esc(c.areaTecnica||'')+(c.tecnico?' · '+esc(c.tecnico):'')+'</div>'+
+    (c.descricao?'<div class="cp-desc">'+esc(String(c.descricao).slice(0,140))+'</div>':'')+
+    '<div class="cp-meta">'+st+'<span><i class="ti ti-clock"></i> '+tempoDecorrido(c.criadoEm)+'</span>'+(nf?'<span><i class="ti ti-camera"></i> '+nf+'</span>':'')+(c._pend?'<span style="color:#9a5b00"><i class="ti ti-cloud-upload"></i> a enviar</span>':'')+'</div></div>';
+}
+function campoInicio(){
+  var ch=ST.data.chamados||[], hoje=todayISO();
+  var pend=ch.filter(campoPend), urg=pend.filter(function(c){return c.prioridade==='Urgente';});
+  var feitos=ch.filter(function(c){return c.status==='Concluido'&&String(c.concluidoEm||'').slice(0,10)===hoje;}).length;
+  var atras=pend.filter(function(c){return campoHoras(c)>24;}).length;
+  var kpi=function(n,l,ic,cls,f){return '<button class="cp-kpi '+cls+'" onclick="campoIrFiltro(\''+f+'\')"><i class="ti '+ic+'"></i><b>'+n+'</b><span>'+l+'</span></button>';};
+  var ativs=(ST.data.config&&ST.data.config.atividadesRecorrentes)||[], regs=ST.data.registrosAtividades||[];
+  var ativHoje=ativs.filter(function(nm){return regs.some(function(r){return r.atividade===nm&&String(r.feito_em||'').slice(0,10)===hoje;});}).length;
+  return '<div class="cp-kpis">'+kpi(pend.length,'Em aberto','ti-clipboard-list','k1','pendentes')+kpi(urg.length,'Urgentes','ti-alert-triangle','k2','urgentes')+
+      kpi(feitos,'Concluídos hoje','ti-circle-check','k3','feitos')+kpi(atras,'Abertos há +24h','ti-clock-exclamation','k4','atrasados')+'</div>'+
+    '<button class="btn cp-big cp-cta" onclick="campoAba(\'novo\')"><i class="ti ti-plus"></i> Novo chamado</button>'+
+    (ativs.length?'<button class="cp-card cp-resumo" onclick="campoAba(\'atividades\')"><i class="ti ti-repeat"></i><span><b>Atividades de hoje</b><small>'+ativHoje+' de '+ativs.length+' registradas</small></span><i class="ti ti-chevron-right"></i></button>':'')+
+    '<div class="cp-sec">Chamados urgentes</div>'+
+    (urg.length?urg.slice(0,8).map(campoCardChamado).join(''):'<div class="cp-vazio cp-vz-s"><i class="ti ti-shield-check"></i><div>Nenhum chamado urgente em aberto.</div></div>');
+}
+function campoFiltrar(){
+  var ch=ST.data.chamados||[], hoje=todayISO(), f=CAMPO.filtro, q=String(CAMPO.busca||'').toLowerCase().trim();
+  var lista=ch.filter(function(c){
+    if(f==='andamento') return c.status==='Andamento';
+    if(f==='urgentes') return campoPend(c)&&c.prioridade==='Urgente';
+    if(f==='atrasados') return campoPend(c)&&campoHoras(c)>24;
+    if(f==='meus') return campoPend(c)&&(c.tecnico===ST.user||c.criadoPor===ST.user);
+    if(f==='feitos') return c.status==='Concluido'&&String(c.concluidoEm||'').slice(0,10)===hoje;
+    return campoPend(c);
+  });
+  if(q) lista=lista.filter(function(c){return [c.local,c.areaTecnica,c.descricao,c.tecnico,c.criadoPor].join(' ').toLowerCase().indexOf(q)>=0;});
+  var ord={Urgente:0,Alta:1,Media:2,Baixa:3};
+  lista.sort(function(a,b){return f==='feitos'?String(b.concluidoEm).localeCompare(String(a.concluidoEm)):((ord[a.prioridade]-ord[b.prioridade])||String(a.criadoEm).localeCompare(String(b.criadoEm)));});
+  return lista.length?lista.map(campoCardChamado).join(''):'<div class="cp-vazio"><i class="ti ti-'+(q?'search':'mood-happy')+'"></i><div>'+(q?'Nada encontrado para essa busca.':f==='feitos'?'Nenhum chamado concluído hoje.':'Nenhum chamado nesta lista.')+'</div></div>';
+}
+function campoBuscar(v){ CAMPO.busca=v; var l=document.getElementById('cp-lista'); if(l) l.innerHTML=campoFiltrar(); }
+function campoChamados(){
+  var ch=ST.data.chamados||[], hoje=todayISO(), f=CAMPO.filtro;
+  if(['pendentes','andamento','urgentes','atrasados','meus','feitos'].indexOf(f)<0) f=CAMPO.filtro='pendentes';
+  var cnt={pendentes:ch.filter(campoPend).length,andamento:ch.filter(function(c){return c.status==='Andamento';}).length,urgentes:ch.filter(function(c){return campoPend(c)&&c.prioridade==='Urgente';}).length,
+    atrasados:ch.filter(function(c){return campoPend(c)&&campoHoras(c)>24;}).length,meus:ch.filter(function(c){return campoPend(c)&&(c.tecnico===ST.user||c.criadoPor===ST.user);}).length,
+    feitos:ch.filter(function(c){return c.status==='Concluido'&&String(c.concluidoEm||'').slice(0,10)===hoje;}).length};
+  var pills=[['pendentes','Em aberto'],['andamento','Em andamento'],['urgentes','Urgentes'],['atrasados','+24h'],['meus','Meus'],['feitos','Concluídos hoje']];
+  return '<div class="cp-pills">'+pills.map(function(p){return '<button class="'+(f===p[0]?'on':'')+'" onclick="CAMPO.filtro=\''+p[0]+'\';campoRender()">'+p[1]+' <em>'+cnt[p[0]]+'</em></button>';}).join('')+'</div>'+
+    '<div class="cp-busca"><i class="ti ti-search"></i><input type="search" placeholder="Buscar local, área ou descrição" value="'+esc(CAMPO.busca||'')+'" oninput="campoBuscar(this.value)"></div>'+
+    '<div id="cp-lista">'+campoFiltrar()+'</div>';
+}
+function campoMais(){
+  var perm=('Notification' in window)?Notification.permission:'indisponivel';
+  var ini=campoPrimeiroNome().charAt(0)||'?';
+  var item=function(ic,t,s,fn,cls){return '<button class="cp-mi'+(cls?' '+cls:'')+'" onclick="'+fn+'"><i class="ti '+ic+'"></i><span><b>'+t+'</b>'+(s?'<small>'+s+'</small>':'')+'</span><i class="ti ti-chevron-right"></i></button>';};
+  return '<div class="cp-card cp-perfil"><div class="cp-av">'+esc(ini)+'</div><div><b>'+esc(ST.user||'-')+'</b><small>'+esc(R2_NOME)+' · Manutenção</small></div></div>'+
+    (CAMPO.fila.length?'<div class="cp-aviso" style="margin-bottom:12px">'+CAMPO.fila.length+' registro(s) aguardando internet. Não saia da conta antes de enviar.</div>':'')+
+    (ST.offline?'<div class="cp-aviso" style="margin-bottom:12px">Sem conexão: mostrando dados salvos em '+fmtDT(localStorage.getItem(R2K('cache_em')))+'.</div>':'')+
+    '<div class="cp-sec">Alertas</div><div class="cp-grp">'+
+      item('ti-bell-ringing','Ativar alertas de urgente',perm==='granted'?'Ativado neste celular':perm==='denied'?'Bloqueado nas configurações do navegador':'Vibra e notifica quando abrir chamado urgente','campoAlertas()')+
+      item('ti-volume','Testar alerta','Vibração, som e notificação','campoTestarAlerta()')+'</div>'+
+    '<div class="cp-sec">Sistema</div><div class="cp-grp">'+
+      item('ti-refresh','Atualizar dados','Busca as informações mais recentes','reload()')+
+      item('ti-layout-dashboard','Abrir sistema completo','Relatórios, configurações e cadastros','campoDesligar()')+
+      item('ti-logout','Sair','','campoSair();fazerLogout()','sair')+'</div>'+
+    '<div class="cp-ver">Laghetto Manutenção R2 · versão '+esc(typeof R2_VERSAO!=='undefined'?R2_VERSAO:'')+'</div>';
+}
+function campoDetalhe(id){
+  var c=(ST.data.chamados||[]).find(function(x){return x.id===id;}); if(!c) return;
+  var fotos=campoFotosDe(c);
+  var botoes='';
+  if(c.status!=='Concluido'){
+    if(c.status!=='Andamento'||c.tecnico!==ST.user) botoes+='<button class="btn sec cp-big" onclick="campoAssumir(\''+esc(id)+'\')"><i class="ti ti-player-play"></i> Assumir</button>';
+    botoes+='<button class="btn cp-big" onclick="campoConcluir(\''+esc(id)+'\')"><i class="ti ti-check"></i> Concluir</button>';
+  }
+  openModal(c.local||'Chamado',
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">'+campoBadgeP(c.prioridade)+'<span class="cp-pr" style="background:#E0E8E2;color:#1B4332">'+esc(c.status)+'</span></div>'+
+    '<div style="font-size:14px;margin-bottom:6px"><b>'+esc(c.areaTecnica||'-')+'</b></div>'+
+    (c.descricao?'<div style="background:#F5F7F5;padding:10px;border-radius:8px;font-size:14px;margin-bottom:8px;white-space:pre-wrap">'+esc(c.descricao)+'</div>':'')+
+    '<div style="font-size:12px;color:#6b7770;margin-bottom:10px">Aberto por '+esc(c.criadoPor||'-')+' · '+fmtDT(c.criadoEm)+(c.tecnico?' · Técnico: '+esc(c.tecnico):'')+(c.concluidoPor?'<br>Concluído por '+esc(c.concluidoPor)+' · '+fmtDT(c.concluidoEm):'')+'</div>'+
+    (fotos.length||c._fotosPend?'<div class="cp-fotos">'+fotos.map(function(u){return '<a href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" loading="lazy" alt="Foto do chamado"></a>';}).join('')+(c._fotosPend?'<div class="cp-fpend"><i class="ti ti-cloud-upload"></i>'+c._fotosPend+' a enviar</div>':'')+'</div>':'')+
+    '<label class="btn sec cp-big" style="display:flex;justify-content:center;margin:10px 0"><i class="ti ti-camera"></i> Adicionar foto<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="campoFotoExistente(\''+esc(id)+'\',this)"></label>'+
+    '<div style="display:grid;gap:8px">'+botoes+'</div>',
+    [{l:'Fechar',c:'sec',f:closeModal}]);
+}
+async function campoFotoExistente(id,inp){
+  var fs=Array.from(inp.files||[]); if(!fs.length) return;
+  var c=(ST.data.chamados||[]).find(function(x){return x.id===id;});
+  for(var i=0;i<fs.length;i++){ try{ campoEnfileirarFoto(id, await campoComprimir(fs[i])); if(c) c._fotosPend=(c._fotosPend||0)+1; }catch(e){ alert(e.message); } }
+  closeModal(); campoRender(); campoDetalhe(id);
+}
+function campoAssumir(id){
+  var c=(ST.data.chamados||[]).find(function(x){return x.id===id;}); if(!c) return;
+  var upd={status:'Andamento',tecnico:ST.user};
+  Object.assign(c,upd,{_pend:true});
+  campoEnfileirar('patchChamado',{id:id,upd:upd});
+  closeModal(); campoRender();
+}
+function campoConcluir(id){
+  var c=(ST.data.chamados||[]).find(function(x){return x.id===id;}); if(!c) return;
+  openModal('Concluir chamado',
+    '<div style="font-size:14px;margin-bottom:10px"><b>'+esc(c.local)+'</b> · '+esc(c.areaTecnica||'')+'</div>'+
+    '<label class="btn sec cp-big" style="display:flex;justify-content:center;margin-bottom:10px"><i class="ti ti-camera"></i> Foto do serviço pronto (opcional)<input id="cp-fconc" type="file" accept="image/*" capture="environment" style="display:none" onchange="this.parentNode.querySelector(\'i\').className=\'ti ti-check\'"></label>',
+    [{l:'Cancelar',c:'sec',f:closeModal},{l:'Concluir',c:'',f:async function(){
+      var inp=document.getElementById('cp-fconc'), f=inp&&inp.files&&inp.files[0];
+      var agora=new Date().toISOString();
+      var upd={status:'Concluido',concluidoEm:agora,concluidoPor:ST.user};
+      var mapa={Urgente:['chamado_urgente',35],Alta:['chamado_alta',20],Media:['chamado_media',10],Baixa:['chamado_baixa',5]}[c.prioridade]||['chamado_media',10];
+      var pts={usuario_id:ST.user,usuario_nome:ST.user,tipo:'chamado_concluido',descricao:'Chamado concluido - '+(c.local||'')+' ('+(c.prioridade||'')+')',pontos:campoPts(mapa[0],mapa[1]),referencia:id};
+      Object.assign(c,upd,{_pend:true});
+      campoEnfileirar('patchChamado',{id:id,upd:upd,pts:pts});
+      if(f){ try{ campoEnfileirarFoto(id, await campoComprimir(f)); c._fotosPend=(c._fotosPend||0)+1; }catch(e){} }
+      closeModal(); if(navigator.vibrate) navigator.vibrate(60); campoRender();
+    }}]);
+}
+
+function campoNovo(){
+  var cfg=ST.data.config||{}, aptos=ST.data.apartamentos||[], areas=cfg.areasComuns||[], tec=cfg.areasTecnicas||[];
+  var n=CAMPO.novo||(CAMPO.novo={tipo:'apartamento',local:'',area:'',prio:'Media',desc:''});
+  var locais=n.tipo==='apartamento'?aptos:areas;
+  function chips(lista,campo,atual){return '<div class="cp-chips">'+lista.map(function(x){return '<button type="button" class="'+(atual===x?'on':'')+'" onclick="CAMPO.novo.'+campo+'=\''+String(x).replace(/'/g,"\\'")+'\';campoRender()">'+esc(x==='Media'?'Média':x)+'</button>';}).join('')+'</div>';}
+  return '<div class="cp-form">'+
+    '<div class="cp-seg" style="margin-bottom:12px"><button class="'+(n.tipo==='apartamento'?'on':'')+'" onclick="CAMPO.novo.tipo=\'apartamento\';CAMPO.novo.local=\'\';campoRender()">Apartamento</button><button class="'+(n.tipo==='area'?'on':'')+'" onclick="CAMPO.novo.tipo=\'area\';CAMPO.novo.local=\'\';campoRender()">Área comum</button></div>'+
+    '<label>'+(n.tipo==='apartamento'?'Apartamento':'Área')+'</label>'+
+    (locais.length?'<input list="cp-locais" id="cp-local" value="'+esc(n.local)+'" placeholder="Toque para escolher ou digite" oninput="CAMPO.novo.local=this.value" inputmode="'+(n.tipo==='apartamento'?'numeric':'text')+'"><datalist id="cp-locais">'+locais.map(function(x){return '<option value="'+esc(x)+'">';}).join('')+'</datalist>'
+      :'<div class="cp-aviso">Nenhum '+(n.tipo==='apartamento'?'apartamento':'área comum')+' cadastrado. Peça ao administrador para cadastrar em Configurações.</div>')+
+    '<label>Área técnica</label>'+chips(tec,'area',n.area)+
+    '<label>Prioridade</label>'+chips(['Baixa','Media','Alta','Urgente'],'prio',n.prio)+
+    '<label>Descrição</label><textarea id="cp-desc" rows="3" placeholder="O que está acontecendo?" oninput="CAMPO.novo.desc=this.value">'+esc(n.desc)+'</textarea>'+
+    '<label>Fotos</label><div class="cp-fotos">'+CAMPO.fotosNovo.map(function(u,i){return '<div class="cp-th"><img src="'+u+'" alt="Foto"><button onclick="CAMPO.fotosNovo.splice('+i+',1);campoRender()" aria-label="Remover foto">×</button></div>';}).join('')+
+      '<label class="cp-addf"><i class="ti ti-camera-plus"></i><input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="campoFotoNova(this)"></label></div>'+
+    '<button class="btn cp-big" style="width:100%;margin-top:14px" onclick="campoEnviarNovo()"><i class="ti ti-send"></i> Abrir chamado</button></div>';
+}
+async function campoFotoNova(inp){
+  var fs=Array.from(inp.files||[]);
+  for(var i=0;i<fs.length;i++){ try{ CAMPO.fotosNovo.push(await campoComprimir(fs[i])); }catch(e){ alert(e.message); } }
+  campoRender();
+}
+function campoEnviarNovo(){
+  var n=CAMPO.novo; var loc=(document.getElementById('cp-local')||{}).value||n.local;
+  n.local=String(loc||'').trim(); n.desc=((document.getElementById('cp-desc')||{}).value||n.desc||'').trim();
+  if(!n.local){ alert('Informe o '+(n.tipo==='apartamento'?'apartamento':'local')+'.'); return; }
+  if(!n.area){ alert('Escolha a área técnica.'); return; }
+  var id=uid(), agora=new Date().toISOString();
+  var chamado={id:id,titulo:'',tipoLocal:n.tipo,local:n.local,areaTecnica:n.area,prioridade:n.prio,descricao:n.desc,status:'Aberto',criadoEm:agora,criadoPor:ST.user,reaberturas:0,tecnico:null,fotos:'[]'};
+  var pts={usuario_id:ST.user,usuario_nome:ST.user,tipo:'chamado_aberto',descricao:'Chamado aberto - '+n.local+' ('+n.area+')',pontos:campoPts('chamado_aberto',3),referencia:id};
+  ST.data.chamados.unshift(Object.assign({},chamado,{_pend:true,_fotosPend:CAMPO.fotosNovo.length}));
+  campoEnfileirar('novoChamado',{chamado:chamado,pts:pts});
+  CAMPO.fotosNovo.forEach(function(u){ campoEnfileirarFoto(id,u); });
+  CAMPO.fotosNovo=[]; CAMPO.novo=null; CAMPO.aba='chamados'; CAMPO.filtro='pendentes';
+  if(navigator.vibrate) navigator.vibrate(60);
+  campoRender();
+}
+
+function campoAtividades(){
+  var ativs=(ST.data.config&&ST.data.config.atividadesRecorrentes)||[], regs=ST.data.registrosAtividades||[], hoje=todayISO();
+  if(!ativs.length) return '<div class="cp-vazio"><i class="ti ti-repeat"></i><div>Nenhuma atividade recorrente cadastrada.</div></div>';
+  return '<div class="cp-dica"><i class="ti ti-hand-finger"></i> Toque em <b>Feito</b> ao terminar · +'+campoPts('atividade',3)+' pts</div>'+ativs.map(function(nm){
+    var ul=regs.find(function(r){return r.atividade===nm;}), hj=regs.filter(function(r){return r.atividade===nm&&String(r.feito_em||'').slice(0,10)===hoje;}).length;
+    return '<div class="cp-card cp-at'+(hj?' feito':'')+'"><div class="cp-atx"><b>'+esc(nm)+'</b>'+
+      '<div class="cp-area">'+(ul?'Último: '+fmtDT(ul.feito_em)+' · '+esc(ul.feito_por||'-'):'Nunca registrado')+(ul&&ul._pend?' · a enviar':'')+'</div>'+
+      (ul&&ul.obs?'<div class="cp-desc"><b>OBS:</b> '+esc(ul.obs)+'</div>':'')+
+      (hj?'<span class="cp-tag ok" style="margin-top:6px;display:inline-block">'+hj+'x hoje</span>':'')+'</div>'+
+      '<button class="cp-feito" data-nm="'+esc(nm)+'" onclick="campoRegAtiv(this.getAttribute(\'data-nm\'))"><i class="ti ti-check"></i>Feito</button></div>';
+  }).join('');
+}
+function campoRegAtiv(nm){
+  openModal('Registrar: '+nm,
+    '<label>OBS (opcional)</label><textarea id="cp-aobs" rows="4" maxlength="1000" placeholder="Ex: Caldeira 2 com pressão baixa" style="width:100%"></textarea>',
+    [{l:'Cancelar',c:'sec',f:closeModal},{l:'Registrar feito',c:'',f:function(){
+      var obs=(document.getElementById('cp-aobs').value||'').trim();
+      var reg={id:uid(),atividade:nm,feito_por:ST.user,feito_em:new Date().toISOString(),obs:obs};
+      var pts={usuario_id:ST.user,usuario_nome:ST.user,tipo:'atividade_recorrente',descricao:'Atividade: '+nm,pontos:campoPts('atividade',3),referencia:reg.id};
+      ST.data.registrosAtividades.unshift(Object.assign({},reg,{_pend:true}));
+      campoEnfileirar('atividade',{reg:reg,pts:pts});
+      closeModal(); if(navigator.vibrate) navigator.vibrate(60); campoRender();
+    }}]);
+}
+
+function campoChecklist(){
+  var t=CAMPO.ckTipo, ref=ckRef(t);
+  var itens=(ST.data.checklistItens||[]).filter(function(i){return i.tipo===t;});
+  var est=ckLoad(t,ref);
+  (ST.data.checklist||[]).forEach(function(r){ if(r.tipo===t&&r.data===ref&&!(r.itemId in est)) est[r.itemId]={c:r.concluido==='sim',p:r.concluidoPor,t:r.concluidoEm}; });
+  var feitos=itens.filter(function(i){return est[i.id]&&est[i.id].c;}).length, pct=itens.length?Math.round(feitos*100/itens.length):0;
+  return '<div class="cp-seg">'+[['diario','Diário'],['semanal','Semanal'],['mensal','Mensal']].map(function(x){return '<button class="'+(t===x[0]?'on':'')+'" onclick="CAMPO.ckTipo=\''+x[0]+'\';campoRender()">'+x[1]+'</button>';}).join('')+'</div>'+
+    '<div class="cp-card cp-pcard"><div class="cp-row"><span><b>'+feitos+' de '+itens.length+'</b><small>itens verificados</small></span><strong>'+pct+'%</strong></div><div class="cp-prog"><span style="width:'+pct+'%"></span></div></div>'+
+    (itens.length?itens.map(function(it){
+      var d=est[it.id]&&est[it.id].c;
+      return '<button class="cp-ck'+(d?' on':'')+'" onclick="campoTogCk(\''+esc(it.id)+'\')"><i class="ti '+(d?'ti-circle-check-filled':'ti-circle')+'"></i><span>'+esc(it.texto)+(d&&est[it.id].p?'<small>'+esc(est[it.id].p)+'</small>':'')+'</span></button>';
+    }).join(''):'<div class="cp-vazio"><i class="ti ti-checkup-list"></i><div>Sem itens neste checklist.</div></div>');
+}
+function campoTogCk(id){
+  var t=CAMPO.ckTipo, ref=ckRef(t), est=ckLoad(t,ref);
+  (ST.data.checklist||[]).forEach(function(r){ if(r.tipo===t&&r.data===ref&&!(r.itemId in est)) est[r.itemId]={c:r.concluido==='sim',p:r.concluidoPor,t:r.concluidoEm}; });
+  var novo=!(est[id]&&est[id].c);
+  est[id]=novo?{c:true,p:ST.user,t:new Date().toISOString()}:{c:false,p:'',t:''};
+  try{ localStorage.setItem(ckKey(t,ref),JSON.stringify(est)); }catch(e){}
+  campoEnfileirar('checklist',{tipo:t,itemId:id,data:ref,concluido:novo,concluidoPor:novo?ST.user:'',concluidoEm:novo?est[id].t:null});
+  if(navigator.vibrate) navigator.vibrate(30);
+  campoRender();
+}
+
+campoCarregarFila();
+
 /* ===== R2 - funcoes adicionais ===== */
 function r2OrdenarAptos(l){
   var vistos={};
@@ -4641,6 +5172,7 @@ async function r2pCarregar(){
     ]);
     R2P.dados={chamados:res[0],ativs:res[1],gastos:res[2],lancs:res[3],cfg:res[4],usuarios:res[5],pontos:res[6],ini:ini,em:new Date()};
     try{ R2P.uso=await r2pRpc('r2_uso_banco',{}); }catch(e){ R2P.uso={erro:e.message}; }
+    try{ R2P.usoFotos=await r2pRpc('r2_uso_fotos',{}); }catch(e){ R2P.usoFotos=null; }
   }catch(e){R2P.erro=e.message;}
   R2P.carregando=false;
   if(R2P.view==='dashboard') r2pRenderDash();
@@ -5141,6 +5673,9 @@ function r2pCardBanco(){
     '</div>'+
     '<div style="display:flex;justify-content:space-between;font-size:11px;color:#6b7770;margin-top:4px"><span>Tabelas da manutenção: '+r2pTam(dados)+' · estrutura do próprio Supabase: '+r2pTam(Math.max(tot-dados,0))+'</span><span>alerta em 80% e 90%</span></div>'+
     alerta+
+    (R2P.usoFotos?(function(f){var pf=Math.min(100,(Number(f.bytes)||0)*100/(Number(f.limite_bytes)||1073741824));var cf=pf>=90?'#c0392b':pf>=80?'#e6a100':'#2D6A4F';
+      return '<div style="margin-top:14px;display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span><b>Fotos dos chamados (Storage):</b> '+r2pTam(f.bytes)+' de 1 GB · '+(Number(f.arquivos)||0)+' foto(s)</span><b style="color:'+cf+'">'+pf.toFixed(1).replace('.',',')+'%</b></div>'+
+        '<div style="height:10px;background:#EEF2EF;border-radius:6px;overflow:hidden"><div style="height:100%;width:'+Math.max(pf,0.6)+'%;background:'+cf+';border-radius:6px"></div></div>';})(R2P.usoFotos):'')+
     '<div class="r2p-two" style="margin-top:16px">'+
       '<div><div style="font-size:12px;font-weight:700;color:#6b7770;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Por hotel</div>'+
         R2_HOTEIS.map(function(x){var o=hot[x.slug]||{bytes:0,linhas:0};return barra(r2pEsc(nomeH[x.slug]),Number(o.bytes)||0,maxH,r2pTam(o.bytes)+' <span style="font-weight:400;color:#6b7770">· '+(Number(o.linhas)||0)+' reg.</span>');}).join('')+'</div>'+
