@@ -307,12 +307,29 @@ var R2_HOTEIS = [
 ];
 var R2_HOTEL = (new URLSearchParams(location.search)).get('hotel') || '';
 var R2_INFO = R2_HOTEIS.find(function(h){return h.slug===R2_HOTEL;}) || null;
-if(R2_HOTEL && !R2_INFO) R2_HOTEL = '';
+/* Hoteis com pagina propria (arquivo <slug>.html no GitHub). Hoteis novos usam index.html?hotel=<slug> */
+var R2_PAGINAS = ['stilo-centro','stilo-borges','stilo-vita','stilo-garden','chateau','golden','pedras-altas'];
+var R2_HOTEIS_TODOS = R2_HOTEIS.slice();
+function r2EnderecoHotel(slug){ return R2_PAGINAS.indexOf(slug)>=0 ? './'+slug+'.html' : './index.html?hotel='+encodeURIComponent(slug); }
+/* Le a lista de hoteis do banco (r2_hoteis). Se falhar, segue com a lista padrao acima. */
+function r2CarregarHoteis(){
+  return fetch(SUPA_URL+'/rest/v1/r2_hoteis?select=slug,nome,ordem,ativo&order=ordem.asc,nome.asc',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY}})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(l){
+      if(!l||!l.length) return;
+      R2_HOTEIS_TODOS = l.map(function(h){return {slug:h.slug,nome:h.nome,ativo:h.ativo!==false,ordem:h.ordem};});
+      var ativos = R2_HOTEIS_TODOS.filter(function(h){return h.ativo;});
+      R2_HOTEIS.length = 0; ativos.forEach(function(h){R2_HOTEIS.push({slug:h.slug,nome:h.nome});});
+    }).catch(function(){}).then(function(){
+      R2_INFO = R2_HOTEIS_TODOS.find(function(h){return h.slug===R2_HOTEL;}) || null;
+      R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
+    });
+}
 var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-23.4';
+var R2_VERSAO = '2026-11-23.5';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -952,8 +969,14 @@ function init() {
     showErr('Erro ao conectar ao banco de dados. Verifique sua conexao com a internet.');
   });
 }
-if(R2_HOTEL) window.addEventListener('load',init);
-else window.addEventListener('load',function(){ r2PortalInit(); });
+window.addEventListener('load',function(){
+  r2CarregarHoteis().then(function(){
+    if(!R2_HOTEL){ r2PortalInit(); return; }
+    if(!R2_INFO){ showErr('Hotel nao encontrado: '+esc(R2_HOTEL)+'. Verifique o endereco.'); var ls=document.getElementById('login-screen'); if(ls) ls.style.display='none'; var ld=document.getElementById('loading'); if(ld) ld.style.display='flex'; return; }
+    if(R2_INFO.ativo===false){ showErr('O '+esc(R2_NOME)+' esta desativado no sistema da Regional 2.'); var ls2=document.getElementById('login-screen'); if(ls2) ls2.style.display='none'; var ld2=document.getElementById('loading'); if(ld2) ld2.style.display='flex'; return; }
+    init();
+  });
+});
 
 function fazerLogin(){
   var users=ST.data.usuarios||[];
@@ -4501,7 +4524,7 @@ function r2pRenderNav(hotel){
   nav.innerHTML='<button class="r2p-voltar" onclick="r2pIr(\'home\')" title="Voltar ao menu de hotéis">'+
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>VOLTAR</button>'+
     '<span class="r2p-atual">'+r2pEsc(nome)+'</span>'+
-    (hotel?'<a class="r2p-btn ghost sm" href="./'+hotel.slug+'.html" target="_blank" rel="noopener" title="Endereço próprio do hotel (para a equipe e para instalar no celular)" style="text-decoration:none"><i class="ti ti-external-link"></i><span class="r2p-link-txt"> Endereço do hotel</span></a>':'');
+    (hotel?'<a class="r2p-btn ghost sm" href="'+r2EnderecoHotel(hotel.slug)+'" target="_blank" rel="noopener" title="Endereço próprio do hotel (para a equipe e para instalar no celular)" style="text-decoration:none"><i class="ti ti-external-link"></i><span class="r2p-link-txt"> Endereço do hotel</span></a>':'');
 }
 function r2pFecharHotel(){ r2pIr('home'); }
 function r2pAbrirHotel(slug){ r2pIr(slug); }
@@ -4788,6 +4811,7 @@ function r2pRenderDash(){
     '<label>Período <select onchange="r2pSetFiltro(\'per\',this.value)">'+R2P_PER.map(function(p){return '<option value="'+p[0]+'"'+(R2P.f.per===p[0]?' selected':'')+'>'+p[1]+'</option>';}).join('')+'</select></label>'+
     '<span style="flex:1"></span>'+
     (R2P.dados?'<span class="r2p-upd">Atualizado às '+R2P.dados.em.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</span>':'')+
+    '<button class="r2p-btn sm r2p-btn-out" onclick="r2pHoteisGerir()"><i class="ti ti-building-plus"></i> Hotéis</button>'+
     '<button class="r2p-btn sm r2p-btn-out" onclick="r2pAcessos()"><i class="ti ti-key"></i> Acessos</button>'+
     '<button class="r2p-btn sm r2p-btn-out" onclick="r2pPDF()"><i class="ti ti-file-type-pdf"></i> Baixar PDF</button>'+
     '<button class="r2p-btn sm" onclick="r2pCarregar()"><i class="ti ti-refresh"></i> Atualizar</button></div>';
@@ -5127,11 +5151,63 @@ function r2pCardBanco(){
   '</div>';
 }
 
+
+/* ---------- Cadastro de hoteis da Regional ---------- */
+function r2pSlug(nome){
+  return String(nome||'').replace(/^\s*laghetto\s+/i,'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40);
+}
+function r2pHoteisGerir(msg){
+  r2pPedirSenha(function(){ r2pHoteisLista(msg); });
+}
+function r2pHoteisLista(msg){
+  var L=R2_HOTEIS_TODOS;
+  r2pModal('Hotéis da Regional 2',
+    (msg?'<div class="r2p-ok" style="margin:0 0 12px">'+msg+'</div>':'')+
+    '<div style="font-size:13px;color:#6b7770;margin-bottom:12px">Todos os hotéis usam o mesmo banco. Ao adicionar um hotel, ele ganha na hora o sistema de manutenção limpo, o usuário <b>ADM</b> (senha 123456) e passa a aparecer no menu e no Dashboard.</div>'+
+    '<div style="max-height:46vh;overflow:auto"><table class="r2p-tbl"><thead><tr><th>Hotel</th><th>Endereço</th><th>Situação</th><th></th></tr></thead><tbody>'+
+    L.map(function(h,i){
+      var url=new URL(r2EnderecoHotel(h.slug),location.href).href;
+      return '<tr><td><b>'+r2pEsc(h.nome)+'</b><div style="font-size:11px;color:#6b7770">'+r2pEsc(h.slug)+'</div></td>'+
+        '<td style="font-size:11px;max-width:200px;word-break:break-all"><a href="'+r2pEsc(url)+'" target="_blank" rel="noopener" style="color:#1B4332">'+r2pEsc(url.replace(/^https?:\/\//,''))+'</a></td>'+
+        '<td>'+(h.ativo!==false?'<span class="r2p-pill ok">Ativo</span>':'<span class="r2p-pill bad">Desativado</span>')+'</td>'+
+        '<td style="text-align:right"><button class="r2p-btn sm" onclick="r2pHotelForm('+i+')">Editar</button></td></tr>';
+    }).join('')+'</tbody></table></div>'+
+    '<div style="margin-top:14px"><button class="r2p-btn" onclick="r2pHotelForm(-1)"><i class="ti ti-building-plus"></i> Adicionar hotel</button></div>');
+}
+function r2pHotelForm(i){
+  var h=i>=0?R2_HOTEIS_TODOS[i]:null;
+  r2pModal(h?'Editar hotel':'Adicionar hotel',
+    '<label>Nome do hotel</label><input id="r2p-hn" value="'+r2pEsc(h?h.nome:'Laghetto ')+'" placeholder="Ex: Laghetto Viale" '+(h?'':'oninput="var s=document.getElementById(\'r2p-hs\');if(!s.dataset.mexido)s.value=r2pSlug(this.value)"')+'>'+
+    '<label>Identificador (usado no endereço e no banco)</label><input id="r2p-hs" value="'+r2pEsc(h?h.slug:'')+'" '+(h?'disabled style="background:#F2F5F2"':'oninput="this.dataset.mexido=1;this.value=r2pSlug(this.value)"')+' placeholder="ex: viale">'+
+    (h?'<div style="font-size:12px;color:#6b7770;margin:-8px 0 12px">O identificador não pode ser alterado depois de criado.</div>':'<div style="font-size:12px;color:#6b7770;margin:-8px 0 12px">Só letras minúsculas, números e hífen. Não dá para mudar depois.</div>')+
+    (h?'<label style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><input id="r2p-ha" type="checkbox" style="width:auto;margin:0" '+(h.ativo!==false?'checked':'')+'> Hotel ativo (desativado some do menu e do Dashboard, mas os dados ficam guardados)</label>':'')+
+    '<div class="r2p-err" id="r2p-her"></div>'+
+    '<div style="display:flex;gap:8px"><button class="r2p-btn" style="background:#EEF2EF;color:#1B4332" onclick="r2pHoteisLista()">Cancelar</button>'+
+    '<button class="r2p-btn" id="r2p-hbt" onclick="r2pHotelSalvar('+i+')">'+(h?'Salvar':'Criar hotel')+'</button></div>');
+  setTimeout(function(){var x=document.getElementById('r2p-hn');if(x){x.focus();x.setSelectionRange(x.value.length,x.value.length);}},50);
+}
+async function r2pHotelSalvar(i){
+  var h=i>=0?R2_HOTEIS_TODOS[i]:null, er=document.getElementById('r2p-her'), bt=document.getElementById('r2p-hbt');
+  var nome=document.getElementById('r2p-hn').value.trim(), slug=h?h.slug:r2pSlug(document.getElementById('r2p-hs').value);
+  var at=document.getElementById('r2p-ha'); at=at?at.checked:true;
+  function erro(m){er.style.display='block';er.textContent=m;}
+  if(nome.length<4) return erro('Informe o nome do hotel.');
+  if(!/^[a-z0-9][a-z0-9-]{1,39}$/.test(slug)) return erro('Identificador inválido. Use letras minúsculas, números e hífen (mínimo 2 caracteres).');
+  if(!h&&R2_HOTEIS_TODOS.some(function(x){return x.slug===slug;})) return erro('Já existe um hotel com esse identificador.');
+  bt.disabled=true; bt.textContent='Salvando...';
+  try{
+    await r2pRpc('r2_hotel_salvar',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem,h_slug:slug,h_nome:nome,h_ativo:at,h_novo:!h});
+    await r2CarregarHoteis();
+    r2pRenderHoteis(); if(R2P.view==='dashboard'){ R2P.dados=null; r2pRenderDash(); r2pCarregar(); }
+    r2pHoteisLista(h?'Hotel atualizado.':'Hotel <b>'+r2pEsc(nome)+'</b> criado. Endereço: <a href="'+r2pEsc(new URL(r2EnderecoHotel(slug),location.href).href)+'" target="_blank" style="color:#1B4332">'+r2pEsc(new URL(r2EnderecoHotel(slug),location.href).href.replace(/^https?:\/\//,''))+'</a> · login ADM / 123456');
+  }catch(e){ bt.disabled=false; bt.textContent=h?'Salvar':'Criar hotel'; erro(/negado/.test(e.message)?'Senha não confere. Feche e entre de novo.':/ja existe/.test(e.message)?'Já existe um hotel com esse identificador.':e.message); }
+}
+
 function r2pRenderHoteis(){
   var por=(R2P.sessao&&R2P.dados)?r2pResumo():null;
   var html=R2_HOTEIS.map(function(h){
     var p=por&&por[h.slug];
-    var sub=p?((p.abertos+p.andamento)+' em aberto · '+p.concMes+' concluídos ('+r2pPerNome().toLowerCase()+')'):'Sistema de manutenção';
+    var sub=p?((p.abertos+p.andamento)+' em aberto · '+p.concMes+' concluídos'):'Sistema de manutenção';
     var tag=p&&p.urg?'<span class="t-tag urg">'+p.urg+' urgente'+(p.urg>1?'s':'')+'</span>':'';
     return '<button class="r2p-tile" onclick="r2pIr(\''+h.slug+'\')">'+tag+r2pSvg('hotel')+
       '<span class="t-nome">'+r2pEsc(h.nome.replace('Laghetto ',''))+'</span><span class="t-sub">'+r2pEsc(sub)+'</span></button>';
