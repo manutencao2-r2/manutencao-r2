@@ -345,6 +345,14 @@ body.campo-on .modal{max-height:88vh;overflow:auto}
 .cp-mi>i:last-child{color:#A9C2AF;font-size:19px}
 .cp-mi.sair b,.cp-mi.sair>i:first-child{color:#c0392b}.cp-mi.sair>i:first-child{background:#FBE4E1}
 .cp-ver{text-align:center;font-size:11.5px;color:#9aa69f;margin-top:18px}
+.cp-st3 button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 4px}
+.cp-st3 button em{font-style:normal;font-size:11px;font-weight:600;opacity:.75}
+.cp-fextra{display:inline-flex;align-items:center;gap:6px;border:none;background:#FCEBD3;color:#8a5410;border-radius:10px;padding:8px 12px;font:600 13px 'DM Sans',sans-serif;margin-bottom:12px}
+.cp-acoes{display:grid;gap:8px;margin-top:12px}
+.cp-ab{display:flex!important;align-items:center;justify-content:center;gap:6px;min-height:46px;border-radius:12px;font:600 15px 'DM Sans',sans-serif;margin:0!important;cursor:pointer}
+.cp-ab.sec{background:#fff;border:1px solid #C9D6CD;color:#0A2A22}
+.cp-ab.pri{background:linear-gradient(135deg,#1B4332,#2D6A4F);border:none;color:#fff}
+.cp-ab:active{opacity:.8}
 
 /* R2 */
 body.r2-portal-mode .app, body.r2-portal-mode #login-screen, body.r2-portal-mode #loading{display:none !important}
@@ -443,7 +451,7 @@ var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-23.6';
+var R2_VERSAO = '2026-11-23.8';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -4126,8 +4134,10 @@ function renderStorageCard(){
    Fotos no Supabase Storage, alerta de urgente, funciona sem internet
    (fila local que envia quando a conexao volta)
    ===================================================================== */
-var CAMPO = {on:false, aba:'inicio', filtro:'pendentes', busca:'', fotosNovo:[], fila:[], enviando:false, ckTipo:'diario'};
+var CAMPO = {on:false, aba:'inicio', filtro:'aberto', busca:'', fotosNovo:[], fila:[], enviando:false, ckTipo:'diario'};
 var FOTO_BUCKET = 'r2-fotos';
+var R2_DRIVE_URL = '__DRIVE_URL__';
+var R2_DRIVE_CHAVE = 'r2-fotos-laghetto-8k2m';
 
 function campoQuer(){
   if(!R2_HOTEL) return false;
@@ -4230,11 +4240,19 @@ var CAMPO_FN = {
     if(d.pts) await registrarPontos(d.pts);
   },
   foto: async function(d){
-    var bin=Uint8Array.from(atob(d.b64), function(c){return c.charCodeAt(0);});
-    var r=await fetch(SUPA_URL+'/storage/v1/object/'+FOTO_BUCKET+'/'+d.caminho,{method:'POST',
-      headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'image/jpeg'},body:bin});
-    if(!r.ok){ var t=await r.text(); throw new Error('Foto ['+r.status+'] '+t.slice(0,120)); }
-    var url=SUPA_URL+'/storage/v1/object/public/'+FOTO_BUCKET+'/'+d.caminho;
+    var url;
+    if(R2_DRIVE_URL.indexOf('https://')===0){
+      var r=await fetch(R2_DRIVE_URL,{method:'POST',body:JSON.stringify({chave:R2_DRIVE_CHAVE,hotel:R2_NOME,local:d.local||'Sem local',area:d.area||'',chamadoId:d.chamadoId,ref:d.ref||'',data:d.data||new Date().toISOString(),usuario:ST.user||'',b64:d.b64})});
+      var j=await r.json();
+      if(!j||!j.ok) throw new Error('Drive: '+((j&&j.erro)||r.status));
+      url='https://drive.google.com/thumbnail?id='+j.id+'&sz=w1600';
+    } else {
+      var bin=Uint8Array.from(atob(d.b64), function(c){return c.charCodeAt(0);});
+      var r2=await fetch(SUPA_URL+'/storage/v1/object/'+FOTO_BUCKET+'/'+d.caminho,{method:'POST',
+        headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'image/jpeg'},body:bin});
+      if(!r2.ok){ var t=await r2.text(); throw new Error('Foto ['+r2.status+'] '+t.slice(0,120)); }
+      url=SUPA_URL+'/storage/v1/object/public/'+FOTO_BUCKET+'/'+d.caminho;
+    }
     var atual=await sbGet('chamados?id=eq.'+encodeURIComponent(d.chamadoId)+'&select=fotos');
     var lista=[]; try{ lista=JSON.parse((atual&&atual[0]&&atual[0].fotos)||'[]'); }catch(e){}
     if(lista.indexOf(url)<0) lista.push(url);
@@ -4265,7 +4283,10 @@ function campoComprimir(file){
 }
 function campoFotosDe(c){ var l=[]; try{ l=JSON.parse(c.fotos||'[]'); }catch(e){} return Array.isArray(l)?l:[]; }
 function campoEnfileirarFoto(chamadoId,dataUrl){
-  campoEnfileirar('foto',{chamadoId:chamadoId,caminho:R2_HOTEL+'/'+chamadoId+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,6)+'.jpg',b64:dataUrl.split(',')[1]});
+  var c=((ST.data&&ST.data.chamados)||[]).find(function(x){return x.id===chamadoId;})||{};
+  var ref=Math.random().toString(36).slice(2,6);
+  var loc=c.local?((c.tipoLocal==='apartamento'||/^\d+[A-Za-z]?$/.test(String(c.local)))?'Apto '+c.local:String(c.local)):'Sem local';
+  campoEnfileirar('foto',{chamadoId:chamadoId,ref:ref,local:loc,area:c.areaTecnica||'',data:new Date().toISOString(),caminho:R2_HOTEL+'/'+chamadoId+'/'+Date.now()+'-'+ref+'.jpg',b64:dataUrl.split(',')[1]});
 }
 
 /* ---------- status / cabecalho ---------- */
@@ -4321,13 +4342,22 @@ function campoIrFiltro(f){ CAMPO.filtro=f; CAMPO.busca=''; campoAba('chamados');
 
 function campoBadgeP(p){ var c={Urgente:'#c0392b',Alta:'#B8741A',Media:'#4F7A43',Baixa:'#6F7C75'}[p]||'#6F7C75'; return '<span class="cp-pr" style="background:'+c+'">'+esc(p==='Media'?'Média':p||'-')+'</span>'; }
 function campoCardChamado(c){
-  var nf=campoFotosDe(c).length+(c._fotosPend||0);
+  var nf=campoFotosDe(c).length+(c._fotosPend||0), id=esc(c.id);
   var st=c.status==='Andamento'?'<span class="cp-tag and">Em andamento</span>':c.status==='Concluido'?'<span class="cp-tag ok">Concluído</span>':'<span class="cp-tag ab">Aberto</span>';
-  return '<div class="cp-card cp-ch'+(c.prioridade==='Urgente'&&c.status!=='Concluido'?' urg':'')+'" onclick="campoDetalhe(\''+esc(c.id)+'\')">'+
+  var acoes='';
+  if(c.status!=='Concluido'){
+    acoes='<div class="cp-acoes" onclick="event.stopPropagation()">'+
+      (c.status==='Aberto'?'<button class="cp-ab sec" onclick="campoAssumir(\''+id+'\')">Em andamento</button>':'')+
+      '<label class="cp-ab pri"><i class="ti ti-camera"></i> Concluir com foto<input type="file" accept="image/*" capture="environment" style="display:none" onchange="campoFinalizar(\''+id+'\',this.files&&this.files[0])"></label>'+
+      '<button class="cp-ab sec" onclick="campoFinalizar(\''+id+'\',null)">Concluído sem foto <i class="ti ti-check"></i></button></div>';
+  }
+  return '<div class="cp-card cp-ch'+(c.prioridade==='Urgente'&&c.status!=='Concluido'?' urg':'')+'" onclick="campoDetalhe(\''+id+'\')">'+
     '<div class="cp-row"><b class="cp-loc">'+esc(c.local||'-')+'</b>'+campoBadgeP(c.prioridade)+'</div>'+
     '<div class="cp-area">'+esc(c.areaTecnica||'')+(c.tecnico?' · '+esc(c.tecnico):'')+'</div>'+
     (c.descricao?'<div class="cp-desc">'+esc(String(c.descricao).slice(0,140))+'</div>':'')+
-    '<div class="cp-meta">'+st+'<span><i class="ti ti-clock"></i> '+tempoDecorrido(c.criadoEm)+'</span>'+(nf?'<span><i class="ti ti-camera"></i> '+nf+'</span>':'')+(c._pend?'<span style="color:#9a5b00"><i class="ti ti-cloud-upload"></i> a enviar</span>':'')+'</div></div>';
+    '<div class="cp-meta">'+st+'<span><i class="ti ti-user"></i> '+esc(c.criadoPor||'-')+'</span><span><i class="ti ti-clock"></i> '+tempoDecorrido(c.criadoEm)+'</span>'+(nf?'<span><i class="ti ti-camera"></i> '+nf+'</span>':'')+(c._pend?'<span style="color:#9a5b00"><i class="ti ti-cloud-upload"></i> a enviar</span>':'')+'</div>'+
+    (c.status==='Concluido'&&c.concluidoPor?'<div class="cp-area" style="margin-top:6px">Concluído por '+esc(c.concluidoPor)+' · '+fmtDT(c.concluidoEm)+'</div>':'')+
+    acoes+'</div>';
 }
 function campoInicio(){
   var ch=ST.data.chamados||[], hoje=todayISO();
@@ -4337,50 +4367,47 @@ function campoInicio(){
   var kpi=function(n,l,ic,cls,f){return '<button class="cp-kpi '+cls+'" onclick="campoIrFiltro(\''+f+'\')"><i class="ti '+ic+'"></i><b>'+n+'</b><span>'+l+'</span></button>';};
   var ativs=(ST.data.config&&ST.data.config.atividadesRecorrentes)||[], regs=ST.data.registrosAtividades||[];
   var ativHoje=ativs.filter(function(nm){return regs.some(function(r){return r.atividade===nm&&String(r.feito_em||'').slice(0,10)===hoje;});}).length;
-  return '<div class="cp-kpis">'+kpi(pend.length,'Em aberto','ti-clipboard-list','k1','pendentes')+kpi(urg.length,'Urgentes','ti-alert-triangle','k2','urgentes')+
-      kpi(feitos,'Concluídos hoje','ti-circle-check','k3','feitos')+kpi(atras,'Abertos há +24h','ti-clock-exclamation','k4','atrasados')+'</div>'+
+  return '<div class="cp-kpis">'+kpi(pend.length,'Em aberto','ti-clipboard-list','k1','aberto')+kpi(urg.length,'Urgentes','ti-alert-triangle','k2','aberto')+
+      kpi(feitos,'Concluídos hoje','ti-circle-check','k3','concluido')+kpi(atras,'Abertos há +24h','ti-clock-exclamation','k4','aberto')+'</div>'+
     '<button class="btn cp-big cp-cta" onclick="campoAba(\'novo\')"><i class="ti ti-plus"></i> Novo chamado</button>'+
     (ativs.length?'<button class="cp-card cp-resumo" onclick="campoAba(\'atividades\')"><i class="ti ti-repeat"></i><span><b>Atividades de hoje</b><small>'+ativHoje+' de '+ativs.length+' registradas</small></span><i class="ti ti-chevron-right"></i></button>':'')+
     '<div class="cp-sec">Chamados urgentes</div>'+
     (urg.length?urg.slice(0,8).map(campoCardChamado).join(''):'<div class="cp-vazio cp-vz-s"><i class="ti ti-shield-check"></i><div>Nenhum chamado urgente em aberto.</div></div>');
 }
+var CAMPO_EXTRA={};
 function campoFiltrar(){
   var ch=ST.data.chamados||[], hoje=todayISO(), f=CAMPO.filtro, q=String(CAMPO.busca||'').toLowerCase().trim();
   var lista=ch.filter(function(c){
     if(f==='andamento') return c.status==='Andamento';
+    if(f==='concluido') return c.status==='Concluido';
     if(f==='urgentes') return campoPend(c)&&c.prioridade==='Urgente';
     if(f==='atrasados') return campoPend(c)&&campoHoras(c)>24;
-    if(f==='meus') return campoPend(c)&&(c.tecnico===ST.user||c.criadoPor===ST.user);
     if(f==='feitos') return c.status==='Concluido'&&String(c.concluidoEm||'').slice(0,10)===hoje;
-    return campoPend(c);
+    return c.status==='Aberto';
   });
   if(q) lista=lista.filter(function(c){return [c.local,c.areaTecnica,c.descricao,c.tecnico,c.criadoPor].join(' ').toLowerCase().indexOf(q)>=0;});
-  var ord={Urgente:0,Alta:1,Media:2,Baixa:3};
-  lista.sort(function(a,b){return f==='feitos'?String(b.concluidoEm).localeCompare(String(a.concluidoEm)):((ord[a.prioridade]-ord[b.prioridade])||String(a.criadoEm).localeCompare(String(b.criadoEm)));});
-  return lista.length?lista.map(campoCardChamado).join(''):'<div class="cp-vazio"><i class="ti ti-'+(q?'search':'mood-happy')+'"></i><div>'+(q?'Nada encontrado para essa busca.':f==='feitos'?'Nenhum chamado concluído hoje.':'Nenhum chamado nesta lista.')+'</div></div>';
+  var ord={Urgente:0,Alta:1,Media:2,Baixa:3}, conc=f==='concluido'||f==='feitos';
+  lista.sort(function(a,b){return conc?String(b.concluidoEm).localeCompare(String(a.concluidoEm)):((ord[a.prioridade]-ord[b.prioridade])||String(a.criadoEm).localeCompare(String(b.criadoEm)));});
+  if(f==='concluido') lista=lista.slice(0,50);
+  return lista.length?lista.map(campoCardChamado).join(''):'<div class="cp-vazio"><i class="ti ti-'+(q?'search':'mood-happy')+'"></i><div>'+(q?'Nada encontrado para essa busca.':conc?'Nenhum chamado concluído.':'Nenhum chamado nesta lista.')+'</div></div>';
 }
 function campoBuscar(v){ CAMPO.busca=v; var l=document.getElementById('cp-lista'); if(l) l.innerHTML=campoFiltrar(); }
 function campoChamados(){
-  var ch=ST.data.chamados||[], hoje=todayISO(), f=CAMPO.filtro;
-  if(['pendentes','andamento','urgentes','atrasados','meus','feitos'].indexOf(f)<0) f=CAMPO.filtro='pendentes';
-  var cnt={pendentes:ch.filter(campoPend).length,andamento:ch.filter(function(c){return c.status==='Andamento';}).length,urgentes:ch.filter(function(c){return campoPend(c)&&c.prioridade==='Urgente';}).length,
-    atrasados:ch.filter(function(c){return campoPend(c)&&campoHoras(c)>24;}).length,meus:ch.filter(function(c){return campoPend(c)&&(c.tecnico===ST.user||c.criadoPor===ST.user);}).length,
-    feitos:ch.filter(function(c){return c.status==='Concluido'&&String(c.concluidoEm||'').slice(0,10)===hoje;}).length};
-  var pills=[['pendentes','Em aberto'],['andamento','Em andamento'],['urgentes','Urgentes'],['atrasados','+24h'],['meus','Meus'],['feitos','Concluídos hoje']];
-  return '<div class="cp-pills">'+pills.map(function(p){return '<button class="'+(f===p[0]?'on':'')+'" onclick="CAMPO.filtro=\''+p[0]+'\';campoRender()">'+p[1]+' <em>'+cnt[p[0]]+'</em></button>';}).join('')+'</div>'+
-    '<div class="cp-busca"><i class="ti ti-search"></i><input type="search" placeholder="Buscar local, área ou descrição" value="'+esc(CAMPO.busca||'')+'" oninput="campoBuscar(this.value)"></div>'+
+  var ch=ST.data.chamados||[], f=CAMPO.filtro;
+  if(['aberto','andamento','concluido'].indexOf(f)<0&&!CAMPO_EXTRA[f]) f=CAMPO.filtro='aberto';
+  var cnt={aberto:ch.filter(function(c){return c.status==='Aberto';}).length,andamento:ch.filter(function(c){return c.status==='Andamento';}).length,concluido:ch.filter(function(c){return c.status==='Concluido';}).length};
+  var tabs=[['aberto','Em aberto'],['andamento','Em andamento'],['concluido','Concluído']];
+  return '<div class="cp-seg cp-st3">'+tabs.map(function(p){return '<button class="'+(f===p[0]?'on':'')+'" onclick="CAMPO.filtro=\''+p[0]+'\';campoRender()">'+p[1]+'<em>'+cnt[p[0]]+'</em></button>';}).join('')+'</div>'+
+    (CAMPO_EXTRA[f]?'<button class="cp-fextra" onclick="CAMPO.filtro=\'aberto\';campoRender()"><i class="ti ti-filter"></i> '+CAMPO_EXTRA[f]+' <i class="ti ti-x"></i></button>':'')+
+    '<div class="cp-busca"><i class="ti ti-search"></i><input type="search" placeholder="Buscar por apto, área, descrição..." value="'+esc(CAMPO.busca||'')+'" oninput="campoBuscar(this.value)"></div>'+
     '<div id="cp-lista">'+campoFiltrar()+'</div>';
 }
 function campoMais(){
-  var perm=('Notification' in window)?Notification.permission:'indisponivel';
   var ini=campoPrimeiroNome().charAt(0)||'?';
   var item=function(ic,t,s,fn,cls){return '<button class="cp-mi'+(cls?' '+cls:'')+'" onclick="'+fn+'"><i class="ti '+ic+'"></i><span><b>'+t+'</b>'+(s?'<small>'+s+'</small>':'')+'</span><i class="ti ti-chevron-right"></i></button>';};
   return '<div class="cp-card cp-perfil"><div class="cp-av">'+esc(ini)+'</div><div><b>'+esc(ST.user||'-')+'</b><small>'+esc(R2_NOME)+' · Manutenção</small></div></div>'+
     (CAMPO.fila.length?'<div class="cp-aviso" style="margin-bottom:12px">'+CAMPO.fila.length+' registro(s) aguardando internet. Não saia da conta antes de enviar.</div>':'')+
     (ST.offline?'<div class="cp-aviso" style="margin-bottom:12px">Sem conexão: mostrando dados salvos em '+fmtDT(localStorage.getItem(R2K('cache_em')))+'.</div>':'')+
-    '<div class="cp-sec">Alertas</div><div class="cp-grp">'+
-      item('ti-bell-ringing','Ativar alertas de urgente',perm==='granted'?'Ativado neste celular':perm==='denied'?'Bloqueado nas configurações do navegador':'Vibra e notifica quando abrir chamado urgente','campoAlertas()')+
-      item('ti-volume','Testar alerta','Vibração, som e notificação','campoTestarAlerta()')+'</div>'+
     '<div class="cp-sec">Sistema</div><div class="cp-grp">'+
       item('ti-refresh','Atualizar dados','Busca as informações mais recentes','reload()')+
       item('ti-layout-dashboard','Abrir sistema completo','Relatórios, configurações e cadastros','campoDesligar()')+
@@ -4418,22 +4445,21 @@ function campoAssumir(id){
   campoEnfileirar('patchChamado',{id:id,upd:upd});
   closeModal(); campoRender();
 }
-function campoConcluir(id){
-  var c=(ST.data.chamados||[]).find(function(x){return x.id===id;}); if(!c) return;
-  openModal('Concluir chamado',
-    '<div style="font-size:14px;margin-bottom:10px"><b>'+esc(c.local)+'</b> · '+esc(c.areaTecnica||'')+'</div>'+
-    '<label class="btn sec cp-big" style="display:flex;justify-content:center;margin-bottom:10px"><i class="ti ti-camera"></i> Foto do serviço pronto (opcional)<input id="cp-fconc" type="file" accept="image/*" capture="environment" style="display:none" onchange="this.parentNode.querySelector(\'i\').className=\'ti ti-check\'"></label>',
-    [{l:'Cancelar',c:'sec',f:closeModal},{l:'Concluir',c:'',f:async function(){
-      var inp=document.getElementById('cp-fconc'), f=inp&&inp.files&&inp.files[0];
-      var agora=new Date().toISOString();
-      var upd={status:'Concluido',concluidoEm:agora,concluidoPor:ST.user};
-      var mapa={Urgente:['chamado_urgente',35],Alta:['chamado_alta',20],Media:['chamado_media',10],Baixa:['chamado_baixa',5]}[c.prioridade]||['chamado_media',10];
-      var pts={usuario_id:ST.user,usuario_nome:ST.user,tipo:'chamado_concluido',descricao:'Chamado concluido - '+(c.local||'')+' ('+(c.prioridade||'')+')',pontos:campoPts(mapa[0],mapa[1]),referencia:id};
-      Object.assign(c,upd,{_pend:true});
-      campoEnfileirar('patchChamado',{id:id,upd:upd,pts:pts});
-      if(f){ try{ campoEnfileirarFoto(id, await campoComprimir(f)); c._fotosPend=(c._fotosPend||0)+1; }catch(e){} }
-      closeModal(); if(navigator.vibrate) navigator.vibrate(60); campoRender();
-    }}]);
+function campoConcluir(id){ closeModal(); campoFinalizar(id,null); }
+async function campoFinalizar(id,f){
+  var c=(ST.data.chamados||[]).find(function(x){return x.id===id;}); if(!c||c.status==='Concluido') return;
+  var agora=new Date().toISOString();
+  var upd={status:'Concluido',concluidoEm:agora,concluidoPor:ST.user};
+  if(!c.tecnico) upd.tecnico=ST.user;
+  var mapa={Urgente:['chamado_urgente',35],Alta:['chamado_alta',20],Media:['chamado_media',10],Baixa:['chamado_baixa',5]}[c.prioridade]||['chamado_media',10];
+  var pts={usuario_id:ST.user,usuario_nome:ST.user,tipo:'chamado_concluido',descricao:'Chamado concluido - '+(c.local||'')+' ('+(c.prioridade||'')+')',pontos:campoPts(mapa[0],mapa[1]),referencia:id};
+  var foto=null;
+  if(f){ try{ foto=await campoComprimir(f); }catch(e){ alert(e.message); return; } }
+  Object.assign(c,upd,{_pend:true});
+  campoEnfileirar('patchChamado',{id:id,upd:upd,pts:pts});
+  if(foto){ campoEnfileirarFoto(id,foto); c._fotosPend=(c._fotosPend||0)+1; }
+  if(navigator.vibrate) navigator.vibrate(60);
+  campoRender();
 }
 
 function campoNovo(){
@@ -4469,7 +4495,7 @@ function campoEnviarNovo(){
   ST.data.chamados.unshift(Object.assign({},chamado,{_pend:true,_fotosPend:CAMPO.fotosNovo.length}));
   campoEnfileirar('novoChamado',{chamado:chamado,pts:pts});
   CAMPO.fotosNovo.forEach(function(u){ campoEnfileirarFoto(id,u); });
-  CAMPO.fotosNovo=[]; CAMPO.novo=null; CAMPO.aba='chamados'; CAMPO.filtro='pendentes';
+  CAMPO.fotosNovo=[]; CAMPO.novo=null; CAMPO.aba='chamados'; CAMPO.filtro='aberto';
   if(navigator.vibrate) navigator.vibrate(60);
   campoRender();
 }
