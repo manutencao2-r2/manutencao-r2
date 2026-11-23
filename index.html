@@ -354,10 +354,26 @@ body.campo-on .modal{max-height:88vh;overflow:auto}
 .cp-ab.pri{background:linear-gradient(135deg,#1B4332,#2D6A4F);border:none;color:#fff}
 .cp-ab:active{opacity:.8}
 .cp-nav button{font-size:10.5px}
-.cp-sel{width:100%;font-size:16px;padding:12px;border:1px solid #C9D6CD;border-radius:12px;background:#fff;color:#1d2b24}
+.cp-escolha{width:100%;font-size:16px;padding:12px;border:1px solid #C9D6CD;border-radius:12px;background:#fff;color:#1d2b24}
 .cp-fbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
 .cp-cta:disabled{opacity:.45;box-shadow:none}
 .cp-toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0A2A22;color:#fff;padding:10px 16px;border-radius:12px;font:600 14px 'DM Sans',sans-serif;z-index:500;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+
+.prev-seg{display:inline-flex;background:#F2F5F2;border-radius:10px;padding:3px;margin-bottom:12px}
+.prev-seg button{border:none;background:none;padding:7px 14px;border-radius:8px;font-weight:600;color:#1B4332;cursor:pointer}
+.prev-seg button.on{background:#1B4332;color:#fff}
+.prev-item{display:flex;gap:12px;align-items:flex-start;border:1px solid #E3EAE5;border-radius:12px;padding:12px 14px;margin-bottom:8px;background:#fff}
+.prev-item.inativa{opacity:.6;background:#FAFBFA}
+.prev-info{flex:1;min-width:0}
+.prev-tit{font-weight:700;font-size:15px;color:#0A2A22;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.prev-meta{font-size:13px;color:#5d6b64;margin-top:3px}
+.prev-freq{background:#E3F0E6;color:#1B4332;font-weight:700;font-size:11px;padding:2px 8px;border-radius:8px}
+.prev-obs{font-size:13px;color:#2b3a33;background:#F5F7F5;border-radius:8px;padding:6px 8px;margin-top:6px;white-space:pre-wrap}
+.prev-ac{display:flex;gap:6px;flex-shrink:0}
+.prev-form label{display:block;font-size:12px;font-weight:700;color:#1B4332;margin:10px 0 4px}
+.prev-form input,.prev-form select,.prev-form textarea{width:100%}
+.prev-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.prev-2{grid-template-columns:1fr}.prev-item{flex-direction:column}}
 
 /* R2 */
 body.r2-portal-mode .app, body.r2-portal-mode #login-screen, body.r2-portal-mode #loading{display:none !important}
@@ -456,7 +472,7 @@ var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-23.11';
+var R2_VERSAO = '2026-11-23.12';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -594,6 +610,7 @@ var PAGES = [
   ['atividades','Atividades Recorrentes','ti ti-repeat'],
   {g:'Planejamento'},
   ['checklists','Checklists','ti ti-checkup-list'],
+  ['preventivas','Preventivas','ti ti-calendar-repeat'],
   ['calendario','Calendario','ti ti-calendar'],
   ['compras','Compras','ti ti-shopping-cart'],
   {g:'Equipe'},
@@ -602,6 +619,7 @@ var PAGES = [
   ['relatorio','Relatorio','ti ti-report'],
   ['gastos','Controle de Gastos','ti ti-cash'],
   ['historico','Historico','ti ti-history'],
+  ['drive','Fotos no Drive','ti ti-brand-google-drive'],
   ['ranking','Ranking','ti ti-trophy'],
   ['treinamentos','Treinamentos','ti ti-school'],
   ['config','Configuracoes','ti ti-settings']
@@ -1141,6 +1159,7 @@ function entrarNoSistema(){
   // Iniciar Realtime para chamados
   iniciarRealtime();
   try{ campoIniciar(); }catch(e){ console.error('campo',e); }
+  setTimeout(function(){ prevGerar(true); },2500);
   // Autorefresh leve a cada 5 min para lembretes, compras, atividades
   // Sem autorefresh - usar botao atualizar ou Realtime
 }
@@ -1243,6 +1262,8 @@ function buildNav() {
 }
 function pgName(id){for(var i=0;i<PAGES.length;i++){if(Array.isArray(PAGES[i])&&PAGES[i][0]===id)return PAGES[i][1];}return '';}
 function goto(p){
+  if(p==='drive'){ abrirDriveHotel(); return; }
+  if(p==='preventivas') PREV.lista=null;
   var anterior=ST.page;
   ST.page=p;
   buildNav();
@@ -1274,6 +1295,7 @@ function render() {
     ST.page==='apartamentos' ?renderApts()    :
     ST.page==='atividades'   ?renderAtiv()    :
     ST.page==='checklists'   ?renderCk()      :
+    ST.page==='preventivas'  ?renderPrev()    :
     ST.page==='calendario'   ?renderCal()     :
     ST.page==='compras'      ?renderComp()    :
     ST.page==='escala'       ?renderEsc()     :
@@ -4411,7 +4433,7 @@ function campoFotosAv(){
   return '<div class="cp-card cp-form" style="padding-top:12px">'+
       '<div class="cp-seg" style="margin-bottom:4px"><button class="'+(t==='apartamento'?'on':'')+'" onclick="CAMPO.avTipo=\'apartamento\';CAMPO.avLocal=\'\';campoRender()">Apartamento</button><button class="'+(t==='area'?'on':'')+'" onclick="CAMPO.avTipo=\'area\';CAMPO.avLocal=\'\';campoRender()">Área comum</button></div>'+
       '<label>'+(t==='apartamento'?'Apartamento':'Área comum')+' (opcional)</label>'+
-      '<select class="cp-sel" onchange="CAMPO.avLocal=this.value"><option value="">Sem local definido (pasta Geral)</option>'+lista.map(function(x){return '<option value="'+esc(x)+'"'+(CAMPO.avLocal===x?' selected':'')+'>'+esc(x)+'</option>';}).join('')+'</select></div>'+
+      '<select class="cp-escolha" onchange="CAMPO.avLocal=this.value"><option value="">Sem local definido (pasta Geral)</option>'+lista.map(function(x){return '<option value="'+esc(x)+'"'+(CAMPO.avLocal===x?' selected':'')+'>'+esc(x)+'</option>';}).join('')+'</select></div>'+
     '<div class="cp-fbtns"><label class="cp-ab sec"><i class="ti ti-photo"></i> Da galeria<input type="file" accept="image/*" multiple style="display:none" onchange="campoFotoAvAdd(this)"></label>'+
       '<label class="cp-ab sec"><i class="ti ti-camera"></i> Tirar foto<input type="file" accept="image/*" capture="environment" style="display:none" onchange="campoFotoAvAdd(this)"></label></div>'+
     (n?'<div class="cp-fotos" style="margin:12px 0">'+CAMPO.fotosAv.map(function(u,i){return '<div class="cp-th"><img src="'+u+'" alt="Foto"><button onclick="CAMPO.fotosAv.splice('+i+',1);campoRender()" aria-label="Remover foto">×</button></div>';}).join('')+'</div>':'')+
@@ -4442,6 +4464,7 @@ function campoMais(){
     (ST.offline?'<div class="cp-aviso" style="margin-bottom:12px">Sem conexão: mostrando dados salvos em '+fmtDT(localStorage.getItem(R2K('cache_em')))+'.</div>':'')+
     '<div class="cp-sec">Sistema</div><div class="cp-grp">'+
       item('ti-refresh','Atualizar dados','Busca as informações mais recentes','reload()')+
+      item('ti-brand-google-drive','Pasta de fotos no Drive','Abre as fotos deste hotel','abrirDriveHotel()')+
       item('ti-layout-dashboard','Abrir sistema completo','Relatórios, configurações e cadastros','campoDesligar()')+
       item('ti-logout','Sair','','campoSair();fazerLogout()','sair')+'</div>'+
     '<div class="cp-ver">Laghetto Manutenção R2 · versão '+esc(typeof R2_VERSAO!=='undefined'?R2_VERSAO:'')+'</div>';
@@ -4502,7 +4525,7 @@ function campoNovo(){
   return '<div class="cp-form">'+
     '<div class="cp-seg" style="margin-bottom:12px"><button class="'+(n.tipo==='apartamento'?'on':'')+'" onclick="CAMPO.novo.tipo=\'apartamento\';CAMPO.novo.local=\'\';campoRender()">Apartamento</button><button class="'+(n.tipo==='area'?'on':'')+'" onclick="CAMPO.novo.tipo=\'area\';CAMPO.novo.local=\'\';campoRender()">Área comum</button></div>'+
     '<label>'+(n.tipo==='apartamento'?'Apartamento':'Área')+'</label>'+
-    (locais.length?'<select id="cp-local" class="cp-sel" onchange="CAMPO.novo.local=this.value"><option value="">'+(n.tipo==='apartamento'?'Selecione o apto':'Selecione a área')+'</option>'+locais.map(function(x){return '<option value="'+esc(x)+'"'+(n.local===x?' selected':'')+'>'+esc(x)+'</option>';}).join('')+'</select>'
+    (locais.length?'<select id="cp-local" class="cp-escolha" onchange="CAMPO.novo.local=this.value"><option value="">'+(n.tipo==='apartamento'?'Selecione o apto':'Selecione a área')+'</option>'+locais.map(function(x){return '<option value="'+esc(x)+'"'+(n.local===x?' selected':'')+'>'+esc(x)+'</option>';}).join('')+'</select>'
       :'<div class="cp-aviso">Nenhum '+(n.tipo==='apartamento'?'apartamento':'área comum')+' cadastrado. Peça ao administrador para cadastrar em Configurações.</div>')+
     '<label>Área técnica</label>'+chips(tec,'area',n.area)+
     '<label>Prioridade</label>'+chips(['Baixa','Media','Alta','Urgente'],'prio',n.prio)+
@@ -4582,6 +4605,142 @@ function campoTogCk(id){
 }
 
 campoCarregarFila();
+
+/* ===== R2 - Preventivas (Planejamento) e pasta do Drive (Gestao) ===== */
+var PREV = {lista:null, carregando:false, filtro:'ativas'};
+var PREV_FREQ = [['diaria','Diária'],['semanal','Semanal'],['quinzenal','Quinzenal'],['mensal','Mensal'],['semestral','Semestral'],['anual','Anual']];
+var PREV_PRIO = [['Baixa','Baixa'],['Media','Média'],['Alta','Alta'],['Urgente','Urgente']];
+function prevFreqNome(f){ for(var i=0;i<PREV_FREQ.length;i++){ if(PREV_FREQ[i][0]===f) return PREV_FREQ[i][1]; } return f||'-'; }
+function prevPodeEditar(){ var p=getPerfil(); return p==='admin'||p==='supervisor'; }
+function prevHoje(){ var d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+function prevFmtData(s){ if(!s) return '-'; var p=String(s).slice(0,10).split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+
+async function prevCarregar(){
+  PREV.carregando=true;
+  try{ PREV.lista=await sbGet('preventivas?select=*&order=proxima_data.asc,titulo.asc')||[]; }
+  catch(e){ console.error('preventivas',e); PREV.lista=PREV.lista||[]; }
+  PREV.carregando=false;
+  if(ST.page==='preventivas') render();
+}
+async function prevGerar(silencioso){
+  try{
+    var r=await fetch(SUPA_URL+'/rest/v1/rpc/r2_gerar_preventivas',{method:'POST',
+      headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_hotel:R2_HOTEL})});
+    var n=r.ok?Number(await r.json())||0:0;
+    if(n>0){ reload(); if(!silencioso) alert(n+' chamado(s) de preventiva criado(s).'); }
+    else if(!silencioso) alert('Nenhuma preventiva vencida para hoje.');
+    if(ST.page==='preventivas') prevCarregar();
+    return n;
+  }catch(e){ if(!silencioso) alert('Erro ao gerar preventivas: '+e.message); return 0; }
+}
+
+function renderPrev(){
+  if(PREV.lista===null){ if(!PREV.carregando) prevCarregar(); return '<div class="card"><div style="padding:30px;text-align:center;color:#6b7770">Carregando preventivas...</div></div>'; }
+  var hoje=prevHoje(), pode=prevPodeEditar();
+  var lista=PREV.lista.filter(function(p){ return PREV.filtro==='todas'||(PREV.filtro==='ativas'?p.ativo:!p.ativo); });
+  var abertos={};
+  (ST.data.chamados||[]).forEach(function(c){ if(c.preventiva_id&&!isConcluido(c.status)) abertos[c.preventiva_id]=c; });
+  var nAtivas=PREV.lista.filter(function(p){return p.ativo;}).length;
+  var nHoje=PREV.lista.filter(function(p){return p.ativo&&String(p.proxima_data)<=hoje;}).length;
+  var badgeP=function(p){ var c={Urgente:'#c0392b',Alta:'#B8741A',Media:'#4F7A43',Baixa:'#6F7C75'}[p]||'#6F7C75'; return '<span style="background:'+c+';color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">'+esc(p==='Media'?'Média':p||'-')+'</span>'; };
+  var linhas=lista.map(function(p){
+    var ab=abertos[p.id], venc=p.ativo&&String(p.proxima_data)<=hoje;
+    return '<div class="prev-item'+(p.ativo?'':' inativa')+'">'+
+      '<div class="prev-info">'+
+        '<div class="prev-tit">'+esc(p.titulo)+' '+badgeP(p.prioridade)+'</div>'+
+        '<div class="prev-meta"><span class="prev-freq">'+prevFreqNome(p.frequencia)+'</span> '+
+          esc((p.tipo_local==='apartamento'&&p.local?'Apto ':'')+(p.local||'Geral'))+(p.area_tecnica?' · '+esc(p.area_tecnica):'')+'</div>'+
+        (p.obs?'<div class="prev-obs">OBS: '+esc(p.obs)+'</div>':'')+
+        '<div class="prev-meta">'+(p.ativo?'Próximo chamado: <b style="color:'+(venc?'#c0392b':'#1B4332')+'">'+prevFmtData(p.proxima_data)+'</b>':'Pausada')+
+          (ab?' · <span style="color:#B8741A">chamado em aberto desde '+fmtDT(ab.criadoEm)+'</span>':'')+'</div>'+
+      '</div>'+
+      (pode?'<div class="prev-ac">'+
+        '<button class="btn sm sec" data-pid="'+esc(p.id)+'" onclick="prevForm(this.getAttribute(\'data-pid\'))" title="Editar"><i class="ti ti-pencil"></i></button>'+
+        '<button class="btn sm sec" data-pid="'+esc(p.id)+'" onclick="prevAtivar(this.getAttribute(\'data-pid\'))" title="'+(p.ativo?'Pausar':'Reativar')+'"><i class="ti ti-player-'+(p.ativo?'pause':'play')+'"></i></button>'+
+        '<button class="btn sm danger" data-pid="'+esc(p.id)+'" onclick="prevExcluir(this.getAttribute(\'data-pid\'))" title="Excluir"><i class="ti ti-trash"></i></button>'+
+      '</div>':'')+
+    '</div>';
+  }).join('');
+  return '<div class="card">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">'+
+      '<div><div style="font-size:16px;font-weight:700;color:#0A2A22">Manutenção preventiva</div>'+
+      '<div style="font-size:13px;color:#6b7770">'+nAtivas+' ativa(s). Os chamados abrem sozinhos todo dia às 6h, na data de cada preventiva.</div></div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+        (pode&&nHoje?'<button class="btn sec" onclick="prevGerar(false)"><i class="ti ti-refresh"></i> Gerar vencidas agora ('+nHoje+')</button>':'')+
+        (pode?'<button class="btn" onclick="prevForm(null)"><i class="ti ti-plus"></i> Nova preventiva</button>':'')+
+      '</div></div>'+
+    '<div class="prev-seg">'+[['ativas','Ativas'],['pausadas','Pausadas'],['todas','Todas']].map(function(f){return '<button class="'+(PREV.filtro===f[0]?'on':'')+'" onclick="PREV.filtro=\''+f[0]+'\';render()">'+f[1]+'</button>';}).join('')+'</div>'+
+    (linhas||'<div style="padding:30px;text-align:center;color:#6b7770">Nenhuma preventiva '+(PREV.filtro==='pausadas'?'pausada':'cadastrada')+'.'+(pode&&PREV.filtro!=='pausadas'?' Clique em "Nova preventiva" para começar.':'')+'</div>')+
+  '</div>';
+}
+
+function prevForm(id){
+  var p=id?(PREV.lista||[]).find(function(x){return x.id===id;}):null;
+  p=p||{titulo:'',tipo_local:'area',local:'',area_tecnica:'',prioridade:'Media',obs:'',frequencia:'mensal',proxima_data:prevHoje(),ativo:true};
+  var cfg=ST.data.config||{}, aptos=ST.data.apartamentos||[], areas=cfg.areasComuns||[], tec=cfg.areasTecnicas||[];
+  var opt=function(l,v){ return l.map(function(x){ var val=Array.isArray(x)?x[0]:x, lab=Array.isArray(x)?x[1]:x; return '<option value="'+esc(val)+'"'+(String(v)===String(val)?' selected':'')+'>'+esc(lab)+'</option>'; }).join(''); };
+  window._prevAptos=aptos; window._prevAreas=areas;
+  openModal(id?'Editar preventiva':'Nova preventiva',
+    '<div class="prev-form">'+
+    '<label>Atividade *</label><input id="pv-tit" maxlength="120" placeholder="Ex: Limpeza dos filtros do ar-condicionado" value="'+esc(p.titulo)+'">'+
+    '<div class="prev-2"><div><label>Repetição *</label><select id="pv-freq">'+opt(PREV_FREQ,p.frequencia)+'</select></div>'+
+      '<div><label>'+(id?'Próximo chamado':'Primeiro chamado')+'</label><input id="pv-data" type="date" value="'+esc(String(p.proxima_data).slice(0,10))+'"></div></div>'+
+    '<div class="prev-2"><div><label>Urgência</label><select id="pv-prio">'+opt(PREV_PRIO,p.prioridade)+'</select></div>'+
+      '<div><label>Área técnica</label><select id="pv-area"><option value="">-</option>'+opt(tec,p.area_tecnica)+'</select></div></div>'+
+    '<div class="prev-2"><div><label>Onde</label><select id="pv-tipo" onchange="prevTrocaTipo()">'+opt([['area','Área comum'],['apartamento','Apartamento'],['geral','Geral (hotel todo)']],p.local?p.tipo_local:'geral')+'</select></div>'+
+      '<div><label>Local</label><select id="pv-local"></select></div></div>'+
+    '<label>OBS</label><textarea id="pv-obs" rows="3" maxlength="1000" placeholder="Instruções, materiais, cuidados...">'+esc(p.obs||'')+'</textarea>'+
+    '</div>',
+    [{l:'Cancelar',c:'sec',f:closeModal},{l:'Salvar',c:'',f:function(){ prevSalvar(id); }}]);
+  prevTrocaTipo(p.local);
+}
+function prevTrocaTipo(atual){
+  var t=document.getElementById('pv-tipo').value, sel=document.getElementById('pv-local');
+  var l=t==='apartamento'?window._prevAptos:t==='area'?window._prevAreas:[];
+  sel.disabled=!l.length;
+  sel.innerHTML=l.length?l.map(function(x){return '<option value="'+esc(x)+'"'+(atual===x?' selected':'')+'>'+esc(x)+'</option>';}).join(''):'<option value="">'+(t==='geral'?'Hotel todo':'Nenhum cadastrado')+'</option>';
+}
+async function prevSalvar(id){
+  var g=function(i){ return (document.getElementById(i).value||'').trim(); };
+  var tit=g('pv-tit'), data=g('pv-data')||prevHoje(), tipo=g('pv-tipo');
+  if(!tit){ alert('Informe a atividade.'); return; }
+  var reg={titulo:tit,frequencia:g('pv-freq'),proxima_data:data,prioridade:g('pv-prio'),area_tecnica:g('pv-area'),
+    tipo_local:tipo==='geral'?'area':tipo,local:tipo==='geral'?'':g('pv-local'),obs:g('pv-obs')};
+  try{
+    if(id) await sbPatch('preventivas?id=eq.'+encodeURIComponent(id),reg);
+    else await sbPost('preventivas',Object.assign({id:uid(),ativo:true,criado_em:new Date().toISOString(),criado_por:ST.user||''},reg));
+    closeModal();
+    if(data<=prevHoje()) await prevGerar(true);
+    await prevCarregar();
+  }catch(e){ alert('Erro ao salvar: '+e.message); }
+}
+async function prevAtivar(id){
+  var p=(PREV.lista||[]).find(function(x){return x.id===id;}); if(!p) return;
+  var upd={ativo:!p.ativo};
+  if(!p.ativo&&String(p.proxima_data)<prevHoje()) upd.proxima_data=prevHoje();
+  try{ await sbPatch('preventivas?id=eq.'+encodeURIComponent(id),upd); if(upd.ativo) await prevGerar(true); await prevCarregar(); }
+  catch(e){ alert('Erro: '+e.message); }
+}
+async function prevExcluir(id){
+  var p=(PREV.lista||[]).find(function(x){return x.id===id;}); if(!p) return;
+  openModal('Excluir preventiva','<div style="font-size:14px">Excluir <b>'+esc(p.titulo)+'</b>? Os chamados já criados continuam no histórico.</div>',
+    [{l:'Cancelar',c:'sec',f:closeModal},{l:'Excluir',c:'danger',f:async function(){
+      try{ await sbDelete('preventivas?id=eq.'+encodeURIComponent(id)); closeModal(); await prevCarregar(); }catch(e){ alert('Erro: '+e.message); }
+    }}]);
+}
+
+/* ---------- Pasta do hotel no Drive ---------- */
+function abrirDriveHotel(){
+  if(!window.R2_DRIVE_URL||R2_DRIVE_URL.indexOf('https://')!==0){ alert('Pasta do Drive ainda não configurada.'); return; }
+  var base=R2_DRIVE_URL+'?pasta='+encodeURIComponent(R2_NOME);
+  var w=window.open('about:blank','_blank');
+  if(w){ try{ w.document.write('<p style="font-family:Arial,sans-serif;padding:24px">Abrindo a pasta de fotos de '+esc(R2_NOME)+'...</p>'); }catch(e){} }
+  fetch(base+'&json=1').then(function(r){return r.json();}).then(function(j){
+    if(!j||!j.url) throw new Error('sem url');
+    if(w&&!w.closed) w.location.href=j.url; else location.href=j.url;
+  }).catch(function(){ if(w&&!w.closed) w.location.href=base; else window.open(base,'_blank'); });
+}
 
 /* ===== R2 - funcoes adicionais ===== */
 function r2OrdenarAptos(l){
