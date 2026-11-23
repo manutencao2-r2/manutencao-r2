@@ -248,9 +248,9 @@ body.campo-on #mroot .modal{border-radius:16px 16px 0 0;padding-bottom:calc(18px
 .cp-hbtn{background:#fff;color:#0A2A22;border:none;border-radius:12px;padding:9px 14px;font:700 14px 'DM Sans',sans-serif;display:flex;align-items:center;gap:4px;margin-top:6px}
 .cp-hero .cp-st{position:absolute;top:calc(12px + env(safe-area-inset-top));right:14px}
 .cp-body{flex:1;overflow:auto;padding:16px 14px 24px;-webkit-overflow-scrolling:touch}
-.cp-nav{display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid #DDE6DF;padding:6px 4px calc(6px + env(safe-area-inset-bottom));flex-shrink:0;box-shadow:0 -2px 10px rgba(10,42,34,.05)}
+.cp-nav{display:grid;grid-template-columns:repeat(6,1fr);background:#fff;border-top:1px solid #DDE6DF;padding:6px 4px calc(6px + env(safe-area-inset-bottom));flex-shrink:0;box-shadow:0 -2px 10px rgba(10,42,34,.05)}
 .cp-nav button{background:none;border:none;color:#7d8a83;display:flex;flex-direction:column;align-items:center;gap:3px;font:600 11px 'DM Sans',sans-serif;padding:4px 2px}
-.cp-ni{position:relative;display:flex;align-items:center;justify-content:center;width:52px;height:30px;border-radius:15px}
+.cp-ni{position:relative;display:flex;align-items:center;justify-content:center;width:46px;height:30px;border-radius:15px}
 .cp-ni i{font-size:22px}
 .cp-ni em{position:absolute;top:-3px;right:2px;background:#c0392b;color:#fff;font:700 10px 'DM Sans',sans-serif;font-style:normal;min-width:17px;height:17px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px}
 .cp-nav button.on{color:#0A2A22}
@@ -353,6 +353,11 @@ body.campo-on .modal{max-height:88vh;overflow:auto}
 .cp-ab.sec{background:#fff;border:1px solid #C9D6CD;color:#0A2A22}
 .cp-ab.pri{background:linear-gradient(135deg,#1B4332,#2D6A4F);border:none;color:#fff}
 .cp-ab:active{opacity:.8}
+.cp-nav button{font-size:10.5px}
+.cp-sel{width:100%;font-size:16px;padding:12px;border:1px solid #C9D6CD;border-radius:12px;background:#fff;color:#1d2b24}
+.cp-fbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.cp-cta:disabled{opacity:.45;box-shadow:none}
+.cp-toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0A2A22;color:#fff;padding:10px 16px;border-radius:12px;font:600 14px 'DM Sans',sans-serif;z-index:500;box-shadow:0 4px 14px rgba(0,0,0,.2)}
 
 /* R2 */
 body.r2-portal-mode .app, body.r2-portal-mode #login-screen, body.r2-portal-mode #loading{display:none !important}
@@ -451,7 +456,7 @@ var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-23.9';
+var R2_VERSAO = '2026-11-23.11';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -4134,7 +4139,7 @@ function renderStorageCard(){
    Fotos no Supabase Storage, alerta de urgente, funciona sem internet
    (fila local que envia quando a conexao volta)
    ===================================================================== */
-var CAMPO = {on:false, aba:'inicio', filtro:'aberto', busca:'', fotosNovo:[], fila:[], enviando:false, ckTipo:'diario'};
+var CAMPO = {on:false, aba:'inicio', filtro:'aberto', busca:'', fotosNovo:[], fotosAv:[], avTipo:'apartamento', avLocal:'', fila:[], enviando:false, ckTipo:'diario'};
 var R2_DRIVE_URL = 'https://script.google.com/macros/s/AKfycbwkGL3jvNdOkmW04GOHM0S4VouE_Yq5U9Rsm_nxht-IHvY5TXHdC4MYYcqO1ppYato6Gw/exec';
 var R2_DRIVE_CHAVE = 'r2-fotos-laghetto-8k2m';
 
@@ -4219,7 +4224,7 @@ async function campoEnviarFila(){
     try{ await CAMPO_FN[op.fn](op.d); CAMPO.fila.splice(i,1); campoSalvarFila(); mudou=true; }
     catch(e){
       if(!navigator.onLine) break;
-      if(op.fn==='foto'){ op.tent=(op.tent||0)+1; op.erro=String(e&&e.message||e).slice(0,120); campoSalvarFila(); console.warn('Foto aguardando nova tentativa',op.erro); i++; continue; }
+      if(op.fn==='foto'||op.fn==='fotoAvulsa'){ op.tent=(op.tent||0)+1; op.erro=String(e&&e.message||e).slice(0,120); campoSalvarFila(); console.warn('Foto aguardando nova tentativa',op.erro); i++; continue; }
       if(campoErroRede(e)) break;
       console.error('Fila: descartado',op,e); op.tent=(op.tent||0)+1;
       if(op.tent>=3){ CAMPO.fila.splice(i,1); campoSalvarFila(); } else break;
@@ -4250,6 +4255,11 @@ var CAMPO_FN = {
     var lista=[]; try{ lista=JSON.parse((atual&&atual[0]&&atual[0].fotos)||'[]'); }catch(e){}
     if(lista.indexOf(url)<0) lista.push(url);
     await sbPatch('chamados?id=eq.'+encodeURIComponent(d.chamadoId),{fotos:JSON.stringify(lista)});
+  },
+  fotoAvulsa: async function(d){
+    var r=await fetch(R2_DRIVE_URL,{method:'POST',body:JSON.stringify({chave:R2_DRIVE_CHAVE,hotel:R2_NOME,local:d.local||'Geral',area:'',chamadoId:'avulsa',ref:d.ref||'',data:d.data||new Date().toISOString(),usuario:ST.user||'',b64:d.b64})});
+    var j=await r.json();
+    if(!j||!j.ok||!j.id) throw new Error('Drive: '+((j&&j.erro)||r.status));
   },
   atividade: async function(d){
     var ex=await sbGet('registros_atividades?id=eq.'+encodeURIComponent(d.reg.id)+'&select=id');
@@ -4313,17 +4323,17 @@ function campoPend(c){ return c.status==='Aberto'||c.status==='Andamento'; }
 function campoRender(){
   if(!CAMPO.on||!ST.data) return;
   var root=document.getElementById('campo-root');
-  if(['inicio','chamados','checklist','atividades','mais','novo'].indexOf(CAMPO.aba)<0) CAMPO.aba='inicio';
-  var abas=[['inicio','Início','ti-home'],['chamados','Chamados','ti-clipboard-list'],['checklist','Checklist','ti-checkup-list'],['atividades','Atividades','ti-repeat'],['mais','Mais','ti-dots']];
+  if(['inicio','chamados','checklist','atividades','fotos','mais','novo'].indexOf(CAMPO.aba)<0) CAMPO.aba='inicio';
+  var abas=[['inicio','Início','ti-home'],['chamados','Chamados','ti-clipboard-list'],['checklist','Checklist','ti-checkup-list'],['atividades','Atividades','ti-repeat'],['fotos','Fotos','ti-camera'],['mais','Mais','ti-dots']];
   var nAb=(ST.data.chamados||[]).filter(campoPend).length;
   var a=CAMPO.aba, hotel=esc(R2_NOME.toUpperCase());
   var data=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
-  var tit={chamados:['Chamados','Toque em um chamado para ver e concluir'],checklist:['Checklist','Marque o que já foi verificado'],atividades:['Atividades','Registre com 1 toque'],mais:['Mais','Perfil, alertas e opções'],novo:['Novo chamado','Preencha e envie, mesmo sem internet']}[a];
+  var tit={chamados:['Chamados','Toque em um chamado para ver e concluir'],checklist:['Checklist','Marque o que já foi verificado'],atividades:['Atividades','Registre com 1 toque'],fotos:['Enviar fotos','As fotos vão para o Drive na pasta do mês e do local'],mais:['Mais','Perfil e opções'],novo:['Novo chamado','Preencha e envie, mesmo sem internet']}[a];
   var acao=a==='chamados'?'<button class="cp-hbtn" onclick="campoAba(\'novo\')"><i class="ti ti-plus"></i> Novo</button>':a==='novo'?'<button class="cp-hbtn" onclick="campoAba(\'chamados\')"><i class="ti ti-x"></i> Cancelar</button>':'';
   var hero=a==='inicio'
     ?'<div class="cp-hk">'+hotel+'</div><div class="cp-ht">Olá, '+esc(campoPrimeiroNome())+'</div><div class="cp-hs">Manutenção · '+esc(data)+'</div>'
     :'<div class="cp-hk">'+hotel+'</div><div class="cp-hrow"><div class="cp-ht">'+tit[0]+'</div>'+acao+'</div><div class="cp-hs">'+tit[1]+'</div>';
-  var corpo=a==='novo'?campoNovo():a==='atividades'?campoAtividades():a==='checklist'?campoChecklist():a==='mais'?campoMais():a==='chamados'?campoChamados():campoInicio();
+  var corpo=a==='novo'?campoNovo():a==='atividades'?campoAtividades():a==='checklist'?campoChecklist():a==='mais'?campoMais():a==='fotos'?campoFotosAv():a==='chamados'?campoChamados():campoInicio();
   root.innerHTML=
     '<header class="cp-hero"><span id="campo-status" class="cp-st"></span>'+hero+'</header>'+
     '<div class="cp-body">'+corpo+'</div>'+
@@ -4395,6 +4405,35 @@ function campoChamados(){
     '<div class="cp-busca"><i class="ti ti-search"></i><input type="search" placeholder="Buscar por apto, área, descrição..." value="'+esc(CAMPO.busca||'')+'" oninput="campoBuscar(this.value)"></div>'+
     '<div id="cp-lista">'+campoFiltrar()+'</div>';
 }
+function campoFotosAv(){
+  var cfg=ST.data.config||{}, t=CAMPO.avTipo, lista=t==='apartamento'?(ST.data.apartamentos||[]):(cfg.areasComuns||[]);
+  var n=CAMPO.fotosAv.length, pend=CAMPO.fila.filter(function(o){return o.fn==='fotoAvulsa';}).length;
+  return '<div class="cp-card cp-form" style="padding-top:12px">'+
+      '<div class="cp-seg" style="margin-bottom:4px"><button class="'+(t==='apartamento'?'on':'')+'" onclick="CAMPO.avTipo=\'apartamento\';CAMPO.avLocal=\'\';campoRender()">Apartamento</button><button class="'+(t==='area'?'on':'')+'" onclick="CAMPO.avTipo=\'area\';CAMPO.avLocal=\'\';campoRender()">Área comum</button></div>'+
+      '<label>'+(t==='apartamento'?'Apartamento':'Área comum')+' (opcional)</label>'+
+      '<select class="cp-sel" onchange="CAMPO.avLocal=this.value"><option value="">Sem local definido (pasta Geral)</option>'+lista.map(function(x){return '<option value="'+esc(x)+'"'+(CAMPO.avLocal===x?' selected':'')+'>'+esc(x)+'</option>';}).join('')+'</select></div>'+
+    '<div class="cp-fbtns"><label class="cp-ab sec"><i class="ti ti-photo"></i> Da galeria<input type="file" accept="image/*" multiple style="display:none" onchange="campoFotoAvAdd(this)"></label>'+
+      '<label class="cp-ab sec"><i class="ti ti-camera"></i> Tirar foto<input type="file" accept="image/*" capture="environment" style="display:none" onchange="campoFotoAvAdd(this)"></label></div>'+
+    (n?'<div class="cp-fotos" style="margin:12px 0">'+CAMPO.fotosAv.map(function(u,i){return '<div class="cp-th"><img src="'+u+'" alt="Foto"><button onclick="CAMPO.fotosAv.splice('+i+',1);campoRender()" aria-label="Remover foto">×</button></div>';}).join('')+'</div>':'')+
+    '<button class="btn cp-big cp-cta" style="margin-top:12px" '+(n?'':'disabled')+' onclick="campoFotoAvEnviar()"><i class="ti ti-upload"></i> Enviar '+(n?n+' ':'')+'foto'+(n===1?'':'s')+' para o Drive</button>'+
+    (pend?'<div class="cp-aviso">'+pend+' foto(s) aguardando envio. O app tenta de novo sozinho quando houver internet.</div>':'');
+}
+async function campoFotoAvAdd(inp){
+  var fs=Array.from(inp.files||[]);
+  for(var i=0;i<fs.length;i++){ try{ CAMPO.fotosAv.push(await campoComprimir(fs[i])); }catch(e){ alert(e.message); } }
+  campoRender();
+}
+function campoFotoAvEnviar(){
+  if(!CAMPO.fotosAv.length) return;
+  var l=CAMPO.avLocal, loc=l?(CAMPO.avTipo==='apartamento'?'Apto '+l:l):'Geral';
+  var agora=Date.now();
+  CAMPO.fotosAv.forEach(function(u,i){ campoEnfileirar('fotoAvulsa',{local:loc,ref:Math.random().toString(36).slice(2,6),data:new Date(agora+i*1000).toISOString(),b64:u.split(',')[1]}); });
+  var n=CAMPO.fotosAv.length; CAMPO.fotosAv=[];
+  if(navigator.vibrate) navigator.vibrate(60);
+  campoRender();
+  campoToast(n+' foto'+(n===1?'':'s')+' na fila de envio para o Drive');
+}
+function campoToast(t){ var d=document.createElement('div'); d.className='cp-toast'; d.textContent=t; document.body.appendChild(d); setTimeout(function(){ d.remove(); },3000); }
 function campoMais(){
   var ini=campoPrimeiroNome().charAt(0)||'?';
   var item=function(ic,t,s,fn,cls){return '<button class="cp-mi'+(cls?' '+cls:'')+'" onclick="'+fn+'"><i class="ti '+ic+'"></i><span><b>'+t+'</b>'+(s?'<small>'+s+'</small>':'')+'</span><i class="ti ti-chevron-right"></i></button>';};
@@ -4463,7 +4502,7 @@ function campoNovo(){
   return '<div class="cp-form">'+
     '<div class="cp-seg" style="margin-bottom:12px"><button class="'+(n.tipo==='apartamento'?'on':'')+'" onclick="CAMPO.novo.tipo=\'apartamento\';CAMPO.novo.local=\'\';campoRender()">Apartamento</button><button class="'+(n.tipo==='area'?'on':'')+'" onclick="CAMPO.novo.tipo=\'area\';CAMPO.novo.local=\'\';campoRender()">Área comum</button></div>'+
     '<label>'+(n.tipo==='apartamento'?'Apartamento':'Área')+'</label>'+
-    (locais.length?'<input list="cp-locais" id="cp-local" value="'+esc(n.local)+'" placeholder="Toque para escolher ou digite" oninput="CAMPO.novo.local=this.value" inputmode="'+(n.tipo==='apartamento'?'numeric':'text')+'"><datalist id="cp-locais">'+locais.map(function(x){return '<option value="'+esc(x)+'">';}).join('')+'</datalist>'
+    (locais.length?'<select id="cp-local" class="cp-sel" onchange="CAMPO.novo.local=this.value"><option value="">'+(n.tipo==='apartamento'?'Selecione o apto':'Selecione a área')+'</option>'+locais.map(function(x){return '<option value="'+esc(x)+'"'+(n.local===x?' selected':'')+'>'+esc(x)+'</option>';}).join('')+'</select>'
       :'<div class="cp-aviso">Nenhum '+(n.tipo==='apartamento'?'apartamento':'área comum')+' cadastrado. Peça ao administrador para cadastrar em Configurações.</div>')+
     '<label>Área técnica</label>'+chips(tec,'area',n.area)+
     '<label>Prioridade</label>'+chips(['Baixa','Media','Alta','Urgente'],'prio',n.prio)+
