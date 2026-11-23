@@ -451,7 +451,7 @@ var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-23.8';
+var R2_VERSAO = '2026-11-23.9';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -4135,8 +4135,7 @@ function renderStorageCard(){
    (fila local que envia quando a conexao volta)
    ===================================================================== */
 var CAMPO = {on:false, aba:'inicio', filtro:'aberto', busca:'', fotosNovo:[], fila:[], enviando:false, ckTipo:'diario'};
-var FOTO_BUCKET = 'r2-fotos';
-var R2_DRIVE_URL = '__DRIVE_URL__';
+var R2_DRIVE_URL = 'https://script.google.com/macros/s/AKfycbwkGL3jvNdOkmW04GOHM0S4VouE_Yq5U9Rsm_nxht-IHvY5TXHdC4MYYcqO1ppYato6Gw/exec';
 var R2_DRIVE_CHAVE = 'r2-fotos-laghetto-8k2m';
 
 function campoQuer(){
@@ -4214,13 +4213,16 @@ async function campoEnviarFila(){
   if(CAMPO.enviando||!CAMPO.fila.length||!navigator.onLine) { campoStatus(); return; }
   CAMPO.enviando=true; campoStatus();
   var mudou=false;
-  while(CAMPO.fila.length){
-    var op=CAMPO.fila[0];
-    try{ await CAMPO_FN[op.fn](op.d); CAMPO.fila.shift(); campoSalvarFila(); mudou=true; }
+  var i=0;
+  while(i<CAMPO.fila.length){
+    var op=CAMPO.fila[i];
+    try{ await CAMPO_FN[op.fn](op.d); CAMPO.fila.splice(i,1); campoSalvarFila(); mudou=true; }
     catch(e){
+      if(!navigator.onLine) break;
+      if(op.fn==='foto'){ op.tent=(op.tent||0)+1; op.erro=String(e&&e.message||e).slice(0,120); campoSalvarFila(); console.warn('Foto aguardando nova tentativa',op.erro); i++; continue; }
       if(campoErroRede(e)) break;
       console.error('Fila: descartado',op,e); op.tent=(op.tent||0)+1;
-      if(op.tent>=3){ CAMPO.fila.shift(); campoSalvarFila(); } else break;
+      if(op.tent>=3){ CAMPO.fila.splice(i,1); campoSalvarFila(); } else break;
     }
   }
   CAMPO.enviando=false; campoStatus();
@@ -4240,19 +4242,10 @@ var CAMPO_FN = {
     if(d.pts) await registrarPontos(d.pts);
   },
   foto: async function(d){
-    var url;
-    if(R2_DRIVE_URL.indexOf('https://')===0){
-      var r=await fetch(R2_DRIVE_URL,{method:'POST',body:JSON.stringify({chave:R2_DRIVE_CHAVE,hotel:R2_NOME,local:d.local||'Sem local',area:d.area||'',chamadoId:d.chamadoId,ref:d.ref||'',data:d.data||new Date().toISOString(),usuario:ST.user||'',b64:d.b64})});
-      var j=await r.json();
-      if(!j||!j.ok) throw new Error('Drive: '+((j&&j.erro)||r.status));
-      url='https://drive.google.com/thumbnail?id='+j.id+'&sz=w1600';
-    } else {
-      var bin=Uint8Array.from(atob(d.b64), function(c){return c.charCodeAt(0);});
-      var r2=await fetch(SUPA_URL+'/storage/v1/object/'+FOTO_BUCKET+'/'+d.caminho,{method:'POST',
-        headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'image/jpeg'},body:bin});
-      if(!r2.ok){ var t=await r2.text(); throw new Error('Foto ['+r2.status+'] '+t.slice(0,120)); }
-      url=SUPA_URL+'/storage/v1/object/public/'+FOTO_BUCKET+'/'+d.caminho;
-    }
+    var r=await fetch(R2_DRIVE_URL,{method:'POST',body:JSON.stringify({chave:R2_DRIVE_CHAVE,hotel:R2_NOME,local:d.local||'Sem local',area:d.area||'',chamadoId:d.chamadoId,ref:d.ref||'',data:d.data||new Date().toISOString(),usuario:ST.user||'',b64:d.b64})});
+    var j=await r.json();
+    if(!j||!j.ok||!j.id) throw new Error('Drive: '+((j&&j.erro)||r.status));
+    var url='https://drive.google.com/thumbnail?id='+j.id+'&sz=w1600';
     var atual=await sbGet('chamados?id=eq.'+encodeURIComponent(d.chamadoId)+'&select=fotos');
     var lista=[]; try{ lista=JSON.parse((atual&&atual[0]&&atual[0].fotos)||'[]'); }catch(e){}
     if(lista.indexOf(url)<0) lista.push(url);
