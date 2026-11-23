@@ -374,6 +374,20 @@ body.campo-on .modal{max-height:88vh;overflow:auto}
 .prev-form input,.prev-form select,.prev-form textarea{width:100%}
 .prev-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:560px){.prev-2{grid-template-columns:1fr}.prev-item{flex-direction:column}}
+.gal-filtros{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.gal-filtros label{display:flex;flex-direction:column;font-size:11px;font-weight:700;color:#1B4332;gap:3px}
+.gal-filtros select{min-width:150px}
+.gal-grupo{margin-bottom:18px}
+.gal-tit{font-weight:700;color:#0A2A22;margin-bottom:8px;font-size:14px}
+.gal-tit span{background:#E3F0E6;color:#1B4332;border-radius:10px;padding:1px 8px;font-size:12px;margin-left:4px}
+.gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.gal-item{border:1px solid #E3EAE5;background:#F5F7F5;border-radius:12px;padding:0;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;text-align:left}
+.gal-item img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:#E8EEE9}
+.gal-item span{font-size:11px;color:#5d6b64;padding:5px 8px}
+.gal-item:hover{border-color:#2D6A4F;box-shadow:0 2px 8px rgba(10,42,34,.12)}
+.gal-item.sem img{opacity:.2}
+.gal-big{background:#0A2A22;border-radius:10px;display:flex;align-items:center;justify-content:center;min-height:200px}
+.gal-big img{max-width:100%;max-height:70vh;display:block;border-radius:10px}
 
 /* R2 */
 body.r2-portal-mode .app, body.r2-portal-mode #login-screen, body.r2-portal-mode #loading{display:none !important}
@@ -472,7 +486,7 @@ var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-23.12';
+var R2_VERSAO = '2026-11-23.13';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -1262,8 +1276,8 @@ function buildNav() {
 }
 function pgName(id){for(var i=0;i<PAGES.length;i++){if(Array.isArray(PAGES[i])&&PAGES[i][0]===id)return PAGES[i][1];}return '';}
 function goto(p){
-  if(p==='drive'){ abrirDriveHotel(); return; }
   if(p==='preventivas') PREV.lista=null;
+  if(p==='drive'){ GAL.dados=null; GAL.erro=''; }
   var anterior=ST.page;
   ST.page=p;
   buildNav();
@@ -1296,6 +1310,7 @@ function render() {
     ST.page==='atividades'   ?renderAtiv()    :
     ST.page==='checklists'   ?renderCk()      :
     ST.page==='preventivas'  ?renderPrev()    :
+    ST.page==='drive'        ?renderGaleria() :
     ST.page==='calendario'   ?renderCal()     :
     ST.page==='compras'      ?renderComp()    :
     ST.page==='escala'       ?renderEsc()     :
@@ -4740,6 +4755,62 @@ function abrirDriveHotel(){
     if(!j||!j.url) throw new Error('sem url');
     if(w&&!w.closed) w.location.href=j.url; else location.href=j.url;
   }).catch(function(){ if(w&&!w.closed) w.location.href=base; else window.open(base,'_blank'); });
+}
+
+/* ---------- Galeria de fotos do Drive (Gestao) ---------- */
+var GAL = {dados:null, mes:'', local:'', carregando:false, erro:''};
+function galCarregar(mes){
+  if(!window.R2_DRIVE_URL||R2_DRIVE_URL.indexOf('https://')!==0){ GAL.erro='Pasta do Drive não configurada.'; render(); return; }
+  GAL.carregando=true; GAL.erro=''; if(ST.page==='drive') render();
+  fetch(R2_DRIVE_URL+'?galeria='+encodeURIComponent(R2_NOME)+(mes?'&mes='+encodeURIComponent(mes):''))
+    .then(function(r){return r.json();})
+    .then(function(j){ if(!j||!j.ok) throw new Error((j&&j.erro)||'resposta inválida'); GAL.dados=j; GAL.mes=j.mes||''; if(GAL.local&&!(j.locais||[]).some(function(l){return l.nome===GAL.local;})) GAL.local=''; })
+    .catch(function(e){ GAL.erro='Não foi possível carregar as fotos ('+e.message+').'; })
+    .then(function(){ GAL.carregando=false; if(ST.page==='drive') render(); });
+}
+function galThumb(id,w){ return 'https://drive.google.com/thumbnail?id='+encodeURIComponent(id)+'&sz=w'+(w||400); }
+function galNomeMes(m){ return String(m||'').replace(/^(\d{4})-(\d{2}) (.*)$/,'$3 de $1'); }
+function renderGaleria(){
+  if(!GAL.dados&&!GAL.carregando&&!GAL.erro) galCarregar('');
+  var d=GAL.dados||{meses:[],locais:[]};
+  var locais=(d.locais||[]).filter(function(l){return !GAL.local||l.nome===GAL.local;});
+  var total=(d.locais||[]).reduce(function(s,l){return s+l.fotos.length;},0);
+  var topo='<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap;margin-bottom:14px">'+
+    '<div><div style="font-size:16px;font-weight:700;color:#0A2A22">Fotos do '+esc(R2_NOME)+'</div>'+
+      '<div style="font-size:13px;color:#6b7770">'+(GAL.carregando?'Carregando do Drive...':total+' foto(s) em '+esc(galNomeMes(GAL.mes)||'-'))+'</div></div>'+
+    '<div class="gal-filtros">'+
+      '<label>Mês<select onchange="GAL.local=\'\';galCarregar(this.value)"'+(d.meses.length?'':' disabled')+'>'+(d.meses.length?d.meses.map(function(m){return '<option value="'+esc(m)+'"'+(m===GAL.mes?' selected':'')+'>'+esc(galNomeMes(m))+'</option>';}).join(''):'<option>-</option>')+'</select></label>'+
+      '<label>Apto ou área<select onchange="GAL.local=this.value;render()"><option value="">Todos</option>'+(d.locais||[]).map(function(l){return '<option value="'+esc(l.nome)+'"'+(l.nome===GAL.local?' selected':'')+'>'+esc(l.nome)+' ('+l.fotos.length+')</option>';}).join('')+'</select></label>'+
+      '<button class="btn sec" onclick="galCarregar(GAL.mes)"'+(GAL.carregando?' disabled':'')+'><i class="ti ti-refresh"></i> Atualizar</button>'+
+      '<button class="btn sec" onclick="abrirDriveHotel()"><i class="ti ti-brand-google-drive"></i> Abrir no Drive</button>'+
+    '</div></div>';
+  var corpo;
+  if(GAL.erro) corpo='<div style="padding:30px;text-align:center;color:#c0392b">'+esc(GAL.erro)+'</div>';
+  else if(GAL.carregando&&!GAL.dados) corpo='<div style="padding:40px;text-align:center;color:#6b7770">Carregando fotos do Drive...</div>';
+  else if(!total) corpo='<div style="padding:40px;text-align:center;color:#6b7770">Nenhuma foto enviada'+(GAL.mes?' em '+esc(galNomeMes(GAL.mes)):' ainda')+'. As fotos do app aparecem aqui.</div>';
+  else corpo=locais.map(function(l){
+    return '<div class="gal-grupo"><div class="gal-tit">'+esc(l.nome)+' <span>'+l.fotos.length+'</span></div><div class="gal-grid">'+
+      l.fotos.map(function(f){
+        return '<button class="gal-item" data-id="'+esc(f.id)+'" data-loc="'+esc(l.nome)+'" onclick="galVer(this.getAttribute(\'data-loc\'),this.getAttribute(\'data-id\'))">'+
+          '<img src="'+galThumb(f.id,400)+'" loading="lazy" alt="Foto '+esc(l.nome)+'" onerror="this.parentNode.classList.add(\'sem\')">'+
+          '<span>'+esc(fmtDT(f.data))+'</span></button>';
+      }).join('')+'</div></div>';
+  }).join('');
+  return '<div class="card">'+topo+corpo+'</div>';
+}
+function galVer(loc,id){
+  var l=((GAL.dados&&GAL.dados.locais)||[]).find(function(x){return x.nome===loc;}); if(!l) return;
+  var i=l.fotos.findIndex(function(f){return f.id===id;}); if(i<0) return;
+  var f=l.fotos[i], ant=l.fotos[i-1], prox=l.fotos[i+1];
+  var nav=function(x,ic,t){ return x?'<button class="btn sec" data-id="'+esc(x.id)+'" data-loc="'+esc(loc)+'" onclick="closeModal();galVer(this.getAttribute(\'data-loc\'),this.getAttribute(\'data-id\'))"><i class="ti '+ic+'"></i> '+t+'</button>':''; };
+  openModal(loc+' · '+fmtDT(f.data),
+    '<div class="gal-big"><img src="'+galThumb(f.id,1600)+'" alt="Foto '+esc(loc)+'"></div>'+
+    (f.desc?'<div style="font-size:13px;color:#5d6b64;margin-top:8px">'+esc(f.desc)+'</div>':'')+
+    '<div style="display:flex;gap:8px;justify-content:space-between;margin-top:10px;flex-wrap:wrap">'+
+      '<div style="display:flex;gap:8px">'+nav(ant,'ti-chevron-left','Anterior')+nav(prox,'ti-chevron-right','Próxima')+'</div>'+
+      '<a class="btn sec" href="https://drive.google.com/file/d/'+encodeURIComponent(f.id)+'/view" target="_blank" rel="noopener"><i class="ti ti-external-link"></i> Abrir no Drive</a>'+
+    '</div>',
+    [{l:'Fechar',c:'sec',f:closeModal}]);
 }
 
 /* ===== R2 - funcoes adicionais ===== */
