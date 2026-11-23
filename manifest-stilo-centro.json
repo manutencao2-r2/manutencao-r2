@@ -1,0 +1,24 @@
+{
+ "id": "stilo-centro",
+ "name": "Manutenção Laghetto Stilo Centro",
+ "short_name": "Stilo Centro",
+ "start_url": "stilo-centro.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#0A2A22",
+ "theme_color": "#0A2A22",
+ "lang": "pt-BR",
+ "icons": [
+  {
+   "src": "icon-stilo-centro-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-stilo-centro-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any maskable"
+  }
+ ]
+}
