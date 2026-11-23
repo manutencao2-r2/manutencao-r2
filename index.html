@@ -4013,12 +4013,15 @@ function abrirUsrForm(id){
   var u=ed||{nome:'',login:'',senha:'',perfil:'operador'};
   openModal(ed?'Editar usuario':'Novo usuario',
     '<div class="form-grid"><div><label>Nome</label><input id="un" value="'+esc(u.nome)+'"></div><div><label>Login</label><input id="ul" value="'+esc(u.login)+'"></div>'+
-    '<div><label>Senha</label><input id="us" type="text" value="'+esc(u.senha)+'"></div>'+
-    '<div><label>Perfil</label><select id="up">'+['admin','operador'].map(function(p){return '<option'+(u.perfil===p?' selected':'')+'>'+p+'</option>';}).join('')+'</select></div></div>',
+    '<div><label>'+(ed?'Nova senha':'Senha')+'</label><div style="position:relative"><input id="us" type="password" value="" autocomplete="new-password" placeholder="'+(ed?'Deixe em branco para manter a atual':'Defina a senha')+'" style="padding-right:38px">'+
+      '<button type="button" onclick="var i=document.getElementById(\'us\');i.type=i.type===\'password\'?\'text\':\'password\';" title="Mostrar o que estou digitando" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;color:#6b7770;font-size:16px"><i class="ti ti-eye"></i></button></div></div>'+
+    '<div><label>Perfil</label><select id="up">'+['admin','supervisor','operador'].map(function(p){return '<option'+(u.perfil===p?' selected':'')+'>'+p+'</option>';}).join('')+'</select></div></div>',
     [{l:'Cancelar',c:'sec',f:closeModal},{l:'Salvar',c:'',f:function(){
       var n=document.getElementById('un').value.trim(),l=document.getElementById('ul').value.trim();
       if(!n||!l){alert('Nome e login obrigatorios');return;}
-      var novo={id:ed?ed.id:'',nome:n,login:l,senha:document.getElementById('us').value,perfil:document.getElementById('up').value};
+      var sDig=document.getElementById('us').value;
+      if(!ed&&!sDig){alert('Defina a senha do novo usuario');return;}
+      var novo={id:ed?ed.id:'',nome:n,login:l,senha:sDig?sDig:(ed?ed.senha:''),perfil:document.getElementById('up').value};
       var lista=ST.data.usuarios.slice();
       if(ed){lista=lista.map(function(x){return x.id===ed.id?Object.assign({},x,novo):x;});}else{lista.push(novo);}
       call('saveUsuarios',{lista:lista},function(){closeModal();reload();});
