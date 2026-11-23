@@ -4278,6 +4278,8 @@ body.r2-portal-mode #r2p{display:block}
 .r2p-modal .box{background:#fff;border-radius:16px;padding:28px;width:100%;max-width:360px;margin:16px}
 .r2p-modal label{display:block;font-size:12px;color:#6b7770;font-weight:500;margin:0 0 4px}
 .r2p-modal input{width:100%;padding:10px;border:1px solid #DDE6DF;border-radius:8px;font:14px 'DM Sans',sans-serif;margin-bottom:14px}
+.r2p-form label,.r2p-modal label{display:block;font-size:12px;color:#6b7770;font-weight:500;margin:0 0 4px}
+.r2p-form input{width:100%;padding:10px;border:1px solid #DDE6DF;border-radius:8px;font:14px 'DM Sans',sans-serif;margin-bottom:14px}
 .r2p-err{display:none;background:#fde2e1;border:1px solid #c0392b;border-radius:8px;padding:9px;font-size:13px;color:#c0392b;margin-bottom:12px;text-align:center}
 .r2p-upd{font-size:12px;color:#6b7770;display:flex;align-items:center;gap:8px}
 @media(max-width:1100px){.r2p-kpis{grid-template-columns:repeat(3,1fr)}.r2p-two{grid-template-columns:1fr}}
@@ -4372,7 +4374,6 @@ function r2PortalInit(){
 /* ---------- Navegacao: home | dashboard | <hotel> ---------- */
 function r2pIr(v, semHistorico){
   var hotel=R2_HOTEIS.find(function(h){return h.slug===v;});
-  if(v==='dashboard' && !R2P.sessao){ R2P.depoisLogin='dashboard'; r2pLoginModal(); v='home'; }
   if(v!=='dashboard' && !hotel) v='home';
   R2P.view=v;
   document.getElementById('r2p-homev').style.display = v==='home'?'block':'none';
@@ -4387,7 +4388,7 @@ function r2pIr(v, semHistorico){
     fr.classList.remove('on'); if(ifr.getAttribute('data-hotel')){ try{ifr.contentWindow.location.replace('about:blank');}catch(e){ifr.src='about:blank';} } ifr.removeAttribute('data-hotel');
     document.title='Manutenção R2 - Laghetto';
   }
-  if(v==='dashboard') r2pRenderDash();
+  if(v==='dashboard'){ if(R2P.sessao) r2pRenderDash(); else r2pRenderLoginDash(); }
   if(v==='home' && R2P.sessao) r2pCarregar();
   r2pRenderNav(hotel);
   if(!semHistorico){
@@ -4414,7 +4415,7 @@ function r2pRenderUser(){
     el.innerHTML='<span class="r2p-chip"><i class="ti ti-user-shield"></i> <span class="r2p-link-txt">'+r2pEsc(R2P.sessao.nome||R2P.sessao.login)+'</span></span>'+
       '<button class="r2p-btn ghost sm" onclick="r2pSair()"><i class="ti ti-logout"></i><span class="r2p-link-txt"> Sair</span></button>';
   } else {
-    el.innerHTML='<button class="r2p-btn light sm" onclick="r2pLoginModal()"><i class="ti ti-lock"></i> Gerente</button>';
+    el.innerHTML='<button class="r2p-btn light sm" onclick="r2pIr(\'dashboard\')"><i class="ti ti-lock"></i> Gerente</button>';
   }
 }
 
@@ -4447,6 +4448,7 @@ async function r2pEntrar(){
     var r=tx?JSON.parse(tx):[];
     if(!r.length){er.style.display='block';er.textContent='Login ou senha incorretos.';bt.disabled=false;bt.textContent='Entrar';return;}
     R2P.sessao={login:r[0].login,nome:r[0].nome||r[0].login,expira:Date.now()+R2P_SESS_HORAS*3600000};
+    R2P.senhaMem=pw;
     localStorage.setItem('r2_portal_sessao',JSON.stringify(R2P.sessao));
     var dep=R2P.depoisLogin; document.getElementById('r2p-mroot').innerHTML=''; R2P.depoisLogin=null;
     r2pRenderUser(); r2pCarregar();
@@ -4460,7 +4462,7 @@ async function r2pEntrar(){
 function r2pSair(){
   localStorage.removeItem('r2_portal_sessao');
   R2_HOTEIS.forEach(function(h){localStorage.removeItem('r2_'+h.slug+'_lg_uid');localStorage.removeItem('r2_'+h.slug+'_lg_user');});
-  R2P.sessao=null;R2P.dados=null;clearInterval(R2P.timer);
+  R2P.sessao=null;R2P.dados=null;R2P.senhaMem=null;clearInterval(R2P.timer);
   r2pRenderUser(); r2pIr('home');
 }
 
@@ -4543,6 +4545,7 @@ function r2pRenderDash(){
   function kpi(ic,l,v,s,cls){return '<div class="r2p-kpi '+(cls||'')+'"><div class="l"><i class="ti '+ic+'"></i> '+l+'</div><div class="v">'+v+'</div><div class="s">'+s+'</div></div>';}
   var h='<div class="r2p-h"><h2><i class="ti ti-layout-dashboard"></i> Dashboard da Regional 2</h2>'+
     '<div class="r2p-upd">Atualizado às '+R2P.dados.em.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+
+    ' <button class="r2p-btn sm" onclick="r2pAcessos()" style="background:#fff;color:#1B4332;border:1px solid #1B4332"><i class="ti ti-key"></i> Acessos do Dashboard</button>'+
     ' <button class="r2p-btn sm" onclick="r2pCarregar()"><i class="ti ti-refresh"></i> Atualizar</button></div></div>';
   h+='<div class="r2p-kpis">'+
     kpi('ti-alert-circle','Em aberto',tot.ab+tot.an,tot.an+' em andamento')+
@@ -4599,6 +4602,116 @@ function r2pRenderDash(){
   el.innerHTML=h;
 }
 
+
+
+/* ---------- Tela de login do Dashboard ---------- */
+function r2pRenderLoginDash(){
+  document.getElementById('r2p-dash').innerHTML=
+    '<div style="min-height:calc(100vh - 160px);display:flex;align-items:center;justify-content:center">'+
+    '<div class="r2p-card" style="width:100%;max-width:400px;padding:30px 28px;margin:0">'+
+      '<div style="text-align:center;margin-bottom:22px">'+
+        '<div class="r2p-mark" style="margin:0 auto 12px;width:56px;height:56px;background:#0A2A22;color:#C7F1C5"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+R2P_ICO.dash+'</svg></div>'+
+        '<div style="font-size:19px;font-weight:700;color:#0A2A22">Dashboard da Regional 2</div>'+
+        '<div style="font-size:13px;color:#6b7770;margin-top:4px">Acesso exclusivo do Gerente de Manutenção</div>'+
+      '</div>'+
+      '<div class="r2p-form">'+
+      '<label>Login</label><input id="r2p-lg" autocomplete="username" onkeydown="if(event.key===\'Enter\')document.getElementById(\'r2p-pw\').focus()">'+
+      '<label>Senha</label><input id="r2p-pw" type="password" autocomplete="current-password" onkeydown="if(event.key===\'Enter\')r2pEntrar()">'+
+      '</div>'+
+      '<div class="r2p-err" id="r2p-er"></div>'+
+      '<button class="r2p-btn" style="width:100%;justify-content:center;padding:12px" onclick="r2pEntrar()" id="r2p-bt">Entrar</button>'+
+      '<div style="text-align:center;margin-top:14px"><a href="#" onclick="r2pIr(\'home\');return false;" style="font-size:13px;color:#1B4332">Voltar aos hotéis</a></div>'+
+    '</div></div>';
+  setTimeout(function(){var i=document.getElementById('r2p-lg');if(i)i.focus();},50);
+}
+
+/* ---------- Gestao de acessos do Dashboard ---------- */
+async function r2pRpc(fn,args){
+  var r=await fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)});
+  var t=await r.text(); var j=null; try{j=t?JSON.parse(t):null;}catch(e){}
+  if(!r.ok) throw new Error((j&&j.message)||t.slice(0,160));
+  return j;
+}
+function r2pModal(tit,corpo){
+  document.getElementById('r2p-mroot').innerHTML='<div class="r2p-modal" onclick="if(event.target===this)r2pFecharModal()"><div class="box" style="max-width:560px">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div style="font-size:17px;font-weight:700;color:#0A2A22">'+tit+'</div>'+
+    '<button class="r2p-btn sm" style="background:#EEF2EF;color:#1B4332" onclick="r2pFecharModal()">Fechar</button></div>'+corpo+'</div></div>';
+}
+function r2pAcessos(){
+  if(!R2P.senhaMem){
+    r2pModal('Confirme sua senha','<div style="font-size:13px;color:#6b7770;margin-bottom:12px">Para gerenciar os acessos do Dashboard, confirme a senha de <b>'+r2pEsc(R2P.sessao.login)+'</b>.</div>'+
+      '<label>Senha</label><input id="r2p-cf" type="password" autocomplete="current-password" onkeydown="if(event.key===\'Enter\')r2pConfirmarSenha()">'+
+      '<div class="r2p-err" id="r2p-cfer"></div><button class="r2p-btn" style="width:100%;justify-content:center;padding:11px" onclick="r2pConfirmarSenha()">Continuar</button>');
+    setTimeout(function(){var i=document.getElementById('r2p-cf');if(i)i.focus();},50);
+    return;
+  }
+  r2pListarAcessos();
+}
+async function r2pConfirmarSenha(){
+  var pw=document.getElementById('r2p-cf').value, er=document.getElementById('r2p-cfer');
+  try{ await r2pRpc('r2_portal_contas_listar',{p_login:R2P.sessao.login,p_senha:pw}); R2P.senhaMem=pw; r2pListarAcessos(); }
+  catch(e){ er.style.display='block'; er.textContent=/negado/.test(e.message)?'Senha incorreta.':'Erro: '+e.message; }
+}
+async function r2pListarAcessos(msg){
+  var lista=[];
+  try{ lista=await r2pRpc('r2_portal_contas_listar',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem})||[]; }
+  catch(e){ R2P.senhaMem=null; if(/negado/.test(e.message)){ r2pAcessos(); return; } r2pModal('Acessos do Dashboard','<div class="r2p-err" style="display:block">'+r2pEsc(e.message)+'</div>'); return; }
+  R2P.contas=lista;
+  r2pModal('Acessos do Dashboard',
+    (msg?'<div style="background:#E3F4E1;color:#1B4332;border-radius:8px;padding:9px 12px;font-size:13px;margin-bottom:12px">'+r2pEsc(msg)+'</div>':'')+
+    '<div style="font-size:13px;color:#6b7770;margin-bottom:12px">Contas que entram no Dashboard R2 e acessam todos os hotéis como administrador.</div>'+
+    '<table class="r2p-tbl"><thead><tr><th>Login</th><th>Nome</th><th>Situação</th><th></th></tr></thead><tbody>'+
+    lista.map(function(c,i){
+      var eu=String(c.login).toUpperCase()===String(R2P.sessao.login).toUpperCase();
+      return '<tr><td><b>'+r2pEsc(c.login)+'</b>'+(eu?' <span class="r2p-pill ok">você</span>':'')+'</td><td>'+r2pEsc(c.nome||'')+'</td>'+
+        '<td>'+(c.ativo?'<span class="r2p-pill ok">Ativo</span>':'<span class="r2p-pill bad">Inativo</span>')+'</td>'+
+        '<td style="text-align:right;white-space:nowrap"><button class="r2p-btn sm" onclick="r2pFormConta('+i+')">Editar</button>'+
+        (eu?'':' <button class="r2p-btn sm" style="background:#c0392b" onclick="r2pExcluirConta('+i+')">Excluir</button>')+'</td></tr>';
+    }).join('')+'</tbody></table>'+
+    '<div style="margin-top:14px"><button class="r2p-btn" onclick="r2pFormConta(-1)"><i class="ti ti-user-plus"></i> Novo acesso</button></div>');
+}
+function r2pFormConta(i){
+  var c=i>=0?R2P.contas[i]:null;
+  var eu=c&&String(c.login).toUpperCase()===String(R2P.sessao.login).toUpperCase();
+  r2pModal(c?'Editar acesso':'Novo acesso',
+    '<label>Login</label><input id="r2p-cl" value="'+r2pEsc(c?c.login:'')+'" '+(c?'disabled style="background:#F2F5F2"':'')+' autocomplete="off">'+
+    '<label>Nome</label><input id="r2p-cn" value="'+r2pEsc(c?(c.nome||''):'')+'" placeholder="Ex: Gerente de Manutenção">'+
+    '<label>'+(c?'Nova senha':'Senha')+'</label><input id="r2p-cs" type="password" autocomplete="new-password" placeholder="'+(c?'Deixe em branco para manter a atual':'Defina a senha')+'">'+
+    '<label>Confirmar senha</label><input id="r2p-cs2" type="password" autocomplete="new-password">'+
+    (eu?'':'<label style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><input id="r2p-ca" type="checkbox" style="width:auto;margin:0" '+(!c||c.ativo?'checked':'')+'> Acesso ativo</label>')+
+    '<div class="r2p-err" id="r2p-cer"></div>'+
+    '<div style="display:flex;gap:8px"><button class="r2p-btn" style="background:#EEF2EF;color:#1B4332" onclick="r2pListarAcessos()">Cancelar</button>'+
+    '<button class="r2p-btn" onclick="r2pSalvarConta('+i+')">Salvar</button></div>');
+}
+async function r2pSalvarConta(i){
+  var c=i>=0?R2P.contas[i]:null, er=document.getElementById('r2p-cer');
+  var lg=document.getElementById('r2p-cl').value.trim(), nm=document.getElementById('r2p-cn').value.trim();
+  var s1=document.getElementById('r2p-cs').value, s2=document.getElementById('r2p-cs2').value;
+  var at=document.getElementById('r2p-ca'); at=at?at.checked:true;
+  function erro(m){er.style.display='block';er.textContent=m;}
+  if(!lg) return erro('Informe o login.');
+  if(!c&&!s1) return erro('Defina a senha do novo acesso.');
+  if(s1!==s2) return erro('As senhas não conferem.');
+  if(s1&&s1.length<6) return erro('A senha precisa ter pelo menos 6 caracteres.');
+  try{
+    await r2pRpc('r2_portal_conta_salvar',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem,c_login:lg,c_nome:nm,c_senha:s1||null,c_ativo:at,c_novo:!c});
+    var eu=c&&String(c.login).toUpperCase()===String(R2P.sessao.login).toUpperCase();
+    if(eu&&s1) R2P.senhaMem=s1;
+    if(eu&&nm){R2P.sessao.nome=nm;localStorage.setItem('r2_portal_sessao',JSON.stringify(R2P.sessao));r2pRenderUser();}
+    r2pListarAcessos(c?'Acesso atualizado.':'Acesso criado.');
+  }catch(e){ erro(/ja existe/.test(e.message)?'Esse login já existe.':e.message); }
+}
+async function r2pExcluirConta(i){
+  var c=R2P.contas[i];
+  r2pModal('Excluir acesso','<div style="font-size:14px;margin-bottom:16px">Excluir o acesso <b>'+r2pEsc(c.login)+'</b> do Dashboard? Essa pessoa não conseguirá mais entrar.</div>'+
+    '<div class="r2p-err" id="r2p-xer"></div>'+
+    '<div style="display:flex;gap:8px"><button class="r2p-btn" style="background:#EEF2EF;color:#1B4332" onclick="r2pListarAcessos()">Cancelar</button>'+
+    '<button class="r2p-btn" style="background:#c0392b" onclick="r2pConfirmaExcluir('+i+')">Excluir</button></div>');
+}
+async function r2pConfirmaExcluir(i){
+  try{ await r2pRpc('r2_portal_conta_excluir',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem,c_login:R2P.contas[i].login}); r2pListarAcessos('Acesso excluído.'); }
+  catch(e){ var er=document.getElementById('r2p-xer'); er.style.display='block'; er.textContent=e.message; }
+}
 
 function r2pRenderHoteis(){
   var por=(R2P.sessao&&R2P.dados)?r2pResumo():null;
