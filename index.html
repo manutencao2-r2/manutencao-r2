@@ -312,7 +312,7 @@ var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-23.3';
+var R2_VERSAO = '2026-11-23.4';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -4359,6 +4359,56 @@ body.r2-portal-mode #r2p{display:block}
 #r2p-frame.on{display:block}
 #r2p-frame iframe{border:0;width:100%;height:100%;display:block}
 @media(max-width:560px){.r2p-home{padding:22px 14px 40px}.r2p-tiles{grid-template-columns:repeat(2,1fr);gap:12px}.r2p-tile{aspect-ratio:1/1;min-height:140px;padding:14px}.r2p-tile .t-nome{font-size:16px}.r2p-tile .ico{width:34px;height:34px}.r2p-voltar{padding:0 10px}.r2p-brand-txt{display:none}.r2p-link-txt{display:none}}
+
+/* ---- Dashboard v2 ---- */
+.r2p-filtros{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:#fff;border:1px solid #DDE6DF;border-radius:12px;padding:10px 14px;margin-bottom:12px}
+.r2p-filtros label{font-size:12px;color:#6b7770;font-weight:600;display:flex;align-items:center;gap:6px}
+.r2p-filtros select,.r2p-limp select,.r2p-limp input{padding:7px 9px;border:1px solid #DDE6DF;border-radius:8px;font:13px 'DM Sans',sans-serif;background:#fff;color:#1d2b24}
+.r2p-btn-out{background:#fff;color:#1B4332;border:1px solid #1B4332}
+.r2p-btn-out:hover{background:#EEF6EF}
+.r2p-abas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.r2p-abas button{border:1px solid #DDE6DF;background:#fff;color:#1B4332;border-radius:20px;padding:7px 14px;font:600 13px 'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px}
+.r2p-abas button.on{background:#1B4332;color:#fff;border-color:#1B4332}
+.r2p-sec{display:none}.r2p-sec.on{display:block}
+.r2p-sub{font-size:12px;font-weight:700;color:#6b7770;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.r2p-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.r2p-grid2 .r2p-card{margin-bottom:0}
+.r2p-podio{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.r2p-pod{border-radius:12px;padding:14px 16px;background:#F5F9F5;border:1px solid #DDE6DF}
+.r2p-pod.p1{background:linear-gradient(180deg,#1B4332,#0A2A22);color:#fff;border:none}
+.r2p-pod .pos{font-size:12px;font-weight:700;letter-spacing:.06em;color:#2D6A4F}
+.r2p-pod.p1 .pos{color:#A1E19C}
+.r2p-pod .nm{font-size:17px;font-weight:700;margin-top:4px}
+.r2p-pod .ht{font-size:12px;opacity:.75}
+.r2p-pod .pt{font-size:24px;font-weight:700;margin-top:8px}
+.r2p-pod .mi{font-size:12px;opacity:.8}
+.r2p-limp{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.r2p-limp label{font-size:12px;color:#6b7770;font-weight:600;display:flex;flex-direction:column;gap:4px}
+.r2p-ok{margin-top:12px;background:#E3F4E1;color:#1B4332;border-radius:8px;padding:10px 12px;font-size:13px}
+.r2p-aviso{margin-top:12px;background:#FFF5F4;border:1px solid #c0392b;color:#7a1f15;border-radius:8px;padding:12px;font-size:13px}
+.r2p-printhead{display:none}
+@media(max-width:900px){.r2p-grid2,.r2p-podio{grid-template-columns:1fr}}
+@page{size:A4;margin:12mm}
+@media print{
+  html,body{height:auto!important;overflow:visible!important;background:#fff!important}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  #r2p{position:static!important;overflow:visible!important;background:#fff!important}
+  .r2p-top,.r2p-noprint,#r2p-homev,#r2p-frame,#r2p-mroot,.r2p-filtros,.r2p-abas,.r2p-h{display:none!important}
+  #r2p-dashv{display:block!important}
+  .r2p-wrap{padding:0!important;max-width:none!important}
+  .r2p-printhead{display:block!important;font-size:12px;color:#0A2A22;font-weight:700;border-bottom:2px solid #0A2A22;padding-bottom:6px;margin-bottom:10px}
+  .r2p-sec{display:block!important}
+  .r2p-sec + .r2p-sec{break-before:page}
+  .r2p-card div[style*="overflow"]{overflow:visible!important}
+  .r2p-tbl th,.r2p-tbl td{padding:4px 3px!important}
+  .r2p-sec::before{content:attr(data-titulo);display:block;font-size:16px;font-weight:700;color:#0A2A22;margin:0 0 8px}
+  .r2p-card,.r2p-kpi,.r2p-pod,.r2p-bar,tr{break-inside:avoid}
+  .r2p-card{box-shadow:none!important}
+  .r2p-kpis{grid-template-columns:repeat(3,1fr)!important}
+  .r2p-tbl .hm{display:table-cell!important}
+  .r2p-tbl{font-size:8.5px;width:100%}
+  .r2p-tbl th{font-size:7.5px;letter-spacing:0;white-space:normal}
+}
 </style>
 
 <div id="r2p">
@@ -4513,33 +4563,76 @@ function r2pSair(){
   r2pRenderUser(); r2pIr('home');
 }
 
+/* =====================================================================
+   DASHBOARD R2 v2 - filtros (hotel + periodo), visao geral, ranking,
+   termometro de palavras, graficos, banco de dados (uso + limpeza), PDF
+   ===================================================================== */
+R2P.f = R2P.f || {hotel:'', per:'mes'};
+R2P.aba = R2P.aba || 'geral';
+var R2P_PER = [['mes','Este mês'],['30','Últimos 30 dias'],['90','Últimos 90 dias'],['ano','Este ano'],['tudo','Todo o período']];
+var R2P_COR = {concl:'#2F8F5B', aberto:'#D18A1F', urg:'#c0392b', alta:'#D18A1F', media:'#8A9A5B', baixa:'#9AA8A0', base:'#2D6A4F', escuro:'#0A2A22'};
+
 function r2pIsoMes(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function r2pIni(per){
+  var d=new Date(); function iso(x){return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');}
+  if(per==='mes') return r2pIsoMes()+'-01';
+  if(per==='30') return iso(new Date(Date.now()-30*864e5));
+  if(per==='90') return iso(new Date(Date.now()-90*864e5));
+  if(per==='ano') return d.getFullYear()+'-01-01';
+  return '';
+}
+function r2pPerNome(){var p=R2P_PER.find(function(x){return x[0]===R2P.f.per;});return p?p[1]:'';}
+function r2pHotelNome(s){var h=R2_HOTEIS.find(function(x){return x.slug===s;});return h?h.nome.replace('Laghetto ',''):s;}
+function r2pHoteisSel(){return R2P.f.hotel?R2_HOTEIS.filter(function(h){return h.slug===R2P.f.hotel;}):R2_HOTEIS;}
+
+/* busca paginada (o Supabase devolve no maximo 1000 linhas por vez) */
+async function r2pGetAll(path){
+  var out=[], off=0, lote=1000;
+  while(true){
+    var r=await fetch(SUPA_URL+'/rest/v1/'+path,{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,Accept:'application/json','Range-Unit':'items',Range:off+'-'+(off+lote-1)}});
+    var t=await r.text();
+    if(!r.ok) throw new Error('['+r.status+'] '+t.slice(0,160));
+    var arr=t?JSON.parse(t):[];
+    out=out.concat(arr);
+    if(arr.length<lote||off>50000) break;
+    off+=lote;
+  }
+  return out;
+}
+
 async function r2pCarregar(){
   if(R2P.carregando) return;
   R2P.carregando=true;R2P.erro='';
-  var mes=r2pIsoMes(), ini=mes+'-01', d30=new Date(Date.now()-30*864e5).toISOString().slice(0,19);
+  var ini=r2pIni(R2P.f.per);
+  var fCh=ini?'&or=(status.in.(Aberto,Andamento,Programado),criadoEm.gte.'+ini+',concluidoEm.gte.'+ini+')':'';
+  var fA=ini?'&feito_em=gte.'+ini:'', fP=ini?'&criado_em=gte.'+ini:'', fL=ini?'&lancado_em=gte.'+ini:'', fG=ini?'&mes=gte.'+ini.slice(0,7):'';
   try{
     var res=await Promise.all([
-      r2pGet('r2_chamados?select=id,hotel,titulo,local,tipoLocal,areaTecnica,prioridade,status,descricao,criadoEm,concluidoEm,tecnico,data_prevista&or=(status.in.(Aberto,Andamento,Programado),criadoEm.gte.'+d30+',concluidoEm.gte.'+d30+')&order=criadoEm.desc&limit=5000'),
-      r2pGet('r2_registros_atividades?select=hotel,feito_em&feito_em=gte.'+ini),
-      r2pGet('r2_gastos?select=hotel,orcamento&mes=eq.'+mes),
-      r2pGet('r2_lancamentos_gastos?select=hotel,valor&mes=eq.'+mes),
+      r2pGetAll('r2_chamados?select=id,hotel,titulo,local,tipoLocal,areaTecnica,prioridade,status,descricao,criadoEm,criadoPor,concluidoEm,concluidoPor,reaberturas,tecnico&order=criadoEm.desc'+fCh),
+      r2pGetAll('r2_registros_atividades?select=hotel,atividade,feito_por,feito_em&order=feito_em.desc'+fA),
+      r2pGetAll('r2_gastos?select=hotel,mes,orcamento'+fG),
+      r2pGetAll('r2_lancamentos_gastos?select=hotel,valor,mes,lancado_em,categoria,fornecedor'+fL),
       r2pGet('r2_config?select=hotel,chave,valor&chave=in.(apartamentosExtras,areasComuns,atividadesRecorrentes)'),
-      r2pGet('r2_usuarios?select=hotel,id')
+      r2pGet('r2_usuarios?select=hotel,id,nome,perfil'),
+      r2pGetAll('r2_pontos?select=hotel,usuario_nome,pontos,tipo,criado_em'+fP)
     ]);
-    R2P.dados={chamados:res[0],ativs:res[1],gastos:res[2],lancs:res[3],cfg:res[4],usuarios:res[5],em:new Date()};
+    R2P.dados={chamados:res[0],ativs:res[1],gastos:res[2],lancs:res[3],cfg:res[4],usuarios:res[5],pontos:res[6],ini:ini,em:new Date()};
     try{ R2P.uso=await r2pRpc('r2_uso_banco',{}); }catch(e){ R2P.uso={erro:e.message}; }
   }catch(e){R2P.erro=e.message;}
   R2P.carregando=false;
-  r2pRenderDash();r2pRenderHoteis();
+  if(R2P.view==='dashboard') r2pRenderDash();
+  r2pRenderHoteis();
   clearInterval(R2P.timer);
-  R2P.timer=setInterval(function(){ if(!document.getElementById('r2p-frame').classList.contains('on')) r2pCarregar(); },60000);
+  R2P.timer=setInterval(function(){ if(R2P.view!=='dashboard'||!document.getElementById('r2p-mroot').firstChild) r2pCarregar(); },60000);
 }
 
+/* ---------- calculos ---------- */
+function r2pDentro(iso){var ini=R2P.dados.ini;return !ini||(iso&&String(iso)>=ini);}
+function r2pChSel(){var hs=R2P.f.hotel;return (R2P.dados.chamados||[]).filter(function(c){return !hs||c.hotel===hs;});}
 function r2pResumo(){
-  var D=R2P.dados, mes=r2pIsoMes(), ini=mes+'-01', agora=Date.now(), d30=agora-30*864e5;
+  var D=R2P.dados, agora=Date.now();
   var por={};
-  R2_HOTEIS.forEach(function(h){por[h.slug]={h:h,abertos:0,andamento:0,urg:0,prog:0,concMes:0,tempos:[],ativ:0,orc:0,gasto:0,aptos:0,areas:0,atv:0,usr:0,maisAntigo:null};});
+  R2_HOTEIS.forEach(function(h){por[h.slug]={h:h,abertos:0,andamento:0,urg:0,prog:0,criados:0,concMes:0,tempos:[],ativ:0,orc:0,gasto:0,aptos:0,areas:0,atv:0,usr:0,maisAntigo:null};});
   (D.chamados||[]).forEach(function(c){
     var p=por[c.hotel];if(!p)return;
     if(c.status==='Aberto'||c.status==='Andamento'){
@@ -4548,14 +4641,15 @@ function r2pResumo(){
       var t=Date.parse(c.criadoEm);if(t&&(!p.maisAntigo||t<p.maisAntigo))p.maisAntigo=t;
     }
     if(c.status==='Programado')p.prog++;
-    if(c.status==='Concluido'&&c.concluidoEm){
-      if(String(c.concluidoEm)>=ini)p.concMes++;
+    if(r2pDentro(c.criadoEm))p.criados++;
+    if(c.status==='Concluido'&&c.concluidoEm&&r2pDentro(c.concluidoEm)){
+      p.concMes++;
       var a=Date.parse(c.criadoEm),b=Date.parse(c.concluidoEm);
-      if(a&&b&&b>=d30&&b>=a)p.tempos.push((b-a)/36e5);
+      if(a&&b&&b>=a)p.tempos.push((b-a)/36e5);
     }
   });
   (D.ativs||[]).forEach(function(x){if(por[x.hotel])por[x.hotel].ativ++;});
-  (D.gastos||[]).forEach(function(x){if(por[x.hotel])por[x.hotel].orc=Number(x.orcamento)||0;});
+  (D.gastos||[]).forEach(function(x){if(por[x.hotel])por[x.hotel].orc+=Number(x.orcamento)||0;});
   (D.lancs||[]).forEach(function(x){if(por[x.hotel])por[x.hotel].gasto+=Number(x.valor)||0;});
   (D.usuarios||[]).forEach(function(x){if(por[x.hotel]&&String(x.id).indexOf('adm-')!==0)por[x.hotel].usr++;});
   (D.cfg||[]).forEach(function(x){
@@ -4570,45 +4664,158 @@ function r2pFmtH(h){if(h==null)return '—';if(h<1)return Math.round(h*60)+' min
 function r2pFmtR(v){return 'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});}
 function r2pDesde(t){if(!t)return '—';var h=(Date.now()-t)/36e5;return r2pFmtH(h);}
 
-/* ---------- Render ---------- */
+/* ---------- graficos SVG/HTML (sem bibliotecas) ---------- */
+function r2pBarras(itens,opt){ /* itens: [{rot,val,cor,txt,tip}] */
+  opt=opt||{}; var max=Math.max.apply(null,itens.map(function(i){return i.val;}).concat([opt.max||0,1]));
+  if(!itens.length) return '<div class="r2p-empty">Sem dados no período.</div>';
+  return itens.map(function(i){
+    return '<div class="r2p-bar" style="grid-template-columns:'+(opt.rot||150)+'px 1fr '+(opt.val||60)+'px" title="'+r2pEsc(i.tip||(i.rot+': '+(i.txt||i.val)))+'"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+r2pEsc(i.rot)+'</span>'+
+      '<div class="tr"><span style="width:'+(i.val*100/max)+'%;background:'+(i.cor||R2P_COR.base)+';border-radius:0 4px 4px 0"></span></div>'+
+      '<b style="text-align:right;white-space:nowrap">'+(i.txt!=null?i.txt:i.val)+'</b></div>';
+  }).join('');
+}
+function r2pBarras2(itens,leg){ /* itens: [{rot,a,b}] barras empilhadas a+b */
+  var max=Math.max.apply(null,itens.map(function(i){return i.a+i.b;}).concat([1]));
+  return itens.map(function(i){
+    return '<div class="r2p-bar" style="grid-template-columns:130px 1fr 70px" title="'+r2pEsc(i.rot+': '+leg[0]+' '+i.a+' · '+leg[1]+' '+i.b)+'"><span>'+r2pEsc(i.rot)+'</span>'+
+      '<div class="tr" style="gap:2px;background:#EEF2EF">'+
+        (i.a?'<span style="width:'+(i.a*100/max)+'%;background:'+R2P_COR.concl+'"></span>':'')+
+        (i.b?'<span style="width:'+(i.b*100/max)+'%;background:'+R2P_COR.aberto+';border-radius:0 4px 4px 0"></span>':'')+
+      '</div><b style="text-align:right;white-space:nowrap">'+i.a+' / '+i.b+'</b></div>';
+  }).join('')+'<div class="r2p-leg"><span><i style="background:'+R2P_COR.concl+'"></i>'+leg[0]+'</span><span><i style="background:'+R2P_COR.aberto+'"></i>'+leg[1]+'</span></div>';
+}
+function r2pColunas(series,rotulos,leg){ /* series: [[...],[...]] ; colunas agrupadas por data */
+  var n=rotulos.length; if(!n) return '<div class="r2p-empty">Sem dados no período.</div>';
+  var W=760,H=220,pl=34,pb=26,pt=10, max=1;
+  series.forEach(function(s){s.forEach(function(v){if(v>max)max=v;});});
+  var passo=Math.ceil(max/4)||1; max=passo*4;
+  var gw=(W-pl-6)/n, bw=Math.max(2,Math.min(18,(gw-3)/series.length-1)), cores=[R2P_COR.aberto,R2P_COR.concl];
+  var g='';
+  for(var k=0;k<=4;k++){var y=pt+(H-pt-pb)*(1-k/4);g+='<line x1="'+pl+'" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="#E4EBE6"/><text x="'+(pl-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="10" fill="#6b7770">'+(passo*k)+'</text>';}
+  var cada=Math.ceil(n/12);
+  rotulos.forEach(function(r,i){
+    var x0=pl+gw*i+(gw-(bw+1)*series.length)/2;
+    series.forEach(function(s,j){
+      var v=s[i]||0,h=(H-pt-pb)*v/max;
+      if(v>0)g+='<rect x="'+(x0+j*(bw+1))+'" y="'+(H-pb-h)+'" width="'+bw+'" height="'+h+'" rx="2" fill="'+cores[j]+'"><title>'+r2pEsc(r+' · '+leg[j]+': '+v)+'</title></rect>';
+    });
+    if(i%cada===0)g+='<text x="'+(pl+gw*i+gw/2)+'" y="'+(H-8)+'" text-anchor="middle" font-size="10" fill="#6b7770">'+r2pEsc(r)+'</text>';
+  });
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block">'+g+'</svg>'+
+    '<div class="r2p-leg">'+leg.map(function(l,j){return '<span><i style="background:'+cores[j]+'"></i>'+l+'</span>';}).join('')+'</div>';
+}
+function r2pSerieTempo(chs){
+  var ini=R2P.dados.ini, hoje=new Date();
+  var d0=ini?new Date(ini+'T00:00:00'):null;
+  if(!d0){ var min=chs.reduce(function(m,c){var t=String(c.criadoEm||'').slice(0,10);return t&&(!m||t<m)?t:m;},''); d0=min?new Date(min+'T00:00:00'):new Date(Date.now()-30*864e5); }
+  var dias=Math.max(1,Math.round((hoje-d0)/864e5)+1), porMes=dias>120, porSem=!porMes&&dias>45;
+  function chave(iso){ var d=new Date(String(iso).slice(0,10)+'T00:00:00');
+    if(porMes) return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    if(porSem){ var s=new Date(d); s.setDate(d.getDate()-((d.getDay()+6)%7)); return s.toISOString().slice(0,10); }
+    return d.toISOString().slice(0,10); }
+  var ks=[], cur=new Date(d0);
+  while(cur<=hoje){ var k=chave(cur.toISOString()); if(ks.indexOf(k)<0)ks.push(k); cur.setDate(cur.getDate()+1); }
+  var ab=ks.map(function(){return 0;}), co=ks.map(function(){return 0;});
+  chs.forEach(function(c){ if(c.criadoEm&&r2pDentro(c.criadoEm)){var i=ks.indexOf(chave(c.criadoEm));if(i>=0)ab[i]++;}
+    if(c.status==='Concluido'&&c.concluidoEm&&r2pDentro(c.concluidoEm)){var j=ks.indexOf(chave(c.concluidoEm));if(j>=0)co[j]++;} });
+  var MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  var rot=ks.map(function(k){ if(porMes){var p=k.split('-');return MES[+p[1]-1]+'/'+p[0].slice(2);} var p2=k.split('-'); return p2[2]+'/'+p2[1]; });
+  return {rot:rot,ab:ab,co:co,tipo:porMes?'mês':porSem?'semana':'dia'};
+}
+
+/* ---------- ranking ---------- */
+function r2pRanking(){
+  var D=R2P.dados, hs=R2P.f.hotel, m={};
+  function u(h,n){ if(!n)return null; var k=h+'|'+n; if(!m[k]) m[k]={hotel:h,nome:n,abertos:0,concl:0,urg:0,tempos:[],reab:0,ativ:0,pts:0}; return m[k]; }
+  (D.usuarios||[]).forEach(function(x){ if((!hs||x.hotel===hs)&&String(x.nome||'').toUpperCase()!=='ADM') u(x.hotel,x.nome); });
+  (D.chamados||[]).forEach(function(c){
+    if(hs&&c.hotel!==hs)return;
+    if(c.criadoPor&&r2pDentro(c.criadoEm)){var a=u(c.hotel,c.criadoPor);a.abertos++;}
+    if(c.status==='Concluido'&&c.concluidoPor&&r2pDentro(c.concluidoEm)){
+      var b=u(c.hotel,c.concluidoPor);b.concl++; if(c.prioridade==='Urgente')b.urg++;
+      var t1=Date.parse(c.criadoEm),t2=Date.parse(c.concluidoEm); if(t1&&t2&&t2>=t1)b.tempos.push((t2-t1)/36e5);
+    }
+    if(Number(c.reaberturas)>0&&c.concluidoPor){var r=u(c.hotel,c.concluidoPor);r.reab+=Number(c.reaberturas);}
+  });
+  (D.ativs||[]).forEach(function(x){ if(hs&&x.hotel!==hs)return; var a=u(x.hotel,x.feito_por); if(a)a.ativ++; });
+  (D.pontos||[]).forEach(function(x){ if(hs&&x.hotel!==hs)return; var a=u(x.hotel,x.usuario_nome); if(a)a.pts+=Number(x.pontos)||0; });
+  return Object.keys(m).map(function(k){var x=m[k];x.tm=r2pMedia(x.tempos);return x;})
+    .filter(function(x){return String(x.nome).toUpperCase()!=='ADM'||x.abertos||x.concl||x.ativ;})
+    .sort(function(a,b){return b.pts-a.pts||b.concl-a.concl||b.ativ-a.ativ||a.nome.localeCompare(b.nome);});
+}
+
+/* ---------- termometro de palavras ---------- */
+var R2P_STOP=('a o e é de da do das dos em no na nos nas um uma uns umas com sem por para pra pro que se ao aos à às ou mas mais muito muita pouco ja já nao não sim esta está estao estão ser ter tem foi era isso esse essa este esta isto ele ela eles elas lá la aqui ali quando como onde qual quais seu sua seus suas meu minha nosso nossa também tambem ainda só so ate até sobre entre apos após depois antes favor obs dia hoje ontem amanha amanhã fazer feito feita precisa preciso verificar ver apto apartamento quarto hotel '+
+  'the and for all teste testes etc pela pelo pelas pelos num numa dele dela deles nele nela todo toda todos todas cada outro outra mesmo mesma pode podem vez vezes bem mal').split(' ');
+function r2pPalavras(chs){
+  var cont={}, forma={};
+  chs.forEach(function(c){
+    if(!r2pDentro(c.criadoEm))return;
+    String((c.titulo||'')+' '+(c.descricao||'')).toLowerCase().split(/[^a-zà-ú0-9]+/i).forEach(function(w){
+      if(w.length<3||/^\d+$/.test(w))return;
+      var k=w.normalize('NFD').replace(/[̀-ͯ]/g,'');
+      if(R2P_STOP.indexOf(w)>=0||R2P_STOP.indexOf(k)>=0)return;
+      cont[k]=(cont[k]||0)+1; forma[k]=forma[k]||{}; forma[k][w]=(forma[k][w]||0)+1;
+    });
+  });
+  return Object.keys(cont).map(function(k){var f=forma[k],best=Object.keys(f).sort(function(a,b){return f[b]-f[a];})[0];return {p:best,n:cont[k]};})
+    .sort(function(a,b){return b.n-a.n||a.p.localeCompare(b.p);}).slice(0,45);
+}
+function r2pTermometro(lista){
+  if(!lista.length) return '<div class="r2p-empty">Ainda não há descrições de chamados no período.</div>';
+  var max=lista[0].n, min=lista[lista.length-1].n;
+  var escala=['#9AB8A3','#6FA383','#3E8A5F','#2D6A4F','#1B4332','#0A2A22'];
+  var emb=lista.slice().sort(function(a,b){return a.p.localeCompare(b.p);});
+  var nuvem=emb.map(function(w){
+    var r=max===min?1:(w.n-min)/(max-min);
+    var tam=13+Math.round(r*26), cor=escala[Math.min(5,Math.round(r*5))];
+    return '<span title="'+r2pEsc(w.p)+': '+w.n+' chamado(s)" style="font-size:'+tam+'px;color:'+cor+';font-weight:'+(r>.5?700:500)+';margin:4px 9px;display:inline-block;line-height:1.15">'+r2pEsc(w.p)+'</span>';
+  }).join('');
+  var top=lista.slice(0,10).map(function(w,i){var r=w.n/max;return {rot:(i+1)+'. '+w.p,val:w.n,cor:r>.66?R2P_COR.urg:r>.33?R2P_COR.aberto:R2P_COR.concl,txt:w.n+'x'};});
+  return '<div class="r2p-two"><div><div class="r2p-sub">Nuvem (quanto maior e mais escuro, mais frequente)</div><div style="text-align:center;padding:8px 4px">'+nuvem+'</div></div>'+
+    '<div><div class="r2p-sub">Termômetro: 10 palavras mais citadas</div>'+r2pBarras(top,{rot:150,val:50})+
+    '<div class="r2p-leg"><span><i style="background:'+R2P_COR.urg+'"></i>quente</span><span><i style="background:'+R2P_COR.aberto+'"></i>morna</span><span><i style="background:'+R2P_COR.concl+'"></i>fria</span></div></div></div>';
+}
+
+/* ---------- render ---------- */
+function r2pSetFiltro(k,v){ R2P.f[k]=v; if(k==='per'){ R2P.dados=null; r2pRenderDash(); r2pCarregar(); } else r2pRenderDash(); }
+function r2pSetAba(a){ R2P.aba=a; r2pRenderDash(); }
 function r2pRenderDash(){
   var el=document.getElementById('r2p-dash');
-  if(!R2P.sessao){
-    el.innerHTML='<div class="r2p-lock"><div><b><i class="ti ti-layout-dashboard"></i> Dashboard da Regional</b>'+
-      '<div>Indicadores consolidados dos 7 hotéis. Acesso exclusivo do Gerente de Manutenção.</div></div>'+
-      '<button class="r2p-btn" onclick="r2pLoginModal()"><i class="ti ti-lock-open"></i> Entrar</button></div>';
-    return;
-  }
-  if(R2P.erro){
-    el.innerHTML='<div class="r2p-card" style="border-color:#c0392b"><h3 style="color:#c0392b"><i class="ti ti-alert-triangle"></i> Não foi possível carregar o dashboard</h3>'+
-      '<div style="font-size:13px;color:#6b7770">'+r2pEsc(R2P.erro)+'</div><div style="margin-top:10px"><button class="r2p-btn sm" onclick="r2pCarregar()"><i class="ti ti-refresh"></i> Tentar de novo</button></div></div>';
-    return;
-  }
-  if(!R2P.dados){el.innerHTML='<div class="r2p-card"><div class="r2p-empty"><i class="ti ti-loader"></i> Carregando indicadores da Regional...</div></div>';return;}
+  if(!R2P.sessao){ r2pRenderLoginDash(); return; }
+  var filtros='<div class="r2p-filtros r2p-noprint">'+
+    '<label>Hotel <select onchange="r2pSetFiltro(\'hotel\',this.value)"><option value="">Todos os hotéis</option>'+R2_HOTEIS.map(function(h){return '<option value="'+h.slug+'"'+(R2P.f.hotel===h.slug?' selected':'')+'>'+r2pEsc(h.nome.replace('Laghetto ',''))+'</option>';}).join('')+'</select></label>'+
+    '<label>Período <select onchange="r2pSetFiltro(\'per\',this.value)">'+R2P_PER.map(function(p){return '<option value="'+p[0]+'"'+(R2P.f.per===p[0]?' selected':'')+'>'+p[1]+'</option>';}).join('')+'</select></label>'+
+    '<span style="flex:1"></span>'+
+    (R2P.dados?'<span class="r2p-upd">Atualizado às '+R2P.dados.em.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</span>':'')+
+    '<button class="r2p-btn sm r2p-btn-out" onclick="r2pAcessos()"><i class="ti ti-key"></i> Acessos</button>'+
+    '<button class="r2p-btn sm r2p-btn-out" onclick="r2pPDF()"><i class="ti ti-file-type-pdf"></i> Baixar PDF</button>'+
+    '<button class="r2p-btn sm" onclick="r2pCarregar()"><i class="ti ti-refresh"></i> Atualizar</button></div>';
+  var abas=[['geral','Visão geral','ti-layout-dashboard'],['ranking','Ranking','ti-trophy'],['palavras','Termômetro de palavras','ti-temperature'],['graficos','Gráficos','ti-chart-bar'],['banco','Banco de dados','ti-database']];
+  var abasH='<div class="r2p-abas r2p-noprint">'+abas.map(function(a){return '<button class="'+(R2P.aba===a[0]?'on':'')+'" onclick="r2pSetAba(\''+a[0]+'\')"><i class="ti '+a[2]+'"></i> '+a[1]+'</button>';}).join('')+'</div>';
+  var titulo='<div class="r2p-h"><h2><i class="ti ti-layout-dashboard"></i> Dashboard da Regional 2</h2><small>'+r2pEsc((R2P.f.hotel?r2pHotelNome(R2P.f.hotel):'Todos os hotéis')+' · '+r2pPerNome())+'</small></div>';
+  var cab='<div class="r2p-printhead">Manutenção · Regional 2 Laghetto — '+r2pEsc((R2P.f.hotel?r2pHotelNome(R2P.f.hotel):'Todos os hotéis')+' · '+r2pPerNome())+' — gerado em '+new Date().toLocaleString('pt-BR')+'</div>';
+  if(R2P.erro){ el.innerHTML=cab+titulo+filtros+'<div class="r2p-card" style="border-color:#c0392b"><h3 style="color:#c0392b"><i class="ti ti-alert-triangle"></i> Não foi possível carregar</h3><div style="font-size:13px;color:#6b7770">'+r2pEsc(R2P.erro)+'</div></div>'; return; }
+  if(!R2P.dados){ el.innerHTML=cab+titulo+filtros+abasH+'<div class="r2p-card"><div class="r2p-empty">Carregando indicadores...</div></div>'; return; }
+  var sec={geral:r2pSecGeral(),ranking:r2pSecRanking(),palavras:r2pSecPalavras(),graficos:r2pSecGraficos(),banco:r2pSecBanco()};
+  el.innerHTML=cab+titulo+filtros+abasH+abas.map(function(a){return '<div class="r2p-sec'+(R2P.aba===a[0]?' on':'')+'" data-titulo="'+r2pEsc(a[1])+'">'+sec[a[0]]+'</div>';}).join('');
+}
 
-  var por=r2pResumo(), L=R2_HOTEIS.map(function(h){return por[h.slug];});
-  var tot=L.reduce(function(s,p){s.ab+=p.abertos;s.an+=p.andamento;s.u+=p.urg;s.pg+=p.prog;s.c+=p.concMes;s.a+=p.ativ;s.o+=p.orc;s.g+=p.gasto;s.t=s.t.concat(p.tempos);return s;},{ab:0,an:0,u:0,pg:0,c:0,a:0,o:0,g:0,t:[]});
+function r2pSecGeral(){
+  var por=r2pResumo(), L=r2pHoteisSel().map(function(h){return por[h.slug];});
+  var tot=L.reduce(function(s,p){s.ab+=p.abertos;s.an+=p.andamento;s.u+=p.urg;s.pg+=p.prog;s.cr+=p.criados;s.c+=p.concMes;s.a+=p.ativ;s.o+=p.orc;s.g+=p.gasto;s.t=s.t.concat(p.tempos);return s;},{ab:0,an:0,u:0,pg:0,cr:0,c:0,a:0,o:0,g:0,t:[]});
   var pctG=tot.o?Math.round(tot.g*100/tot.o):null;
-
   function kpi(ic,l,v,s,cls){return '<div class="r2p-kpi '+(cls||'')+'"><div class="l"><i class="ti '+ic+'"></i> '+l+'</div><div class="v">'+v+'</div><div class="s">'+s+'</div></div>';}
-  var h='<div class="r2p-h"><h2><i class="ti ti-layout-dashboard"></i> Dashboard da Regional 2</h2>'+
-    '<div class="r2p-upd">Atualizado às '+R2P.dados.em.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+
-    ' <button class="r2p-btn sm" onclick="r2pAcessos()" style="background:#fff;color:#1B4332;border:1px solid #1B4332"><i class="ti ti-key"></i> Acessos do Dashboard</button>'+
-    ' <button class="r2p-btn sm" onclick="r2pCarregar()"><i class="ti ti-refresh"></i> Atualizar</button></div></div>';
-  h+='<div class="r2p-kpis">'+
-    kpi('ti-alert-circle','Em aberto',tot.ab+tot.an,tot.an+' em andamento')+
+  var h='<div class="r2p-kpis">'+
+    kpi('ti-alert-circle','Em aberto agora',tot.ab+tot.an,tot.an+' em andamento')+
     kpi('ti-urgent','Urgentes',tot.u,'abertos agora',tot.u?'red':'')+
-    kpi('ti-calendar-event','Programados',tot.pg,'aguardando data')+
-    kpi('ti-circle-check','Concluídos no mês',tot.c,'todos os hotéis')+
-    kpi('ti-clock','Tempo médio',r2pFmtH(r2pMedia(tot.t)),'solução · últimos 30 dias')+
-    kpi('ti-cash','Gastos do mês',r2pFmtR(tot.g),pctG==null?'sem orçamento lançado':pctG+'% do orçamento',pctG!=null&&pctG>100?'red':'')+
+    kpi('ti-clipboard-plus','Abertos no período',tot.cr,tot.pg+' programados')+
+    kpi('ti-circle-check','Concluídos no período',tot.c,tot.cr?Math.round(tot.c*100/Math.max(tot.cr,1))+'% do que foi aberto':'—')+
+    kpi('ti-clock','Tempo médio',r2pFmtH(r2pMedia(tot.t)),'da abertura à conclusão')+
+    kpi('ti-cash','Gastos',r2pFmtR(tot.g),pctG==null?'sem orçamento lançado':pctG+'% do orçamento',pctG!=null&&pctG>100?'red':'')+
   '</div>';
-
-  h+=r2pCardBanco();
-
-  // Tabela por hotel
   h+='<div class="r2p-card"><h3><i class="ti ti-table"></i> Situação por hotel</h3><div style="overflow-x:auto"><table class="r2p-tbl"><thead><tr>'+
-    '<th>Hotel</th><th class="n">Abertos</th><th class="n">Urgentes</th><th class="n hm">Andamento</th><th class="n hm">Programados</th><th class="n">Concl. mês</th><th class="n hm">Tempo médio</th><th class="n hm">Mais antigo</th><th class="n hm">Ativid. mês</th><th class="n hm">Gasto / Orçamento</th><th class="hm">Implantação</th>'+
+    '<th>Hotel</th><th class="n">Em aberto</th><th class="n">Urgentes</th><th class="n hm">Programados</th><th class="n">Abertos período</th><th class="n">Concluídos período</th><th class="n hm">Tempo médio</th><th class="n hm">Mais antigo</th><th class="n hm">Atividades</th><th class="n hm">Gasto / Orçamento</th><th class="hm">Implantação</th>'+
     '</tr></thead><tbody>'+
     L.map(function(p){
       var impl=[p.aptos?null:'aptos',p.areas?null:'áreas',p.atv?null:'atividades'].filter(Boolean);
@@ -4616,42 +4823,156 @@ function r2pRenderDash(){
       var gp=p.orc?Math.round(p.gasto*100/p.orc):null;
       var gH=p.orc?r2pFmtR(p.gasto)+' / '+r2pFmtR(p.orc)+' <span class="r2p-pill '+(gp>100?'bad':gp>80?'warn':'ok')+'">'+gp+'%</span>':(p.gasto?r2pFmtR(p.gasto):'—');
       return '<tr class="click" onclick="r2pAbrirHotel(\''+p.h.slug+'\')">'+
-        '<td><b>'+r2pEsc(p.h.nome.replace('Laghetto ',''))+'</b></td>'+
-        '<td class="n">'+(p.abertos+p.andamento)+'</td>'+
-        '<td class="n">'+(p.urg?'<span class="r2p-pill bad">'+p.urg+'</span>':'0')+'</td>'+
-        '<td class="n hm">'+p.andamento+'</td><td class="n hm">'+p.prog+'</td>'+
-        '<td class="n">'+p.concMes+'</td>'+
-        '<td class="n hm">'+r2pFmtH(r2pMedia(p.tempos))+'</td>'+
-        '<td class="n hm">'+r2pDesde(p.maisAntigo)+'</td>'+
-        '<td class="n hm">'+p.ativ+'</td>'+
-        '<td class="n hm" style="white-space:nowrap">'+gH+'</td>'+
-        '<td class="hm">'+implH+'</td></tr>';
+        '<td><b>'+r2pEsc(p.h.nome.replace('Laghetto ',''))+'</b></td><td class="n">'+(p.abertos+p.andamento)+'</td>'+
+        '<td class="n">'+(p.urg?'<span class="r2p-pill bad">'+p.urg+'</span>':'0')+'</td><td class="n hm">'+p.prog+'</td>'+
+        '<td class="n">'+p.criados+'</td><td class="n">'+p.concMes+'</td><td class="n hm">'+r2pFmtH(r2pMedia(p.tempos))+'</td>'+
+        '<td class="n hm">'+r2pDesde(p.maisAntigo)+'</td><td class="n hm">'+p.ativ+'</td><td class="n hm" style="white-space:nowrap">'+gH+'</td><td class="hm">'+implH+'</td></tr>';
     }).join('')+'</tbody></table></div></div>';
-
-  // Barras + urgentes
-  var max=Math.max.apply(null,L.map(function(p){return p.abertos+p.andamento;}).concat([1]));
-  var bars=L.map(function(p){
-    var t=p.abertos+p.andamento, u=p.urg, n=t-u;
-    return '<div class="r2p-bar"><span>'+r2pEsc(p.h.nome.replace('Laghetto ',''))+'</span><div class="tr">'+
-      '<span style="width:'+(u*100/max)+'%;background:#c0392b"></span><span style="width:'+(n*100/max)+'%;background:#2D6A4F"></span></div>'+
-      '<b style="text-align:right">'+t+'</b></div>';
-  }).join('');
-  var urg=(R2P.dados.chamados||[]).filter(function(c){return (c.status==='Aberto'||c.status==='Andamento')&&c.prioridade==='Urgente';})
+  var urg=r2pChSel().filter(function(c){return (c.status==='Aberto'||c.status==='Andamento')&&c.prioridade==='Urgente';})
     .sort(function(a,b){return String(a.criadoEm).localeCompare(String(b.criadoEm));}).slice(0,12);
-  var nomeH={};R2_HOTEIS.forEach(function(x){nomeH[x.slug]=x.nome.replace('Laghetto ','');});
-  h+='<div class="r2p-two">'+
-    '<div class="r2p-card"><h3><i class="ti ti-chart-bar"></i> Chamados em aberto por hotel</h3>'+bars+
-      '<div class="r2p-leg"><span><i style="background:#c0392b"></i>Urgentes</span><span><i style="background:#2D6A4F"></i>Demais prioridades</span></div></div>'+
-    '<div class="r2p-card"><h3><i class="ti ti-urgent" style="color:#c0392b"></i> Urgentes em aberto ('+urg.length+')</h3>'+
+  h+='<div class="r2p-card"><h3><i class="ti ti-urgent" style="color:#c0392b"></i> Urgentes em aberto ('+urg.length+')</h3>'+
       (urg.length?urg.map(function(c){
-        return '<div class="r2p-urg" onclick="r2pAbrirHotel(\''+r2pEsc(c.hotel)+'\')"><span class="h">'+r2pEsc(nomeH[c.hotel]||c.hotel)+'</span>'+
+        return '<div class="r2p-urg" onclick="r2pAbrirHotel(\''+r2pEsc(c.hotel)+'\')"><span class="h">'+r2pEsc(r2pHotelNome(c.hotel))+'</span>'+
           '<div class="t"><b>'+r2pEsc(c.local||'-')+'</b> · '+r2pEsc(c.areaTecnica||'')+'<div>'+r2pEsc((c.titulo||c.descricao||'').slice(0,90))+(c.tecnico?' · Técnico: '+r2pEsc(c.tecnico):'')+'</div></div>'+
           '<span class="a">há '+r2pDesde(Date.parse(c.criadoEm))+'</span></div>';
-      }).join(''):'<div class="r2p-empty"><i class="ti ti-circle-check" style="color:#2D6A4F"></i> Nenhum chamado urgente em aberto.</div>')+
-    '</div></div>';
-  el.innerHTML=h;
+      }).join(''):'<div class="r2p-empty">Nenhum chamado urgente em aberto.</div>')+'</div>';
+  return h;
 }
 
+function r2pSecRanking(){
+  var R=r2pRanking();
+  if(!R.length) return '<div class="r2p-card"><div class="r2p-empty">Nenhum usuário com movimento no período.</div></div>';
+  var top=R.slice(0,3).map(function(x,i){
+    return '<div class="r2p-pod p'+(i+1)+'"><div class="pos">'+(i+1)+'º</div><div class="nm">'+r2pEsc(x.nome)+'</div><div class="ht">'+r2pEsc(r2pHotelNome(x.hotel))+'</div><div class="pt">'+x.pts+' pts</div>'+
+      '<div class="mi">'+x.concl+' concluídos · '+x.ativ+' atividades</div></div>';
+  }).join('');
+  var tab='<table class="r2p-tbl"><thead><tr><th>#</th><th>Usuário</th><th>Hotel</th><th class="n">Pontos</th><th class="n">Abertos</th><th class="n">Concluídos</th><th class="n hm">Urgentes concl.</th><th class="n">Tempo médio</th><th class="n hm">Reaberturas</th><th class="n">Atividades</th></tr></thead><tbody>'+
+    R.map(function(x,i){return '<tr><td>'+(i+1)+'</td><td><b>'+r2pEsc(x.nome)+'</b></td><td>'+r2pEsc(r2pHotelNome(x.hotel))+'</td><td class="n"><b>'+x.pts+'</b></td><td class="n">'+x.abertos+'</td><td class="n">'+x.concl+'</td><td class="n hm">'+x.urg+'</td><td class="n">'+r2pFmtH(x.tm)+'</td><td class="n hm">'+(x.reab?'<span class="r2p-pill warn">'+x.reab+'</span>':'0')+'</td><td class="n">'+x.ativ+'</td></tr>';}).join('')+
+    '</tbody></table>';
+  var conc=R.filter(function(x){return x.concl;}).sort(function(a,b){return b.concl-a.concl;}).slice(0,10)
+    .map(function(x){return {rot:x.nome+' ('+r2pHotelNome(x.hotel)+')',val:x.concl,cor:R2P_COR.concl};});
+  var tm=R.filter(function(x){return x.tm!=null;}).sort(function(a,b){return a.tm-b.tm;}).slice(0,10)
+    .map(function(x){return {rot:x.nome+' ('+r2pHotelNome(x.hotel)+')',val:x.tm,txt:r2pFmtH(x.tm),cor:R2P_COR.base};});
+  return '<div class="r2p-card"><h3><i class="ti ti-trophy"></i> Pódio do período</h3><div class="r2p-podio">'+top+'</div></div>'+
+    '<div class="r2p-card"><h3><i class="ti ti-list-numbers"></i> Ranking geral ('+R.length+' usuários)</h3><div style="overflow-x:auto">'+tab+'</div>'+
+    '<div style="font-size:11px;color:#6b7770;margin-top:8px">Pontos seguem a tabela de pontuação de cada hotel. Tempo médio = da abertura do chamado até a conclusão feita pelo usuário. Reaberturas = chamados que o usuário concluiu e foram reabertos.</div></div>'+
+    '<div class="r2p-two"><div class="r2p-card"><h3><i class="ti ti-circle-check"></i> Quem mais concluiu</h3>'+r2pBarras(conc,{rot:190,val:40})+'</div>'+
+    '<div class="r2p-card"><h3><i class="ti ti-clock"></i> Mais rápidos (tempo médio)</h3>'+r2pBarras(tm,{rot:190,val:60})+'</div></div>';
+}
+
+function r2pSecPalavras(){
+  var chs=r2pChSel();
+  return '<div class="r2p-card"><h3><i class="ti ti-temperature"></i> Termômetro de palavras dos chamados</h3>'+
+    '<div style="font-size:12px;color:#6b7770;margin-bottom:10px">Palavras mais usadas no título e na descrição dos chamados abertos no período ('+r2pEsc(r2pPerNome().toLowerCase())+'). Palavras comuns como "de", "para", "apto" são ignoradas.</div>'+
+    r2pTermometro(r2pPalavras(chs))+'</div>';
+}
+
+function r2pSecGraficos(){
+  var chs=r2pChSel(), por=r2pResumo(), Hs=r2pHoteisSel();
+  var st=r2pSerieTempo(chs);
+  var dent=chs.filter(function(c){return r2pDentro(c.criadoEm);});
+  function contar(campo,lista){var m={};lista.forEach(function(c){var k=c[campo]||'Não informado';m[k]=(m[k]||0)+1;});return m;}
+  var pr=contar('prioridade',dent), corP={Urgente:R2P_COR.urg,Alta:R2P_COR.alta,Media:R2P_COR.media,Baixa:R2P_COR.baixa};
+  var prI=['Urgente','Alta','Media','Baixa'].map(function(k){return {rot:k==='Media'?'Média':k,val:pr[k]||0,cor:corP[k]};});
+  var ar=contar('areaTecnica',dent), arI=Object.keys(ar).sort(function(a,b){return ar[b]-ar[a];}).slice(0,10).map(function(k){return {rot:k,val:ar[k]};});
+  var lc=contar('local',dent), lcI=Object.keys(lc).sort(function(a,b){return lc[b]-lc[a];}).slice(0,10).map(function(k){return {rot:k,val:lc[k]};});
+  var hora=[0,0,0,0,0,0], fx=['00-04h','04-08h','08-12h','12-16h','16-20h','20-24h'];
+  dent.forEach(function(c){var d=new Date(c.criadoEm);if(!isNaN(d))hora[Math.floor(d.getHours()/4)]++;});
+  var semana=[0,0,0,0,0,0,0], ds=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  dent.forEach(function(c){var d=new Date(c.criadoEm);if(!isNaN(d))semana[d.getDay()]++;});
+  var hot2=Hs.map(function(h){var p=por[h.slug];return {rot:h.nome.replace('Laghetto ',''),a:p.concMes,b:p.abertos+p.andamento};});
+  var tmH=Hs.map(function(h){var t=r2pMedia(por[h.slug].tempos);return {rot:h.nome.replace('Laghetto ',''),val:t||0,txt:r2pFmtH(t)};});
+  var atH=Hs.map(function(h){return {rot:h.nome.replace('Laghetto ',''),val:por[h.slug].ativ};});
+  var gH=Hs.map(function(h){var p=por[h.slug],pc=p.orc?p.gasto*100/p.orc:0;return {rot:h.nome.replace('Laghetto ',''),val:p.gasto,txt:r2pFmtR(p.gasto)+(p.orc?' ('+Math.round(pc)+'%)':''),cor:pc>100?R2P_COR.urg:pc>80?R2P_COR.aberto:R2P_COR.base};});
+  function card(ic,t,c,full){return '<div class="r2p-card'+(full?'':' r2p-half')+'"><h3><i class="ti '+ic+'"></i> '+t+'</h3>'+c+'</div>';}
+  return card('ti-chart-bar','Chamados abertos e concluídos por '+st.tipo,r2pColunas([st.ab,st.co],st.rot,['Abertos','Concluídos']),true)+
+    '<div class="r2p-grid2">'+
+    card('ti-building','Por hotel: concluídos no período / em aberto agora',r2pBarras2(hot2,['Concluídos','Em aberto']))+
+    card('ti-flag','Por prioridade (abertos no período)',r2pBarras(prI,{rot:90,val:40}))+
+    card('ti-tools','Por área técnica',r2pBarras(arI,{rot:130,val:40}))+
+    card('ti-map-pin','Locais com mais chamados',r2pBarras(lcI,{rot:130,val:40}))+
+    card('ti-clock','Tempo médio de solução por hotel',r2pBarras(tmH,{rot:130,val:70}))+
+    card('ti-repeat','Atividades recorrentes registradas',r2pBarras(atH,{rot:130,val:40}))+
+    card('ti-calendar-week','Chamados por dia da semana',r2pBarras(ds.map(function(d,i){return {rot:d,val:semana[i]};}),{rot:60,val:40}))+
+    card('ti-clock-hour-8','Chamados por horário de abertura',r2pBarras(fx.map(function(f,i){return {rot:f,val:hora[i]};}),{rot:70,val:40}))+
+    card('ti-cash','Gastos por hotel (vs. orçamento)',r2pBarras(gH,{rot:130,val:130}))+
+    '</div>';
+}
+
+/* ---------- banco: uso + limpeza ---------- */
+var R2P_LIMPEZA=[
+  ['chamados_concluidos','Chamados concluídos','concluídos antes de'],
+  ['atividades','Registros de atividades recorrentes','registrados antes de'],
+  ['pontos','Pontos do ranking','lançados antes de'],
+  ['lembretes_concluidos','Lembretes concluídos','concluídos antes de'],
+  ['compras_compradas','Compras já compradas','compradas antes de'],
+  ['lancamentos','Lançamentos de gastos','lançados antes de'],
+  ['quiz_respostas','Respostas de quiz','respondidas antes de'],
+  ['checklist','Marcações de checklist','do dia anterior a']
+];
+function r2pSecBanco(){
+  var d=new Date(); d.setFullYear(d.getFullYear()-1);
+  var def=d.toISOString().slice(0,10);
+  return r2pCardBanco()+
+  '<div class="r2p-card r2p-noprint"><h3><i class="ti ti-trash"></i> Limpeza de dados antigos</h3>'+
+    '<div style="font-size:13px;color:#6b7770;margin-bottom:12px">Apaga registros antigos para liberar espaço. Apartamentos, áreas, usuários, equipe e configurações nunca são apagados por aqui. <b style="color:#c0392b">A exclusão é definitiva: o plano grátis não tem backup.</b></div>'+
+    '<div class="r2p-limp">'+
+      '<label>O que apagar<select id="r2p-lt">'+R2P_LIMPEZA.map(function(x){return '<option value="'+x[0]+'">'+x[1]+'</option>';}).join('')+'</select></label>'+
+      '<label>Hotel<select id="r2p-lh"><option value="">Todos os hotéis</option>'+R2_HOTEIS.map(function(h){return '<option value="'+h.slug+'"'+(R2P.f.hotel===h.slug?' selected':'')+'>'+r2pEsc(h.nome.replace('Laghetto ',''))+'</option>';}).join('')+'</select></label>'+
+      '<label>Anteriores a<input id="r2p-ld" type="date" value="'+def+'" max="'+new Date().toISOString().slice(0,10)+'"></label>'+
+      '<button class="r2p-btn" onclick="r2pLimpar(false)"><i class="ti ti-search"></i> Ver quantos</button>'+
+    '</div><div id="r2p-lres"></div></div>';
+}
+function r2pPedirSenha(depois){
+  if(R2P.senhaMem){ depois(); return; }
+  r2pModal('Confirme sua senha','<div style="font-size:13px;color:#6b7770;margin-bottom:12px">Confirme a senha de <b>'+r2pEsc(R2P.sessao.login)+'</b> para continuar.</div>'+
+    '<label>Senha</label><input id="r2p-cf" type="password" autocomplete="current-password">'+
+    '<div class="r2p-err" id="r2p-cfer"></div><button class="r2p-btn" id="r2p-cfbt" style="width:100%;justify-content:center;padding:11px">Continuar</button>');
+  var ok=async function(){
+    var pw=document.getElementById('r2p-cf').value, er=document.getElementById('r2p-cfer');
+    try{ await r2pRpc('r2_portal_contas_listar',{p_login:R2P.sessao.login,p_senha:pw}); R2P.senhaMem=pw; document.getElementById('r2p-mroot').innerHTML=''; depois(); }
+    catch(e){ er.style.display='block'; er.textContent=/negado/.test(e.message)?'Senha incorreta.':'Erro: '+e.message; }
+  };
+  document.getElementById('r2p-cfbt').onclick=ok;
+  document.getElementById('r2p-cf').onkeydown=function(e){if(e.key==='Enter')ok();};
+  setTimeout(function(){var i=document.getElementById('r2p-cf');if(i)i.focus();},50);
+}
+function r2pLimpar(){
+  var tipo=document.getElementById('r2p-lt').value, hotel=document.getElementById('r2p-lh').value, ate=document.getElementById('r2p-ld').value;
+  var res=document.getElementById('r2p-lres');
+  if(!ate){res.innerHTML='<div class="r2p-err" style="display:block">Escolha a data.</div>';return;}
+  var info=R2P_LIMPEZA.find(function(x){return x[0]===tipo;});
+  r2pPedirSenha(async function(){
+    res.innerHTML='<div class="r2p-empty">Contando...</div>';
+    try{
+      var n=await r2pRpc('r2_limpeza',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem,p_tipo:tipo,p_hotel:hotel||null,p_ate:ate,p_executar:false});
+      var alvo=info[1]+' '+info[2]+' '+ate.split('-').reverse().join('/')+' — '+(hotel?r2pHotelNome(hotel):'todos os hotéis');
+      if(!n){ res.innerHTML='<div class="r2p-ok">Nada a apagar: nenhum registro de '+r2pEsc(alvo)+'.</div>'; return; }
+      res.innerHTML='<div class="r2p-aviso"><b>'+n+' registro(s)</b> serão apagados: '+r2pEsc(alvo)+'.'+
+        (tipo==='pontos'?'<br>Atenção: apagar pontos muda o ranking dos usuários.':'')+
+        '<div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">Para confirmar, digite <b>APAGAR</b>: <input id="r2p-lconf" style="width:130px;padding:7px;border:1px solid #c0392b;border-radius:6px" autocomplete="off">'+
+        '<button class="r2p-btn" style="background:#c0392b" onclick="r2pLimparExec(\''+tipo+'\',\''+(hotel||'')+'\',\''+ate+'\','+n+')"><i class="ti ti-trash"></i> Apagar definitivamente</button></div></div>';
+    }catch(e){ R2P.senhaMem=/negado/.test(e.message)?null:R2P.senhaMem; res.innerHTML='<div class="r2p-err" style="display:block">'+r2pEsc(e.message)+'</div>'; }
+  });
+}
+async function r2pLimparExec(tipo,hotel,ate,n){
+  var res=document.getElementById('r2p-lres');
+  if((document.getElementById('r2p-lconf').value||'').trim().toUpperCase()!=='APAGAR'){ alert('Digite APAGAR para confirmar.'); return; }
+  try{
+    var feito=await r2pRpc('r2_limpeza',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem,p_tipo:tipo,p_hotel:hotel||null,p_ate:ate,p_executar:true});
+    res.innerHTML='<div class="r2p-ok">'+feito+' registro(s) apagados. O espaço é reaproveitado pelo banco aos poucos (a barra pode levar algumas horas para baixar).</div>';
+    r2pCarregar();
+  }catch(e){ res.innerHTML='<div class="r2p-err" style="display:block">'+r2pEsc(e.message)+'</div>'; }
+}
+
+/* ---------- PDF ---------- */
+function r2pPDF(){
+  if(!R2P.dados){alert('Aguarde carregar os dados.');return;}
+  var t=document.title;
+  document.title='Dashboard R2 - '+(R2P.f.hotel?r2pHotelNome(R2P.f.hotel):'Todos os hoteis')+' - '+r2pPerNome()+' - '+new Date().toISOString().slice(0,10);
+  document.body.classList.add('r2p-imprimindo');
+  setTimeout(function(){ window.print(); setTimeout(function(){document.body.classList.remove('r2p-imprimindo');document.title=t;},500); },100);
+}
 
 
 /* ---------- Tela de login do Dashboard ---------- */
@@ -4810,7 +5131,7 @@ function r2pRenderHoteis(){
   var por=(R2P.sessao&&R2P.dados)?r2pResumo():null;
   var html=R2_HOTEIS.map(function(h){
     var p=por&&por[h.slug];
-    var sub=p?((p.abertos+p.andamento)+' em aberto · '+p.concMes+' concluídos no mês'):'Sistema de manutenção';
+    var sub=p?((p.abertos+p.andamento)+' em aberto · '+p.concMes+' concluídos ('+r2pPerNome().toLowerCase()+')'):'Sistema de manutenção';
     var tag=p&&p.urg?'<span class="t-tag urg">'+p.urg+' urgente'+(p.urg>1?'s':'')+'</span>':'';
     return '<button class="r2p-tile" onclick="r2pIr(\''+h.slug+'\')">'+tag+r2pSvg('hotel')+
       '<span class="t-nome">'+r2pEsc(h.nome.replace('Laghetto ',''))+'</span><span class="t-sub">'+r2pEsc(sub)+'</span></button>';
