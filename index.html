@@ -310,6 +310,24 @@ var R2_INFO = R2_HOTEIS.find(function(h){return h.slug===R2_HOTEL;}) || null;
 if(R2_HOTEL && !R2_INFO) R2_HOTEL = '';
 var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
+/* Versao publicada. A cada publicacao este numero muda; quem estiver com a
+   versao antiga em cache recarrega sozinho. */
+var R2_VERSAO = '2026-11-23.2';
+function r2VerificarVersao(){
+  if(location.protocol==='file:') return;
+  var url=location.href.split('#')[0];
+  fetch(url,{cache:'reload'}).then(function(r){return r.ok?r.text():'';}).then(function(t){
+    var m=/var R2_VERSAO = '([^']+)'/.exec(t||'');
+    if(!m||m[1]===R2_VERSAO) return;
+    var chave='r2_recarregado_'+m[1];
+    try{ if(sessionStorage.getItem(chave)) return; sessionStorage.setItem(chave,'1'); }catch(e){}
+    var ocupado=document.querySelector('#mroot .modal, #mroot > div, #r2p-mroot > div');
+    if(ocupado){ setTimeout(r2VerificarVersao,60000); try{sessionStorage.removeItem(chave);}catch(e){} return; }
+    location.reload();
+  }).catch(function(){});
+}
+window.addEventListener('load',function(){ setTimeout(r2VerificarVersao,1500); setInterval(r2VerificarVersao,5*60000); });
+document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') r2VerificarVersao(); });
 /* Toda chamada REST vai para as tabelas r2_* filtradas pelo hotel atual */
 function r2Path(method, path){
   var i = path.indexOf('?');
