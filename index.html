@@ -470,11 +470,11 @@ var R2_HOTEIS_TODOS = R2_HOTEIS.slice();
 function r2EnderecoHotel(slug){ return R2_PAGINAS.indexOf(slug)>=0 ? './'+slug+'.html' : './index.html?hotel='+encodeURIComponent(slug); }
 /* Le a lista de hoteis do banco (r2_hoteis). Se falhar, segue com a lista padrao acima. */
 function r2CarregarHoteis(){
-  return fetch(SUPA_URL+'/rest/v1/r2_hoteis?select=slug,nome,ordem,ativo&order=ordem.asc,nome.asc',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY}})
+  return fetch(SUPA_URL+'/rest/v1/r2_hoteis?select=*&order=ordem.asc,nome.asc',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY}})
     .then(function(r){return r.ok?r.json():null;})
     .then(function(l){
       if(!l||!l.length) return;
-      R2_HOTEIS_TODOS = l.map(function(h){return {slug:h.slug,nome:h.nome,ativo:h.ativo!==false,ordem:h.ordem};});
+      R2_HOTEIS_TODOS = l.map(function(h){return {slug:h.slug,nome:h.nome,ativo:h.ativo!==false&&!h.excluido_em,ordem:h.ordem,excluido_em:h.excluido_em||null,excluido_por:h.excluido_por||null};});
       var ativos = R2_HOTEIS_TODOS.filter(function(h){return h.ativo;});
       R2_HOTEIS.length = 0; ativos.forEach(function(h){R2_HOTEIS.push({slug:h.slug,nome:h.nome});});
     }).catch(function(){}).then(function(){
@@ -486,7 +486,7 @@ var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-24.1';
+var R2_VERSAO = '2026-11-24.2';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -5203,6 +5203,18 @@ body.r2-portal-mode #r2p{display:block}
 .r2p-filtros select,.r2p-limp select,.r2p-limp input{padding:7px 9px;border:1px solid #DDE6DF;border-radius:8px;font:13px 'DM Sans',sans-serif;background:#fff;color:#1d2b24}
 .r2p-btn-out{background:#fff;color:#1B4332;border:1px solid #1B4332}
 .r2p-btn-out:hover{background:#EEF6EF}
+.r2p-btn-del{background:#fff;color:#c0392b;border:1px solid #e3b4ae}
+.r2p-btn-del:hover{background:#FDE2E1}
+.r2p-btn-perigo{background:#c0392b}
+.r2p-btn-perigo:hover{background:#a93226}
+.r2p-btn-perigo:disabled{background:#d9a49e;cursor:not-allowed}
+.r2p-lix{margin-top:14px;border:1px dashed #e3b4ae;background:#FFF8F7;border-radius:10px;padding:12px}
+.r2p-lix-t{font-weight:700;color:#c0392b;font-size:13px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.r2p-alerta{display:flex;gap:10px;background:#FFF1DB;border:1px solid #e6a100;color:#6b4300;border-radius:10px;padding:11px 13px;font-size:13px;line-height:1.45}
+.r2p-alerta i{font-size:20px;flex:none}
+.r2p-alerta.forte{background:#FDE2E1;border-color:#c0392b;color:#7a1f16}
+.r2p-cont{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:13px}
+.r2p-cont li{display:flex;justify-content:space-between;border-bottom:1px solid #EEF2EF;padding:3px 0}
 .r2p-abas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
 .r2p-abas button{border:1px solid #DDE6DF;background:#fff;color:#1B4332;border-radius:20px;padding:7px 14px;font:600 13px 'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px}
 .r2p-abas button.on{background:#1B4332;color:#fff;border-color:#1B4332}
@@ -6294,19 +6306,163 @@ function r2pHoteisGerir(msg){
   r2pPedirSenha(function(){ r2pHoteisLista(msg); });
 }
 function r2pHoteisLista(msg){
-  var L=R2_HOTEIS_TODOS;
+  var L=R2_HOTEIS_TODOS, vivos=[], lix=[];
+  L.forEach(function(h,i){ (h.excluido_em?lix:vivos).push([h,i]); });
+  function linha(par){
+    var h=par[0], i=par[1], url=new URL(r2EnderecoHotel(h.slug),location.href).href;
+    return '<tr><td><b>'+r2pEsc(h.nome)+'</b><div style="font-size:11px;color:#6b7770">'+r2pEsc(h.slug)+'</div></td>'+
+      '<td style="font-size:11px;max-width:200px;word-break:break-all"><a href="'+r2pEsc(url)+'" target="_blank" rel="noopener" style="color:#1B4332">'+r2pEsc(url.replace(/^https?:\/\//,''))+'</a></td>'+
+      '<td>'+(h.ativo!==false?'<span class="r2p-pill ok">Ativo</span>':'<span class="r2p-pill bad">Desativado</span>')+'</td>'+
+      '<td style="text-align:right;white-space:nowrap"><button class="r2p-btn sm" onclick="r2pHotelForm('+i+')">Editar</button> '+
+      '<button class="r2p-btn sm r2p-btn-del" onclick="r2pHotelExcluir('+i+')" title="Excluir hotel"><i class="ti ti-trash"></i> Excluir</button></td></tr>';
+  }
+  function linhaLix(par){
+    var h=par[0], i=par[1];
+    return '<tr><td><b>'+r2pEsc(h.nome)+'</b><div style="font-size:11px;color:#6b7770">'+r2pEsc(h.slug)+' · enviado por '+r2pEsc(h.excluido_por||'-')+' em '+r2pDataHora(h.excluido_em)+'</div></td>'+
+      '<td style="text-align:right;white-space:nowrap"><button class="r2p-btn sm" onclick="r2pHotelRestaurar('+i+')"><i class="ti ti-arrow-back-up"></i> Restaurar</button> '+
+      '<button class="r2p-btn sm r2p-btn-out" onclick="r2pHotelBaixar(null,\''+h.slug+'\')"><i class="ti ti-download"></i> Cópia</button> '+
+      '<button class="r2p-btn sm r2p-btn-del" onclick="r2pHotelExcluir('+i+')">Excluir de vez</button></td></tr>';
+  }
   r2pModal('Hotéis da Regional 2',
     (msg?'<div class="r2p-ok" style="margin:0 0 12px">'+msg+'</div>':'')+
     '<div style="font-size:13px;color:#6b7770;margin-bottom:12px">Todos os hotéis usam o mesmo banco. Ao adicionar um hotel, ele ganha na hora o sistema de manutenção limpo, o usuário <b>ADM</b> (senha 123456) e passa a aparecer no menu e no Dashboard.</div>'+
-    '<div style="max-height:46vh;overflow:auto"><table class="r2p-tbl"><thead><tr><th>Hotel</th><th>Endereço</th><th>Situação</th><th></th></tr></thead><tbody>'+
-    L.map(function(h,i){
-      var url=new URL(r2EnderecoHotel(h.slug),location.href).href;
-      return '<tr><td><b>'+r2pEsc(h.nome)+'</b><div style="font-size:11px;color:#6b7770">'+r2pEsc(h.slug)+'</div></td>'+
-        '<td style="font-size:11px;max-width:200px;word-break:break-all"><a href="'+r2pEsc(url)+'" target="_blank" rel="noopener" style="color:#1B4332">'+r2pEsc(url.replace(/^https?:\/\//,''))+'</a></td>'+
-        '<td>'+(h.ativo!==false?'<span class="r2p-pill ok">Ativo</span>':'<span class="r2p-pill bad">Desativado</span>')+'</td>'+
-        '<td style="text-align:right"><button class="r2p-btn sm" onclick="r2pHotelForm('+i+')">Editar</button></td></tr>';
-    }).join('')+'</tbody></table></div>'+
-    '<div style="margin-top:14px"><button class="r2p-btn" onclick="r2pHotelForm(-1)"><i class="ti ti-building-plus"></i> Adicionar hotel</button></div>');
+    '<div style="max-height:40vh;overflow:auto"><table class="r2p-tbl"><thead><tr><th>Hotel</th><th>Endereço</th><th>Situação</th><th></th></tr></thead><tbody>'+
+    vivos.map(linha).join('')+'</tbody></table></div>'+
+    (lix.length?'<div class="r2p-lix"><div class="r2p-lix-t"><i class="ti ti-trash"></i> Lixeira ('+lix.length+')</div>'+
+      '<div style="font-size:12px;color:#6b7770;margin-bottom:8px">Hotéis na lixeira saem do menu e do Dashboard, mas nenhum dado foi apagado. Restaurar devolve tudo como estava.</div>'+
+      '<table class="r2p-tbl"><tbody>'+lix.map(linhaLix).join('')+'</tbody></table></div>':'')+
+    '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="r2p-btn" onclick="r2pHotelForm(-1)"><i class="ti ti-building-plus"></i> Adicionar hotel</button>'+
+    '<button class="r2p-btn r2p-btn-out" onclick="r2pHotelBackups()"><i class="ti ti-database-export"></i> Cópias de segurança</button></div>');
+}
+function r2pDataHora(v){ if(!v) return '-'; var d=new Date(v); return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+var R2P_TAB_NOME={r2_chamados:'Chamados',r2_registros_atividades:'Atividades',r2_pontos:'Pontos',r2_checklist:'Checklist feito',r2_checklist_itens:'Itens de checklist',r2_config:'Configurações',r2_usuarios:'Usuários',r2_equipe:'Equipe',r2_lembretes:'Lembretes',r2_compras:'Compras',r2_treinamentos:'Treinamentos',r2_quiz_perguntas:'Quiz (perguntas)',r2_quiz_respostas:'Quiz (respostas)',r2_gastos:'Orçamentos',r2_lancamentos_gastos:'Lançamentos de gastos',r2_projetos:'Projetos',r2_projetos_aptos:'Projetos por apto',r2_preventivas:'Preventivas'};
+function r2pSalvarJSON(obj,nome){
+  var b=new Blob([JSON.stringify(obj,null,1)],{type:'application/json'}), a=document.createElement('a');
+  a.href=URL.createObjectURL(b); a.download=nome; document.body.appendChild(a); a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},2000);
+}
+function r2pNomeCopia(slug){ var d=new Date(); function z(n){return String(n).padStart(2,'0');} return 'copia-hotel-'+slug+'-'+d.getFullYear()+z(d.getMonth()+1)+z(d.getDate())+'-'+z(d.getHours())+z(d.getMinutes())+'.json'; }
+async function r2pHotelBaixar(id,slug){
+  try{
+    var d=await r2pRpc('r2_hotel_backup_baixar',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem,p_id:id,p_slug:slug});
+    if(!d) throw new Error('Cópia não encontrada.');
+    r2pSalvarJSON(d,r2pNomeCopia(d.slug||slug||'hotel'));
+    return d;
+  }catch(e){ alert('Não foi possível baixar a cópia: '+e.message); return null; }
+}
+async function r2pHotelExcluir(i){
+  var h=R2_HOTEIS_TODOS[i], def=!!h.excluido_em;
+  if(!def && R2_HOTEIS_TODOS.filter(function(x){return !x.excluido_em;}).length<=1){ r2pHoteisLista(); return; }
+  r2pModal(def?'Excluir de vez':'Excluir hotel','<div style="color:#6b7770;font-size:13px">Levantando os dados do '+r2pEsc(h.nome)+'...</div>');
+  var res={};
+  try{ res=await r2pRpc('r2_hotel_resumo',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem,p_slug:h.slug})||{}; }
+  catch(e){ r2pModal('Excluir hotel','<div class="r2p-err" style="display:block">'+r2pEsc(/negado/.test(e.message)?'Senha não confere. Feche e entre de novo.':/PGRST202|Could not find|does not exist/.test(e.message)?'A função de exclusão ainda não foi instalada no banco. Avise o administrador do sistema.':e.message)+'</div>'); return; }
+  var tot=0, itens=Object.keys(res).map(function(k){tot+=res[k];return '<li><span>'+r2pEsc(R2P_TAB_NOME[k]||k)+'</span><b>'+res[k]+'</b></li>';}).join('');
+  var aviso=def?
+    '<div class="r2p-alerta forte"><i class="ti ti-alert-octagon"></i><div><b>Exclusão definitiva.</b> Os '+tot+' registros abaixo serão apagados do banco e o hotel deixa de existir. Antes de apagar, o sistema baixa uma cópia no seu computador e guarda outra no banco. Só dá para trazer o hotel de volta por essas cópias.</div></div>':
+    '<div class="r2p-alerta"><i class="ti ti-info-circle"></i><div><b>O hotel vai para a lixeira.</b> Ele sai do menu, do Dashboard e o site dele para de abrir para a equipe. Nenhum registro é apagado e dá para restaurar a qualquer momento. Uma cópia de segurança é baixada no seu computador e outra fica no banco.</div></div>';
+  r2pModal(def?'Excluir de vez: '+r2pEsc(h.nome):'Excluir '+r2pEsc(h.nome),
+    aviso+
+    '<div style="font-size:12px;font-weight:700;color:#6b7770;text-transform:uppercase;letter-spacing:.5px;margin:14px 0 6px">O que existe nesse hotel</div>'+
+    (itens?'<ul class="r2p-cont">'+itens+'</ul>':'<div style="font-size:13px;color:#6b7770">Nenhum registro.</div>')+
+    '<label style="margin-top:14px">Para confirmar, digite o nome do hotel: <b>'+r2pEsc(h.nome)+'</b></label>'+
+    '<input id="r2p-xn" autocomplete="off" oninput="r2pXChecar()" placeholder="'+r2pEsc(h.nome)+'">'+
+    '<label>Sua senha do Dashboard</label><input id="r2p-xs" type="password" autocomplete="current-password" oninput="r2pXChecar()">'+
+    '<label>Motivo (opcional)</label><input id="r2p-xm" maxlength="200" placeholder="Ex: hotel saiu da regional">'+
+    (def?'<label style="display:flex;align-items:flex-start;gap:8px;margin:4px 0 12px;font-weight:400"><input id="r2p-xc" type="checkbox" style="width:auto;margin:3px 0 0" onchange="r2pXChecar()"> Entendo que os dados serão apagados do banco e que a volta só é possível pela cópia de segurança.</label>':'')+
+    '<div class="r2p-err" id="r2p-xer"></div>'+
+    '<div style="display:flex;gap:8px"><button class="r2p-btn" style="background:#EEF2EF;color:#1B4332" onclick="r2pHoteisLista()">Cancelar</button>'+
+    '<button class="r2p-btn r2p-btn-perigo" id="r2p-xbt" disabled onclick="r2pHotelExcluirOk('+i+')">'+(def?'Excluir de vez':'Mandar para a lixeira')+'</button></div>');
+  R2P.xNome=h.nome; R2P.xLibera=Date.now()+5000; clearInterval(R2P.xTimer);
+  R2P.xTimer=setInterval(r2pXChecar,500); r2pXChecar();
+  setTimeout(function(){var x=document.getElementById('r2p-xn');if(x)x.focus();},50);
+}
+function r2pNorm(t){ return String(t||'').trim().replace(/\s+/g,' ').toUpperCase(); }
+function r2pXChecar(){
+  var bt=document.getElementById('r2p-xbt'); if(!bt){ clearInterval(R2P.xTimer); return; }
+  var n=document.getElementById('r2p-xn').value, s=document.getElementById('r2p-xs').value, c=document.getElementById('r2p-xc');
+  var falta=Math.ceil((R2P.xLibera-Date.now())/1000);
+  var ok=r2pNorm(n)===r2pNorm(R2P.xNome)&&s.length>0&&(!c||c.checked);
+  bt.disabled=!ok||falta>0||bt.dataset.rodando==='1';
+  if(bt.dataset.rodando!=='1') bt.textContent=(c?'Excluir de vez':'Mandar para a lixeira')+(falta>0?' ('+falta+')':'');
+  if(falta<=0&&ok) clearInterval(R2P.xTimer);
+}
+async function r2pHotelExcluirOk(i){
+  var h=R2_HOTEIS_TODOS[i], def=!!h.excluido_em, bt=document.getElementById('r2p-xbt'), er=document.getElementById('r2p-xer');
+  var senha=document.getElementById('r2p-xs').value, conf=document.getElementById('r2p-xn').value, mot=document.getElementById('r2p-xm').value;
+  function erro(m){ er.style.display='block'; er.textContent=m; bt.dataset.rodando=''; r2pXChecar(); }
+  bt.dataset.rodando='1'; bt.disabled=true; bt.textContent='Baixando cópia de segurança...';
+  try{
+    var copia=await r2pRpc('r2_hotel_backup_baixar',{p_login:R2P.sessao.login,p_senha:senha,p_id:null,p_slug:h.slug});
+    if(!copia||!copia.hotel) return erro('Não foi possível gerar a cópia de segurança. Nada foi alterado.');
+    r2pSalvarJSON(copia,r2pNomeCopia(h.slug));
+    bt.textContent=def?'Excluindo...':'Mandando para a lixeira...';
+    var r=await r2pRpc('r2_hotel_excluir',{p_login:R2P.sessao.login,p_senha:senha,p_slug:h.slug,p_confirma:conf,p_modo:def?'definitivo':'lixeira',p_motivo:mot||null});
+    R2P.senhaMem=senha;
+    await r2CarregarHoteis(); r2pRenderHoteis();
+    if(R2P.view==='dashboard'){ R2P.dados=null; r2pRenderDash(); r2pCarregar(); }
+    r2pHoteisLista(def?'<b>'+r2pEsc(h.nome)+'</b> foi excluído de vez ('+(r.apagados||0)+' registros). A cópia foi baixada e outra ficou guardada em Cópias de segurança.':
+      '<b>'+r2pEsc(h.nome)+'</b> foi para a lixeira. Nada foi apagado e a cópia de segurança foi baixada.');
+  }catch(e){
+    var m=e.message;
+    erro(/negado/.test(m)?'Senha não confere.':/nome de confirmacao/.test(m)?'O nome digitado não confere com o do hotel.':/ultimo hotel/.test(m)?'Não é possível excluir o único hotel ativo.':/lixeira antes/.test(m)?'Mande o hotel para a lixeira antes de excluir de vez.':/does not exist|PGRST202|Could not find/.test(m)?'A função de exclusão ainda não foi instalada no banco.':m);
+  }
+}
+async function r2pHotelRestaurar(i){
+  var h=R2_HOTEIS_TODOS[i];
+  try{
+    await r2pRpc('r2_hotel_restaurar',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem,p_slug:h.slug});
+    await r2CarregarHoteis(); r2pRenderHoteis();
+    if(R2P.view==='dashboard'){ R2P.dados=null; r2pRenderDash(); r2pCarregar(); }
+    r2pHoteisLista('<b>'+r2pEsc(h.nome)+'</b> foi restaurado e voltou ao menu.');
+  }catch(e){ r2pHoteisLista(); alert('Não foi possível restaurar: '+e.message); }
+}
+async function r2pHotelBackups(msg){
+  r2pModal('Cópias de segurança','<div style="color:#6b7770;font-size:13px">Carregando...</div>');
+  var L=[];
+  try{ L=await r2pRpc('r2_hotel_backups',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem})||[]; }
+  catch(e){ r2pModal('Cópias de segurança','<div class="r2p-err" style="display:block">'+r2pEsc(e.message)+'</div><button class="r2p-btn" style="margin-top:10px" onclick="r2pHoteisLista()">Voltar</button>'); return; }
+  R2P.backups=L;
+  var tipoN={lixeira:'Ida para a lixeira',definitivo:'Antes da exclusão definitiva',manual:'Manual'};
+  r2pModal('Cópias de segurança',
+    (msg?'<div class="r2p-ok" style="margin:0 0 12px">'+msg+'</div>':'')+
+    '<div style="font-size:13px;color:#6b7770;margin-bottom:12px">Toda exclusão grava uma cópia completa do hotel aqui. Um hotel excluído de vez pode ser recriado com todos os registros a partir de uma cópia, daqui ou de um arquivo baixado.</div>'+
+    (L.length?'<div style="max-height:44vh;overflow:auto"><table class="r2p-tbl"><thead><tr><th>Hotel</th><th>Quando</th><th>Registros</th><th></th></tr></thead><tbody>'+
+      L.map(function(b,k){
+        return '<tr><td><b>'+r2pEsc(b.nome||b.slug)+'</b><div style="font-size:11px;color:#6b7770">'+r2pEsc(tipoN[b.tipo]||b.tipo)+(b.motivo?' · '+r2pEsc(b.motivo):'')+'</div></td>'+
+          '<td style="font-size:12px">'+r2pDataHora(b.criado_em)+'<div style="font-size:11px;color:#6b7770">'+r2pEsc(b.criado_por||'')+'</div></td><td>'+(b.registros||0)+'</td>'+
+          '<td style="text-align:right;white-space:nowrap"><button class="r2p-btn sm r2p-btn-out" onclick="r2pHotelBaixar('+b.id+',null)"><i class="ti ti-download"></i> Baixar</button>'+
+          (b.existe?'':' <button class="r2p-btn sm" onclick="r2pHotelRecriar('+k+')">Recriar hotel</button>')+'</td></tr>';
+      }).join('')+'</tbody></table></div>':'<div style="font-size:13px;color:#6b7770">Nenhuma cópia ainda. Elas são criadas automaticamente quando um hotel é excluído.</div>')+
+    '<div class="r2p-err" id="r2p-ber"></div>'+
+    '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="r2p-btn" style="background:#EEF2EF;color:#1B4332" onclick="r2pHoteisLista()">Voltar</button>'+
+    '<label class="r2p-btn r2p-btn-out" style="margin:0;cursor:pointer"><i class="ti ti-file-upload"></i> Recriar de um arquivo<input type="file" accept=".json,application/json" style="display:none" onchange="r2pHotelRecriarArq(this)"></label></div>');
+}
+async function r2pHotelRecriarRodar(id,dados,nome){
+  var er=document.getElementById('r2p-ber');
+  try{
+    var r=await r2pRpc('r2_hotel_recriar',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem,p_backup_id:id,p_dados:dados});
+    await r2CarregarHoteis(); r2pRenderHoteis();
+    if(R2P.view==='dashboard'){ R2P.dados=null; r2pRenderDash(); r2pCarregar(); }
+    r2pHoteisLista('<b>'+r2pEsc(nome)+'</b> foi recriado com '+(r.registros||0)+' registros.');
+  }catch(e){ if(er){er.style.display='block';er.textContent=/ja existe/.test(e.message)?'Já existe um hotel com esse identificador.':/invalida/.test(e.message)?'Arquivo de cópia inválido.':e.message;} }
+}
+function r2pHotelRecriar(k){
+  var b=R2P.backups[k];
+  if(!confirm('Recriar o '+(b.nome||b.slug)+' com os '+(b.registros||0)+' registros desta cópia?')) return;
+  r2pHotelRecriarRodar(b.id,null,b.nome||b.slug);
+}
+function r2pHotelRecriarArq(inp){
+  var f=inp.files&&inp.files[0]; if(!f) return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    var er=document.getElementById('r2p-ber'), d=null;
+    try{ d=JSON.parse(rd.result); }catch(e){}
+    if(!d||!d.hotel||!d.slug||!d.tabelas){ er.style.display='block'; er.textContent='Esse arquivo não é uma cópia de hotel do sistema.'; return; }
+    if(!confirm('Recriar o '+(d.hotel.nome||d.slug)+' com os '+(d.registros||0)+' registros deste arquivo?')) return;
+    r2pHotelRecriarRodar(null,d,d.hotel.nome||d.slug);
+  };
+  rd.readAsText(f);
 }
 function r2pHotelForm(i){
   var h=i>=0?R2_HOTEIS_TODOS[i]:null;
