@@ -486,7 +486,7 @@ var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-23.15';
+var R2_VERSAO = '2026-11-24.1';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -5248,53 +5248,102 @@ body.r2-portal-mode #r2p{display:block}
 .r2p-relacoes{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
 .r2p-relacoes span{font-size:12px;color:#6b7770}
 .r2p-relprev-h{font-size:13px;font-weight:700;color:#5d6b64;margin:18px 0 8px}
-#r2p-rel-doc{background:#fff;max-width:820px;margin:0 auto;padding:28px 34px;border:1px solid #E3EAE5;border-radius:12px;box-shadow:0 4px 18px rgba(10,42,34,.08);color:#1d2b24}
-.r2r-capa{background:linear-gradient(150deg,#0A2A22 0%,#1B4332 55%,#2D6A4F 100%);color:#fff;border-radius:14px;padding:46px 40px 30px;min-height:560px;display:flex;flex-direction:column;margin-bottom:24px}
-.r2r-capa-tag{font-size:11px;letter-spacing:.18em;font-weight:700;color:#A1E19C}
-.r2r-capa h1{font-size:32px;line-height:1.1;margin:14px 0 10px}
-.r2r-capa-sub{font-size:15px;color:rgba(255,255,255,.85);line-height:1.5}
-.r2r-capa-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:auto}
-.r2r-capa-kpis div{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:12px}
-.r2r-capa-kpis b{display:block;font-size:22px}.r2r-capa-kpis span{font-size:11px;color:rgba(255,255,255,.75)}
-.r2r-capa-h{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
-.r2r-capa-h span{border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:3px 10px;font-size:11px}
-.r2r-capa-rod{font-size:11px;color:rgba(255,255,255,.65);margin-top:16px}
-.r2r-sec{margin-bottom:22px}
-.r2r-sec h2{display:flex;align-items:center;gap:10px;font-size:18px;color:#0A2A22;border-bottom:2px solid #0A2A22;padding-bottom:6px;margin-bottom:12px}
-.r2r-sec h2 span{background:#1B4332;color:#A1E19C;font-size:13px;border-radius:6px;padding:2px 7px}
-.r2r-sec h3{font-size:13px;color:#1B4332;margin:0 0 8px}
-.r2r-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-.r2r-kpi{border:1px solid #E3EAE5;border-radius:10px;padding:10px 12px;border-left:4px solid #2D6A4F}
-.r2r-kpi.ok{border-left-color:#2F8F5B}.r2r-kpi.bad{border-left-color:#c0392b}
-.r2r-kpi .l{font-size:11px;color:#6b7770;font-weight:600}.r2r-kpi .v{font-size:21px;font-weight:700;color:#0A2A22;margin:2px 0}.r2r-kpi .s{font-size:11px;color:#6b7770}
-.r2r-texto{background:#F3F8F4;border-radius:10px;padding:12px 16px;font-size:13px;line-height:1.55}
-.r2r-texto p+p{margin-top:5px}
-.r2r-tbl{width:100%;border-collapse:collapse;font-size:12px}
-.r2r-tbl th{background:#1B4332;color:#fff;text-align:left;padding:6px 7px;font-size:11px;font-weight:600;line-height:1.2}
-.r2r-tbl td{padding:6px 7px;border-bottom:1px solid #E7EDE9;vertical-align:top}
-.r2r-tbl tr.tot td{font-weight:700;background:#F2F5F2;border-top:2px solid #1B4332}
-.r2r-tbl tr.top td{background:#FBF7EC}
-.r2r-tbl.sm{font-size:11px}
-.r2r-bad{color:#c0392b;font-weight:700}.r2r-warn{color:#B8741A;font-weight:700}.r2r-ok{color:#2F8F5B;font-weight:700}
-.r2r-card{border:1px solid #E3EAE5;border-radius:10px;padding:12px 14px;margin-bottom:10px}
-.r2r-g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.r2r-g2 .r2r-card{margin-bottom:0}
-.r2r-fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.r2r-fotos figure{margin:0;border:1px solid #E3EAE5;border-radius:10px;overflow:hidden}
-.r2r-fotos img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#EEF2EF}
-.r2r-fotos figcaption{font-size:10.5px;color:#3d4b44;padding:6px 8px;line-height:1.35}
-.r2r-fotos figcaption span{color:#6b7770}
-.r2r-obs{border-left:4px solid #2F8F5B;background:#F3F8F4;border-radius:8px;padding:12px 16px;font-size:13px;line-height:1.55}
-.r2r-rod{font-size:10px;color:#8a978f;text-align:center;border-top:1px solid #E3EAE5;padding-top:8px;margin-top:10px}
+#r2p-rel-doc{--z:1;max-width:1125px;margin:0 auto}
+.r2s{zoom:var(--z);position:relative;width:1123px;height:794px;overflow:hidden;background:#fff;display:flex;flex-direction:column;padding:30px 42px 22px;box-sizing:border-box;margin:0 auto 22px;border-radius:10px;box-shadow:0 6px 24px rgba(10,42,34,.14);color:#1d2b24}
+.r2s-h{display:flex;align-items:center;gap:14px;border-bottom:3px solid #0A2A22;padding-bottom:12px;margin-bottom:18px;flex-shrink:0}
+.r2s-h .nn{background:#1B4332;color:#A1E19C;font-weight:700;font-size:17px;border-radius:8px;padding:4px 10px}
+.r2s-h h3{font-size:28px;color:#0A2A22;margin:0;flex:1;line-height:1.1}
+.r2s-h .ctx{font-size:13px;color:#6b7770;text-align:right}
+.r2s-b{flex:1;min-height:0;display:flex;flex-direction:column}
+.r2s-b>*{flex:1;min-height:0}
+.r2s-f{display:flex;justify-content:space-between;font-size:11.5px;color:#8a978f;border-top:1px solid #E3EAE5;padding-top:8px;margin-top:12px;flex-shrink:0}
+.r2s-card{border:1px solid #E3EAE5;border-radius:12px;padding:14px 18px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.r2s-card h4{font-size:15px;color:#1B4332;margin:0 0 12px}
+.r2s-cb{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center}
+.r2s .r2p-bar{font-size:14px;margin-bottom:12px;gap:12px}
+.r2s .r2p-bar .tr{height:20px;border-radius:5px}
+.r2s .r2p-leg{font-size:13px}
+.r2s-vazio{display:flex;align-items:center;justify-content:center;color:#8a978f;font-size:16px;flex:1}
+.r2s-kpi{border:1px solid #E3EAE5;border-left:6px solid #2D6A4F;border-radius:12px;padding:14px 18px;display:flex;flex-direction:column;justify-content:center}
+.r2s-kpi.ok{border-left-color:#2F8F5B}.r2s-kpi.bad{border-left-color:#c0392b}
+.r2s-kpi .l{font-size:14px;color:#5d6b64;font-weight:600}
+.r2s-kpi .v{font-size:40px;font-weight:700;color:#0A2A22;line-height:1.1;margin:4px 0}
+.r2s-kpi .s{font-size:13px;color:#6b7770}
+.r2s-kgrid{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:12px}
+.r2s-kgrid.three{grid-template-columns:repeat(3,1fr);flex:0 0 130px}
+.r2s-res{display:grid;grid-template-columns:1.15fr 1fr;gap:20px}
+.r2s-dest{background:#F3F8F4;border-radius:14px;padding:22px 26px;display:flex;flex-direction:column}
+.r2s-dest h4{font-size:17px;color:#1B4332;margin:0 0 12px}
+.r2s-dest ul{margin:0;padding-left:20px;display:flex;flex-direction:column;justify-content:space-around;flex:1;font-size:16px;line-height:1.4}
+.r2s-dest li::marker{color:#2F8F5B}
+.r2s-tbl{width:100%;border-collapse:collapse;font-size:14px;align-self:flex-start}
+.r2s-tbl th{background:#1B4332;color:#fff;text-align:left;padding:9px 10px;font-size:12.5px;font-weight:600;line-height:1.2}
+.r2s-tbl td{padding:9px 10px;border-bottom:1px solid #E7EDE9;vertical-align:top}
+.r2s-tbl td small{display:block;color:#6b7770;font-size:11.5px}
+.r2s-tbl td.n{white-space:nowrap}
+.r2s-tbl.big{font-size:16px}.r2s-tbl.big td{padding:13px 10px}.r2s-tbl.big th{font-size:13px;padding:11px 10px}
+.r2s-tbl.sm{font-size:12.5px}.r2s-tbl.sm td{padding:7px 8px}
+.r2s-tbl tr.tot td{font-weight:700;background:#F2F5F2;border-top:2px solid #1B4332}
+.r2s-tbl tr.top td{background:#FBF7EC}
+.r2s-bad{color:#c0392b;font-weight:700}.r2s-warn{color:#B8741A;font-weight:700}.r2s-ok{color:#2F8F5B;font-weight:700}
+.r2s-g-a{display:flex;flex-direction:column;gap:14px}
+.r2s-g-a>.r2s-card.wide{flex:1}
+.r2s-g-a>.r2s-g2{flex:1.15}
+.r2s-card.wide svg{max-height:250px}
+.r2s-g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;min-height:0}
+.r2s-g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;min-height:0;flex:1}
+.r2s-g4{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px}
+.r2s-g2.alto>.r2s-card .r2s-cb,.r2s-prev .r2s-card:last-child .r2s-cb{justify-content:flex-start}
+.r2s-val{display:flex;flex-direction:column;gap:14px}
+.r2s-val>.r2s-g2{flex:1}
+.r2s-eq{display:grid;grid-template-columns:330px 1fr;gap:20px;align-items:start}
+.r2s-podio{display:flex;flex-direction:column;gap:12px}
+.r2s-podio h4{font-size:15px;color:#1B4332;margin:0}
+.r2s-pod{display:flex;align-items:center;gap:14px;border-radius:14px;padding:16px 18px;background:#F3F8F4;border:1px solid #DCE8DF}
+.r2s-pod.p1{background:linear-gradient(135deg,#1B4332,#2D6A4F);color:#fff;border:none}
+.r2s-pod .pos{font-size:30px;font-weight:700;color:#B8741A;width:50px}
+.r2s-pod.p1 .pos{color:#F2C94C}
+.r2s-pod>div:nth-child(2){flex:1}
+.r2s-pod .nm{font-size:18px;font-weight:700}.r2s-pod .ht{font-size:13px;opacity:.75}
+.r2s-pod .pt{font-size:26px;font-weight:700}.r2s-pod .pt small{font-size:12px;margin-left:3px;opacity:.8}
+.r2s-prev{display:grid;grid-template-columns:240px 1fr 1fr;gap:16px}
+.r2s-kcol{display:grid;grid-template-rows:repeat(3,1fr);gap:12px}
+.r2s-lista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.r2s-lista li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #EEF2EF;padding-bottom:7px}
+.r2s-lista li span{color:#6b7770;white-space:nowrap}
+.r2s-lista li.mais{color:#6b7770;border:none}
+.r2s-fotos{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:14px}
+.r2s-fotos.n1{grid-template-columns:1fr;grid-template-rows:1fr}
+.r2s-fotos.n2{grid-template-columns:1fr 1fr;grid-template-rows:1fr}
+.r2s-fotos.n3{grid-template-columns:repeat(3,1fr);grid-template-rows:1fr}
+.r2s-fotos.n4{grid-template-columns:1fr 1fr}
+.r2s-fotos figure{position:relative;margin:0;border-radius:12px;overflow:hidden;background:#E8EEE9;min-height:0}
+.r2s-fotos img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.r2s-fotos figcaption{position:absolute;left:0;right:0;bottom:0;padding:22px 14px 10px;background:linear-gradient(transparent,rgba(6,24,19,.88));color:#fff;font-size:13px;line-height:1.35}
+.r2s-fotos figcaption span{display:block;font-size:12px;opacity:.9}
+.r2s-fotos figcaption em{display:block;font-style:normal;font-size:11px;opacity:.75;margin-top:2px}
+.r2s-obs{background:#F3F8F4;border-left:8px solid #2F8F5B;border-radius:14px;padding:34px 40px;font-size:20px;line-height:1.6;color:#1d2b24}
+.r2s.capa{padding:0;flex-direction:row;background:linear-gradient(135deg,#0A2A22 0%,#1B4332 55%,#2D6A4F 100%);color:#fff}
+.r2s-capa-l{flex:1.45;padding:64px 56px 40px;display:flex;flex-direction:column}
+.r2s-capa-l .r2s-tag{background:none;padding:0;font-size:13px;letter-spacing:.2em;font-weight:700;color:#A1E19C}
+.r2s-capa-l h1{font-size:50px;line-height:1.05;margin:22px 0 18px}
+.r2s-capa-l .sub{font-size:22px;color:rgba(255,255,255,.9)}
+.r2s-capa-l .per{font-size:18px;color:#A1E19C;margin-top:6px;font-weight:600}
+.r2s-capa-l .hs{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.r2s-capa-l .hs span{border:1px solid rgba(255,255,255,.35);border-radius:16px;padding:5px 13px;font-size:13px}
+.r2s-capa-l .rod{margin-top:auto;font-size:13px;color:rgba(255,255,255,.65)}
+.r2s-capa-r{flex:1;background:rgba(0,0,0,.18);display:grid;grid-template-rows:repeat(4,1fr);padding:40px 40px}
+.r2s-capa-r div{display:flex;flex-direction:column;justify-content:center;border-bottom:1px solid rgba(255,255,255,.15);padding-left:6px}
+.r2s-capa-r div:last-child{border:none}
+.r2s-capa-r b{font-size:46px;line-height:1.05}
+.r2s-capa-r span{font-size:15px;color:rgba(255,255,255,.75)}
 @media print{
   body.r2p-rel-print #r2p-dash > *:not(#r2p-rel-doc){display:none!important}
   body.r2p-rel-print .r2p-printhead{display:none!important}
-  body.r2p-rel-print #r2p-rel-doc{border:none!important;box-shadow:none!important;padding:0!important;max-width:none!important;border-radius:0!important}
-  body.r2p-rel-print .r2r-capa{min-height:250mm;break-after:page;border-radius:0;margin:0}
-  body.r2p-rel-print .r2r-sec{margin-bottom:16px}
-  body.r2p-rel-print .r2r-kpis,body.r2p-rel-print .r2r-texto{break-inside:avoid}
-  body.r2p-rel-print .r2r-card,body.r2p-rel-print .r2r-kpi,body.r2p-rel-print .r2r-fotos figure,body.r2p-rel-print tr,body.r2p-rel-print .r2p-bar{break-inside:avoid}
-  body.r2p-rel-print .r2r-sec h2{break-after:avoid}
+  body.r2p-rel-print #r2p-rel-doc{max-width:none!important;margin:0!important;padding:0!important}
+  body.r2p-rel-print,body.r2p-rel-print #r2p,body.r2p-rel-print .r2p-wrap,body.r2p-rel-print #r2p-dashv,body.r2p-rel-print #r2p-dash{margin:0!important;padding:0!important;width:auto!important;max-width:none!important}
+  body.r2p-rel-print .r2s{zoom:1!important;margin:0!important;border-radius:0!important;box-shadow:none!important;break-after:page;break-inside:avoid}
+  body.r2p-rel-print .r2s:last-child{break-after:auto}
 }
 @media print{
   html,body{height:auto!important;overflow:visible!important;background:#fff!important}
@@ -5914,7 +5963,7 @@ function r2pRelCandidatas(){
 function r2pRelTogSec(k,v){ R2P.rel.sec[k]=v; r2pRelSalvar(); r2pRelAtualizaDoc(); }
 function r2pRelTogFoto(u,v){ if(!R2P.rel.fotos) R2P.rel.fotos={}; if(v) R2P.rel.fotos[u]=true; else delete R2P.rel.fotos[u]; r2pRelAtualizaDoc(); var n=document.getElementById('r2p-rel-nf'); if(n) n.textContent=Object.keys(R2P.rel.fotos).length; }
 function r2pRelFotosTodas(v){ var c=r2pRelCandidatas(); R2P.rel.fotos={}; if(v) c.slice(0,12).forEach(function(x){R2P.rel.fotos[x.url]=true;}); r2pRenderDash(); }
-function r2pRelAtualizaDoc(){ var d=document.getElementById('r2p-rel-doc'); if(d) d.innerHTML=r2pRelDoc(); }
+function r2pRelAtualizaDoc(){ var d=document.getElementById('r2p-rel-doc'); if(d){ d.innerHTML=r2pRelDoc(); r2pRelEscala(); } }
 var _r2pRelT; function r2pRelTexto(campo,v){ R2P.rel[campo]=v; r2pRelSalvar(); clearTimeout(_r2pRelT); _r2pRelT=setTimeout(r2pRelAtualizaDoc,350); }
 
 function r2pSecRelatorio(){
@@ -5940,106 +5989,129 @@ function r2pSecRelatorio(){
   '</div>';
   return painel+'<div class="r2p-relprev-h r2p-noprint"><i class="ti ti-eye"></i> Prévia do relatório</div><div id="r2p-rel-doc">'+r2pRelDoc()+'</div>';
 }
-function r2pRelPosRender(){}
+function r2pRelEscala(){
+  var d=document.getElementById('r2p-rel-doc'); if(!d) return;
+  var w=d.clientWidth||1123; d.style.setProperty('--z',Math.min(1,(w-2)/1123));
+}
+window.addEventListener('resize',function(){ if(R2P.aba==='relatorio') r2pRelEscala(); });
+function r2pRelPosRender(){ r2pRelEscala(); }
 
 function r2pRelDoc(){
   var D=R2P.dados, S=R2P.rel.sec, por=r2pResumo(), Hs=r2pHoteisSel(), L=Hs.map(function(h){return por[h.slug];});
-  var chs=r2pChSel(), dent=chs.filter(function(c){return r2pDentro(c.criadoEm);});
+  var chs=r2pChSel(), dent=chs.filter(function(c){return r2pDentro(c.criadoEm);}), multi=Hs.length>1;
   var tot=L.reduce(function(s,p){s.ab+=p.abertos;s.an+=p.andamento;s.u+=p.urg;s.cr+=p.criados;s.c+=p.concMes;s.a+=p.ativ;s.o+=p.orc;s.g+=p.gasto;s.t=s.t.concat(p.tempos);return s;},{ab:0,an:0,u:0,cr:0,c:0,a:0,o:0,g:0,t:[]});
   var tm=r2pMedia(tot.t), pctC=tot.cr?Math.round(tot.c*100/tot.cr):null, pctG=tot.o?Math.round(tot.g*100/tot.o):null;
   function contar(campo,lista){var m={};lista.forEach(function(c){var k=c[campo]||'Não informado';m[k]=(m[k]||0)+1;});return m;}
-  function topo(m){ var k=Object.keys(m).sort(function(a,b){return m[b]-m[a];})[0]; return k?{k:k,n:m[k]}:null; }
-  var alvo=R2P.f.hotel?r2pHotelNome(R2P.f.hotel):'Regional 2 — '+Hs.length+' hotéis';
-  var hojeTxt=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
-  var secs=[];
-  function sec(num,tit,html){ secs.push('<section class="r2r-sec"><h2><span>'+String(num).padStart(2,'0')+'</span>'+r2pEsc(tit)+'</h2>'+html+'</section>'); }
-  function kpi(l,v,s,cls){ return '<div class="r2r-kpi '+(cls||'')+'"><div class="l">'+l+'</div><div class="v">'+v+'</div><div class="s">'+s+'</div></div>'; }
-  var n=0, out='';
-  if(S.capa){
-    out+='<div class="r2r-capa"><div class="r2r-capa-tag">MANUTENÇÃO · GRUPO LAGHETTO</div><h1>'+r2pEsc(r2pRelTitulo())+'</h1>'+
-      '<div class="r2r-capa-sub">'+r2pEsc(alvo)+'<br>Período: '+r2pEsc(r2pRelPerTexto())+'</div>'+
-      '<div class="r2r-capa-kpis">'+
-        '<div><b>'+tot.cr+'</b><span>chamados abertos</span></div><div><b>'+tot.c+'</b><span>concluídos</span></div>'+
-        '<div><b>'+r2pFmtH(tm)+'</b><span>tempo médio</span></div><div><b>'+r2pFmtR(tot.g)+'</b><span>em gastos</span></div></div>'+
-      (Hs.length>1?'<div class="r2r-capa-h">'+Hs.map(function(h){return '<span>'+r2pEsc(h.nome.replace('Laghetto ',''))+'</span>';}).join('')+'</div>':'')+
-      '<div class="r2r-capa-rod">Gerado em '+r2pEsc(hojeTxt)+' · Sistema de Manutenção R2</div></div>';
-  }
+  function ordem(m,n){ return Object.keys(m).sort(function(a,b){return m[b]-m[a];}).slice(0,n); }
+  var alvo=R2P.f.hotel?r2pHotelNome(R2P.f.hotel):'Regional 2 · '+Hs.length+' hotéis';
+  var per=r2pRelPerTexto(), tit=r2pRelTitulo();
+  var slides=[], num=0;
+  function kpi(l,v,s,cls){ return '<div class="r2s-kpi '+(cls||'')+'"><div class="l">'+l+'</div><div class="v">'+v+'</div><div class="s">'+s+'</div></div>'; }
+  function card(t,html,cls){ return '<div class="r2s-card '+(cls||'')+'"><h4>'+t+'</h4><div class="r2s-cb">'+html+'</div></div>'; }
+  function slide(t,corpo,cls){ num++; slides.push({t:t,n:num,html:corpo,cls:cls||''}); }
+  function vazio(t){ return '<div class="r2s-vazio">'+t+'</div>'; }
+  var hNome=function(h){return h.nome.replace('Laghetto ','');};
+
   if(S.resumo){
-    var maisH=Hs.length>1?L.slice().sort(function(a,b){return b.criados-a.criados;})[0]:null;
-    var tA=topo(contar('areaTecnica',dent)), tL=topo(contar('local',dent));
-    var frases=[];
-    frases.push('No período, foram abertos <b>'+tot.cr+'</b> chamados e concluídos <b>'+tot.c+'</b>'+(pctC!=null?' (<b>'+pctC+'%</b> do volume aberto)':'')+'.');
-    if(tm!=null) frases.push('O tempo médio entre a abertura e a conclusão foi de <b>'+r2pFmtH(tm)+'</b>.');
-    frases.push((tot.ab+tot.an)?'Neste momento há <b>'+(tot.ab+tot.an)+'</b> chamados pendentes, sendo <b>'+tot.u+'</b> urgente'+(tot.u===1?'':'s')+'.':'Não há chamados pendentes neste momento.');
-    if(maisH&&maisH.criados) frases.push('O hotel com mais chamados no período foi o <b>'+r2pEsc(maisH.h.nome.replace('Laghetto ',''))+'</b> ('+maisH.criados+').');
-    if(tA) frases.push('A área técnica mais demandada foi <b>'+r2pEsc(tA.k)+'</b> ('+tA.n+' chamados)'+(tL?' e o local com mais ocorrências foi <b>'+r2pEsc(tL.k)+'</b> ('+tL.n+')':'')+'.');
-    frases.push('A equipe registrou <b>'+tot.a+'</b> atividades recorrentes.');
-    if(tot.g||tot.o) frases.push('Os gastos somaram <b>'+r2pFmtR(tot.g)+'</b>'+(pctG!=null?', o equivalente a <b>'+pctG+'%</b> do orçamento de '+r2pFmtR(tot.o):'')+'.');
-    sec(++n,'Resumo executivo','<div class="r2r-kpis">'+
+    var maisH=multi?L.slice().sort(function(a,b){return b.criados-a.criados;})[0]:null;
+    var ar=contar('areaTecnica',dent), lc=contar('local',dent), tA=ordem(ar,1)[0], tL=ordem(lc,1)[0];
+    var it=[];
+    it.push('<b>'+tot.cr+'</b> chamados abertos e <b>'+tot.c+'</b> concluídos'+(pctC!=null?' (<b>'+pctC+'%</b> do volume)':'')+'.');
+    if(tm!=null) it.push('Tempo médio de solução de <b>'+r2pFmtH(tm)+'</b>, da abertura à conclusão.');
+    it.push((tot.ab+tot.an)?'<b>'+(tot.ab+tot.an)+'</b> chamados pendentes agora, <b>'+tot.u+'</b> urgente'+(tot.u===1?'':'s')+'.':'Nenhum chamado pendente neste momento.');
+    if(maisH&&maisH.criados) it.push('Hotel com mais chamados: <b>'+r2pEsc(hNome(maisH.h))+'</b> ('+maisH.criados+').');
+    if(tA) it.push('Área mais demandada: <b>'+r2pEsc(tA)+'</b> ('+ar[tA]+')'+(tL?'; local com mais ocorrências: <b>'+r2pEsc(tL)+'</b> ('+lc[tL]+')':'')+'.');
+    it.push('<b>'+tot.a+'</b> atividades recorrentes registradas pela equipe.');
+    if(tot.g||tot.o) it.push('Gastos de <b>'+r2pFmtR(tot.g)+'</b>'+(pctG!=null?', <b>'+pctG+'%</b> do orçamento de '+r2pFmtR(tot.o):'')+'.');
+    slide('Resumo executivo','<div class="r2s-res"><div class="r2s-kgrid">'+
       kpi('Abertos no período',tot.cr,'chamados')+kpi('Concluídos',tot.c,pctC!=null?pctC+'% do aberto':'—','ok')+kpi('Tempo médio',r2pFmtH(tm),'abertura → conclusão')+
       kpi('Pendentes agora',tot.ab+tot.an,tot.an+' em andamento')+kpi('Urgentes pendentes',tot.u,'abertos agora',tot.u?'bad':'')+kpi('Gastos',r2pFmtR(tot.g),pctG!=null?pctG+'% do orçamento':'sem orçamento',pctG>100?'bad':'')+
-      '</div><div class="r2r-texto">'+frases.map(function(f){return '<p>'+f+'</p>';}).join('')+'</div>');
+      '</div><div class="r2s-dest"><h4>Destaques do período</h4><ul>'+it.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div></div>');
   }
   if(S.hoteis&&Hs.length){
-    sec(++n,'Situação por hotel','<table class="r2r-tbl"><thead><tr><th>Hotel</th><th>Abertos<br>período</th><th>Concluídos<br>período</th><th>Pendentes</th><th>Urgentes</th><th>Tempo<br>médio</th><th>Atividades</th><th>Gasto</th><th>% orç.</th></tr></thead><tbody>'+
+    slide(multi?'Situação por hotel':'Situação do hotel','<table class="r2s-tbl big"><thead><tr><th>Hotel</th><th>Abertos no período</th><th>Concluídos no período</th><th>Pendentes</th><th>Urgentes</th><th>Tempo médio</th><th>Atividades</th><th>Gasto</th><th>% do orçamento</th></tr></thead><tbody>'+
       L.map(function(p){ var gp=p.orc?Math.round(p.gasto*100/p.orc):null;
-        return '<tr><td><b>'+r2pEsc(p.h.nome.replace('Laghetto ',''))+'</b></td><td>'+p.criados+'</td><td>'+p.concMes+'</td><td>'+(p.abertos+p.andamento)+'</td><td>'+(p.urg?'<span class="r2r-bad">'+p.urg+'</span>':'0')+'</td><td>'+r2pFmtH(r2pMedia(p.tempos))+'</td><td>'+p.ativ+'</td><td>'+r2pFmtR(p.gasto)+'</td><td>'+(gp==null?'—':'<span class="'+(gp>100?'r2r-bad':gp>80?'r2r-warn':'r2r-ok')+'">'+gp+'%</span>')+'</td></tr>'; }).join('')+
-      (Hs.length>1?'<tr class="tot"><td>Total</td><td>'+tot.cr+'</td><td>'+tot.c+'</td><td>'+(tot.ab+tot.an)+'</td><td>'+tot.u+'</td><td>'+r2pFmtH(tm)+'</td><td>'+tot.a+'</td><td>'+r2pFmtR(tot.g)+'</td><td>'+(pctG==null?'—':pctG+'%')+'</td></tr>':'')+
+        return '<tr><td><b>'+r2pEsc(hNome(p.h))+'</b></td><td>'+p.criados+'</td><td>'+p.concMes+'</td><td>'+(p.abertos+p.andamento)+'</td><td>'+(p.urg?'<span class="r2s-bad">'+p.urg+'</span>':'0')+'</td><td>'+r2pFmtH(r2pMedia(p.tempos))+'</td><td>'+p.ativ+'</td><td>'+r2pFmtR(p.gasto)+'</td><td>'+(gp==null?'—':'<span class="'+(gp>100?'r2s-bad':gp>80?'r2s-warn':'r2s-ok')+'">'+gp+'%</span>')+'</td></tr>'; }).join('')+
+      (multi?'<tr class="tot"><td>Total</td><td>'+tot.cr+'</td><td>'+tot.c+'</td><td>'+(tot.ab+tot.an)+'</td><td>'+tot.u+'</td><td>'+r2pFmtH(tm)+'</td><td>'+tot.a+'</td><td>'+r2pFmtR(tot.g)+'</td><td>'+(pctG==null?'—':pctG+'%')+'</td></tr>':'')+
       '</tbody></table>');
   }
   if(S.graficos){
-    var st=r2pSerieTempo(chs);
-    var pr=contar('prioridade',dent), corP={Urgente:R2P_COR.urg,Alta:R2P_COR.alta,Media:R2P_COR.media,Baixa:R2P_COR.baixa};
-    var ar=contar('areaTecnica',dent), lc=contar('local',dent);
-    var g='<div class="r2r-card"><h3>Chamados abertos e concluídos por '+st.tipo+'</h3>'+r2pColunas([st.ab,st.co],st.rot,['Abertos','Concluídos'])+'</div><div class="r2r-g2">';
-    if(Hs.length>1) g+='<div class="r2r-card"><h3>Por hotel: concluídos / pendentes</h3>'+r2pBarras2(Hs.map(function(h){var p=por[h.slug];return {rot:h.nome.replace('Laghetto ',''),a:p.concMes,b:p.abertos+p.andamento};}),['Concluídos','Pendentes'])+'</div>';
-    g+='<div class="r2r-card"><h3>Por prioridade</h3>'+r2pBarras(['Urgente','Alta','Media','Baixa'].map(function(k){return {rot:k==='Media'?'Média':k,val:pr[k]||0,cor:corP[k]};}),{rot:80,val:36})+'</div>'+
-      '<div class="r2r-card"><h3>Por área técnica</h3>'+r2pBarras(Object.keys(ar).sort(function(a,b){return ar[b]-ar[a];}).slice(0,8).map(function(k){return {rot:k,val:ar[k]};}),{rot:120,val:36})+'</div>'+
-      '<div class="r2r-card"><h3>Locais com mais chamados</h3>'+r2pBarras(Object.keys(lc).sort(function(a,b){return lc[b]-lc[a];}).slice(0,8).map(function(k){return {rot:k,val:lc[k]};}),{rot:120,val:36})+'</div>';
-    if(Hs.length>1) g+='<div class="r2r-card"><h3>Tempo médio de solução por hotel</h3>'+r2pBarras(Hs.map(function(h){var t=r2pMedia(por[h.slug].tempos);return {rot:h.nome.replace('Laghetto ',''),val:t||0,txt:r2pFmtH(t)};}),{rot:120,val:60})+'</div>';
-    sec(++n,'Gráficos',g+'</div>');
+    var st=r2pSerieTempo(chs), pr=contar('prioridade',dent), corP={Urgente:R2P_COR.urg,Alta:R2P_COR.alta,Media:R2P_COR.media,Baixa:R2P_COR.baixa};
+    var prI=['Urgente','Alta','Media','Baixa'].map(function(k){return {rot:k==='Media'?'Média':k,val:pr[k]||0,cor:corP[k]};});
+    slide('Evolução dos chamados','<div class="r2s-g-a">'+card('Chamados abertos e concluídos por '+st.tipo,r2pColunas([st.ab,st.co],st.rot,['Abertos','Concluídos']),'wide')+
+      '<div class="r2s-g2">'+card('Por prioridade',r2pBarras(prI,{rot:90,val:40}))+
+      (multi?card('Por hotel: concluídos / pendentes',r2pBarras2(Hs.map(function(h){var p=por[h.slug];return {rot:hNome(h),a:p.concMes,b:p.abertos+p.andamento};}),['Concluídos','Pendentes'])):
+        card('Situação atual',r2pBarras([{rot:'Concluídos',val:tot.c,cor:R2P_COR.concl},{rot:'Em aberto',val:tot.ab,cor:R2P_COR.aberto},{rot:'Em andamento',val:tot.an,cor:R2P_COR.base}],{rot:110,val:40})))+'</div></div>');
+    var ar2=contar('areaTecnica',dent), lc2=contar('local',dent);
+    var sem=[0,0,0,0,0,0,0], ds=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    dent.forEach(function(c){var d=new Date(c.criadoEm);if(!isNaN(d))sem[d.getDay()]++;});
+    slide('Onde e quando acontecem','<div class="r2s-g4">'+
+      card('Por área técnica',r2pBarras(ordem(ar2,7).map(function(k){return {rot:k,val:ar2[k]};}),{rot:130,val:40}))+
+      card('Locais com mais chamados',r2pBarras(ordem(lc2,7).map(function(k){return {rot:k,val:lc2[k]};}),{rot:130,val:40}))+
+      (multi?card('Tempo médio de solução por hotel',r2pBarras(Hs.map(function(h){var t=r2pMedia(por[h.slug].tempos);return {rot:hNome(h),val:t||0,txt:r2pFmtH(t)};}),{rot:130,val:70})):
+        card('Atividades recorrentes',r2pBarras([{rot:'Registradas',val:tot.a}],{rot:110,val:40})))+
+      card('Chamados por dia da semana',r2pBarras(ds.map(function(d,i){return {rot:d,val:sem[i]};}),{rot:50,val:40}))+'</div>');
   }
   if(S.valores){
-    var lancs=(D.lancs||[]).filter(function(x){return !R2P.f.hotel||x.hotel===R2P.f.hotel;});
-    var cat={}, forn={};
-    lancs.forEach(function(x){ var v=Number(x.valor)||0; cat[x.categoria||'Sem categoria']=(cat[x.categoria||'Sem categoria']||0)+v; if(x.fornecedor) forn[x.fornecedor]=(forn[x.fornecedor]||0)+v; });
-    var catI=Object.keys(cat).sort(function(a,b){return cat[b]-cat[a];}).slice(0,8).map(function(k){return {rot:k,val:cat[k],txt:r2pFmtR(cat[k])};});
-    var fI=Object.keys(forn).sort(function(a,b){return forn[b]-forn[a];}).slice(0,8).map(function(k){return {rot:k,val:forn[k],txt:r2pFmtR(forn[k]),cor:R2P_COR.escuro};});
-    var v='<div class="r2r-kpis three">'+kpi('Total gasto',r2pFmtR(tot.g),lancs.length+' lançamentos')+kpi('Orçamento',tot.o?r2pFmtR(tot.o):'—','do período')+kpi('Saldo',tot.o?r2pFmtR(tot.o-tot.g):'—',pctG!=null?pctG+'% utilizado':'',tot.o&&tot.g>tot.o?'bad':'ok')+'</div>';
-    if(Hs.length>1) v+='<div class="r2r-card"><h3>Gastos por hotel (vs. orçamento)</h3>'+r2pBarras(Hs.map(function(h){var p=por[h.slug],pc=p.orc?p.gasto*100/p.orc:0;return {rot:h.nome.replace('Laghetto ',''),val:p.gasto,txt:r2pFmtR(p.gasto)+(p.orc?' ('+Math.round(pc)+'%)':''),cor:pc>100?R2P_COR.urg:pc>80?R2P_COR.aberto:R2P_COR.base};}),{rot:120,val:130})+'</div>';
-    v+='<div class="r2r-g2"><div class="r2r-card"><h3>Por categoria</h3>'+(catI.length?r2pBarras(catI,{rot:120,val:90}):'<div class="r2p-empty">Sem lançamentos no período.</div>')+'</div>'+
-      '<div class="r2r-card"><h3>Principais fornecedores</h3>'+(fI.length?r2pBarras(fI,{rot:120,val:90}):'<div class="r2p-empty">Sem fornecedores informados.</div>')+'</div></div>';
-    sec(++n,'Gastos e valores',v);
+    var lancs=(D.lancs||[]).filter(function(x){return !R2P.f.hotel||x.hotel===R2P.f.hotel;}), cat={}, forn={};
+    lancs.forEach(function(x){ var v=Number(x.valor)||0, k=x.categoria||'Sem categoria'; cat[k]=(cat[k]||0)+v; if(x.fornecedor) forn[x.fornecedor]=(forn[x.fornecedor]||0)+v; });
+    var catI=ordem(cat,7).map(function(k){return {rot:k,val:cat[k],txt:r2pFmtR(cat[k])};}), fI=ordem(forn,7).map(function(k){return {rot:k,val:forn[k],txt:r2pFmtR(forn[k]),cor:R2P_COR.escuro};});
+    slide('Gastos e valores','<div class="r2s-val"><div class="r2s-kgrid three">'+kpi('Total gasto',r2pFmtR(tot.g),lancs.length+' lançamentos')+kpi('Orçamento',tot.o?r2pFmtR(tot.o):'—','do período')+kpi('Saldo',tot.o?r2pFmtR(tot.o-tot.g):'—',pctG!=null?pctG+'% utilizado':'',tot.o&&tot.g>tot.o?'bad':'ok')+'</div>'+
+      '<div class="r2s-g'+(multi?'3':'2')+'">'+
+      (multi?card('Por hotel (vs. orçamento)',r2pBarras(Hs.map(function(h){var p=por[h.slug],pc=p.orc?p.gasto*100/p.orc:0;return {rot:hNome(h),val:p.gasto,txt:r2pFmtR(p.gasto)+(p.orc?' ('+Math.round(pc)+'%)':''),cor:pc>100?R2P_COR.urg:pc>80?R2P_COR.aberto:R2P_COR.base};}),{rot:95,val:115})):'')+
+      card('Por categoria',catI.length?r2pBarras(catI,{rot:110,val:80}):vazio('Sem lançamentos no período.'))+
+      card('Principais fornecedores',fI.length?r2pBarras(fI,{rot:110,val:80}):vazio('Sem fornecedores informados.'))+'</div></div>');
   }
   if(S.equipe){
-    var R=r2pRanking().slice(0,10);
-    sec(++n,'Equipe e ranking',R.length?'<table class="r2r-tbl"><thead><tr><th>#</th><th>Colaborador</th><th>Hotel</th><th>Pontos</th><th>Concluídos</th><th>Urgentes</th><th>Tempo médio</th><th>Atividades</th></tr></thead><tbody>'+
-      R.map(function(x,i){return '<tr'+(i<3?' class="top"':'')+'><td>'+(i+1)+'º</td><td><b>'+r2pEsc(x.nome)+'</b></td><td>'+r2pEsc(r2pHotelNome(x.hotel))+'</td><td><b>'+x.pts+'</b></td><td>'+x.concl+'</td><td>'+x.urg+'</td><td>'+r2pFmtH(x.tm)+'</td><td>'+x.ativ+'</td></tr>';}).join('')+'</tbody></table>':'<div class="r2p-empty">Sem movimento da equipe no período.</div>');
+    var R=r2pRanking();
+    var pod=R.slice(0,3).map(function(x,i){return '<div class="r2s-pod p'+(i+1)+'"><div class="pos">'+(i+1)+'º</div><div><div class="nm">'+r2pEsc(x.nome)+'</div><div class="ht">'+r2pEsc(r2pHotelNome(x.hotel))+'</div></div><div class="pt">'+x.pts+'<small>pts</small></div></div>';}).join('');
+    slide('Equipe e ranking',R.length?'<div class="r2s-eq"><div class="r2s-podio"><h4>Pódio do período</h4>'+pod+'</div>'+
+      '<table class="r2s-tbl big"><thead><tr><th>#</th><th>Colaborador</th><th>Hotel</th><th>Pontos</th><th>Concluídos</th><th>Urgentes</th><th>Tempo médio</th><th>Atividades</th></tr></thead><tbody>'+
+      R.slice(0,10).map(function(x,i){return '<tr'+(i<3?' class="top"':'')+'><td>'+(i+1)+'º</td><td><b>'+r2pEsc(x.nome)+'</b></td><td>'+r2pEsc(r2pHotelNome(x.hotel))+'</td><td><b>'+x.pts+'</b></td><td>'+x.concl+'</td><td>'+x.urg+'</td><td>'+r2pFmtH(x.tm)+'</td><td>'+x.ativ+'</td></tr>';}).join('')+'</tbody></table></div>':vazio('Sem movimento da equipe no período.'));
   }
   if(S.prev){
-    var P=(D.prev||[]).filter(function(p){return !R2P.f.hotel||p.hotel===R2P.f.hotel;});
-    var gerados=dent.filter(function(c){return c.preventiva_id;}), concP=gerados.filter(function(c){return c.status==='Concluido';}).length;
-    var freq={}; P.filter(function(p){return p.ativo;}).forEach(function(p){freq[p.frequencia]=(freq[p.frequencia]||0)+1;});
+    var P=(D.prev||[]).filter(function(p){return !R2P.f.hotel||p.hotel===R2P.f.hotel;}), ativas=P.filter(function(p){return p.ativo;});
+    var ger=dent.filter(function(c){return c.preventiva_id;}), cP=ger.filter(function(c){return c.status==='Concluido';}).length, fq={};
+    ativas.forEach(function(p){fq[p.frequencia]=(fq[p.frequencia]||0)+1;});
     var FN={diaria:'Diária',semanal:'Semanal',quinzenal:'Quinzenal',mensal:'Mensal',semestral:'Semestral',anual:'Anual'};
-    sec(++n,'Manutenção preventiva','<div class="r2r-kpis three">'+kpi('Preventivas ativas',P.filter(function(p){return p.ativo;}).length,P.length+' cadastradas')+kpi('Chamados gerados',gerados.length,'no período')+kpi('Preventivas concluídas',concP,gerados.length?Math.round(concP*100/gerados.length)+'% do gerado':'—','ok')+'</div>'+
-      (Object.keys(freq).length?'<div class="r2r-card"><h3>Preventivas ativas por frequência</h3>'+r2pBarras(['diaria','semanal','quinzenal','mensal','semestral','anual'].filter(function(k){return freq[k];}).map(function(k){return {rot:FN[k],val:freq[k]};}),{rot:100,val:36})+'</div>':''));
+    slide('Manutenção preventiva','<div class="r2s-prev"><div class="r2s-kcol">'+kpi('Preventivas ativas',ativas.length,P.length+' cadastradas')+kpi('Chamados gerados',ger.length,'no período')+kpi('Concluídas',cP,ger.length?Math.round(cP*100/ger.length)+'% do gerado':'—','ok')+'</div>'+
+      card('Preventivas ativas por frequência',Object.keys(fq).length?r2pBarras(['diaria','semanal','quinzenal','mensal','semestral','anual'].filter(function(k){return fq[k];}).map(function(k){return {rot:FN[k],val:fq[k]};}),{rot:100,val:40}):vazio('Nenhuma preventiva ativa.'))+
+      card('Programação ativa',ativas.length?'<ul class="r2s-lista">'+ativas.slice(0,9).map(function(p){return '<li><b>'+r2pEsc(p.titulo)+'</b><span>'+(FN[p.frequencia]||p.frequencia)+(multi?' · '+r2pEsc(r2pHotelNome(p.hotel)):'')+'</span></li>';}).join('')+(ativas.length>9?'<li class="mais">+ '+(ativas.length-9)+' preventivas</li>':'')+'</ul>':vazio('Nenhuma preventiva ativa.'))+'</div>');
   }
   if(S.destaques){
-    var pend=chs.filter(function(c){return c.status==='Aberto'||c.status==='Andamento';}).sort(function(a,b){var pa=a.prioridade==='Urgente'?0:1,pb=b.prioridade==='Urgente'?0:1;return pa-pb||String(a.criadoEm).localeCompare(String(b.criadoEm));}).slice(0,10);
-    var dem=chs.filter(function(c){return c.status==='Concluido'&&c.concluidoEm&&r2pDentro(c.concluidoEm);}).map(function(c){return {c:c,h:(Date.parse(c.concluidoEm)-Date.parse(c.criadoEm))/36e5};}).filter(function(x){return x.h>=0;}).sort(function(a,b){return b.h-a.h;}).slice(0,5);
-    function linha(c,extra){ return '<tr><td>'+r2pEsc(r2pHotelNome(c.hotel))+'</td><td><b>'+r2pEsc(c.local||'-')+'</b></td><td>'+r2pEsc(c.areaTecnica||'')+'</td><td>'+r2pEsc(String(c.descricao||c.titulo||'').replace(/\n/g,' ').slice(0,70))+'</td><td>'+extra+'</td></tr>'; }
-    sec(++n,'Destaques e pendências','<div class="r2r-card"><h3>Pendências prioritárias ('+pend.length+')</h3>'+(pend.length?'<table class="r2r-tbl sm"><thead><tr><th>Hotel</th><th>Local</th><th>Área</th><th>Descrição</th><th>Aberto há</th></tr></thead><tbody>'+pend.map(function(c){return linha(c,(c.prioridade==='Urgente'?'<span class="r2r-bad">Urgente</span> ':'')+r2pDesde(Date.parse(c.criadoEm)));}).join('')+'</tbody></table>':'<div class="r2p-empty">Nenhuma pendência.</div>')+'</div>'+
-      '<div class="r2r-card"><h3>Chamados que mais demoraram para concluir</h3>'+(dem.length?'<table class="r2r-tbl sm"><thead><tr><th>Hotel</th><th>Local</th><th>Área</th><th>Descrição</th><th>Duração</th></tr></thead><tbody>'+dem.map(function(x){return linha(x.c,r2pFmtH(x.h));}).join('')+'</tbody></table>':'<div class="r2p-empty">Sem chamados concluídos no período.</div>')+'</div>');
+    var pend=chs.filter(function(c){return c.status==='Aberto'||c.status==='Andamento';}).sort(function(a,b){var pa=a.prioridade==='Urgente'?0:1,pb=b.prioridade==='Urgente'?0:1;return pa-pb||String(a.criadoEm).localeCompare(String(b.criadoEm));}).slice(0,9);
+    var dem=chs.filter(function(c){return c.status==='Concluido'&&c.concluidoEm&&r2pDentro(c.concluidoEm);}).map(function(c){return {c:c,h:(Date.parse(c.concluidoEm)-Date.parse(c.criadoEm))/36e5};}).filter(function(x){return x.h>=0;}).sort(function(a,b){return b.h-a.h;}).slice(0,9);
+    function lin(c,ex){ return '<tr><td><b>'+r2pEsc(c.local||'-')+'</b>'+(multi?'<small>'+r2pEsc(r2pHotelNome(c.hotel))+'</small>':'')+'</td><td>'+r2pEsc(String(c.descricao||c.titulo||'').replace(/\n/g,' ').slice(0,58))+'<small>'+r2pEsc(c.areaTecnica||'')+'</small></td><td class="n">'+ex+'</td></tr>'; }
+    slide('Destaques e pendências','<div class="r2s-g2 alto">'+
+      card('Pendências prioritárias ('+chs.filter(function(c){return c.status==='Aberto'||c.status==='Andamento';}).length+')',pend.length?'<table class="r2s-tbl sm"><thead><tr><th>Local</th><th>Descrição</th><th>Aberto há</th></tr></thead><tbody>'+pend.map(function(c){return lin(c,(c.prioridade==='Urgente'?'<span class="r2s-bad">Urgente</span><br>':'')+r2pDesde(Date.parse(c.criadoEm)));}).join('')+'</tbody></table>':vazio('Nenhuma pendência.'))+
+      card('Os que mais demoraram para concluir',dem.length?'<table class="r2s-tbl sm"><thead><tr><th>Local</th><th>Descrição</th><th>Duração</th></tr></thead><tbody>'+dem.map(function(x){return lin(x.c,r2pFmtH(x.h));}).join('')+'</tbody></table>':vazio('Sem chamados concluídos no período.'))+'</div>');
   }
   if(S.fotos){
     var sel=r2pRelCandidatas().filter(function(x){return R2P.rel.fotos&&R2P.rel.fotos[x.url];}).slice(0,24);
-    sec(++n,'Registro fotográfico',sel.length?'<div class="r2r-fotos">'+sel.map(function(x){var c=x.ch;
-      return '<figure><img src="'+r2pEsc(r2pRelFotoUrl(x.url,900))+'" alt=""><figcaption><b>'+r2pEsc(r2pHotelNome(c.hotel)+' · '+(c.local||'-'))+'</b>'+r2pEsc((c.areaTecnica?' · '+c.areaTecnica:''))+'<br>'+r2pEsc(String(c.descricao||'').replace(/\n/g,' ').slice(0,80))+'<br><span>'+(c.status==='Concluido'?'Concluído '+(c.concluidoPor?'por '+r2pEsc(c.concluidoPor)+' ':'')+'em '+new Date(c.concluidoEm).toLocaleDateString('pt-BR'):'Aberto em '+new Date(c.criadoEm).toLocaleDateString('pt-BR'))+'</span></figcaption></figure>';}).join('')+'</div>':'<div class="r2p-empty">Nenhuma foto selecionada.</div>');
+    if(!sel.length) slide('Registro fotográfico',vazio('Nenhuma foto selecionada.'));
+    for(var i=0;i<sel.length;i+=6){
+      var grupo=sel.slice(i,i+6);
+      slide('Registro fotográfico'+(sel.length>6?' ('+(i/6+1)+'/'+Math.ceil(sel.length/6)+')':''),'<div class="r2s-fotos n'+grupo.length+'">'+grupo.map(function(x){var c=x.ch;
+        return '<figure><img src="'+r2pEsc(r2pRelFotoUrl(x.url,1000))+'" alt=""><figcaption><b>'+r2pEsc((multi?r2pHotelNome(c.hotel)+' · ':'')+(c.local||'-'))+'</b> '+r2pEsc(c.areaTecnica?'· '+c.areaTecnica:'')+'<span>'+r2pEsc(String(c.descricao||'').replace(/\n/g,' ').slice(0,70))+'</span><em>'+(c.status==='Concluido'?'Concluído'+(c.concluidoPor?' por '+r2pEsc(c.concluidoPor):'')+' em '+new Date(c.concluidoEm).toLocaleDateString('pt-BR'):'Aberto em '+new Date(c.criadoEm).toLocaleDateString('pt-BR'))+'</em></figcaption></figure>';}).join('')+'</div>');
+    }
   }
-  if(S.obs&&String(R2P.rel.obs||'').trim()){
-    sec(++n,'Observações do gestor','<div class="r2r-obs">'+r2pEsc(R2P.rel.obs).replace(/\n/g,'<br>')+'</div>');
+  if(S.obs&&String(R2P.rel.obs||'').trim()) slide('Observações do gestor','<div class="r2s-obs">'+r2pEsc(R2P.rel.obs).replace(/\n/g,'<br>')+'</div>');
+
+  var total=slides.length+(S.capa?1:0), out='';
+  if(S.capa){
+    out+='<div class="r2s capa"><div class="r2s-capa-l"><div class="r2s-tag">MANUTENÇÃO · GRUPO LAGHETTO</div><h1>'+r2pEsc(tit)+'</h1>'+
+      '<div class="sub">'+r2pEsc(alvo)+'</div><div class="per">'+r2pEsc(per.charAt(0).toUpperCase()+per.slice(1))+'</div>'+
+      (multi?'<div class="hs">'+Hs.map(function(h){return '<span>'+r2pEsc(hNome(h))+'</span>';}).join('')+'</div>':'')+
+      '<div class="rod">Gerado em '+r2pEsc(new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'}))+' · Sistema de Manutenção R2</div></div>'+
+      '<div class="r2s-capa-r"><div><b>'+tot.cr+'</b><span>chamados abertos</span></div><div><b>'+tot.c+'</b><span>concluídos'+(pctC!=null?' · '+pctC+'%':'')+'</span></div>'+
+      '<div><b>'+r2pFmtH(tm)+'</b><span>tempo médio de solução</span></div><div><b>'+r2pFmtR(tot.g)+'</b><span>em gastos</span></div></div></div>';
   }
-  return out+secs.join('')+'<div class="r2r-rod">'+r2pEsc(r2pRelTitulo())+' · '+r2pEsc(r2pRelPerTexto())+' · gerado em '+r2pEsc(new Date().toLocaleString('pt-BR'))+'</div>';
+  var off=S.capa?1:0;
+  out+=slides.map(function(s,i){
+    return '<div class="r2s '+s.cls+'"><div class="r2s-h"><span class="nn">'+String(s.n).padStart(2,'0')+'</span><h3>'+r2pEsc(s.t)+'</h3><span class="ctx">'+r2pEsc(alvo+' · '+per)+'</span></div>'+
+      '<div class="r2s-b">'+s.html+'</div><div class="r2s-f"><span>'+r2pEsc(tit)+'</span><span>'+(i+1+off)+' / '+total+'</span></div></div>';
+  }).join('');
+  return out||'<div class="r2p-empty">Marque ao menos uma seção.</div>';
 }
 
 function r2pRelPDF(){
@@ -6050,8 +6122,9 @@ function r2pRelPDF(){
   esperar.then(function(){
     var t=document.title;
     document.title=(r2pRelTitulo()+' - '+r2pRelPerTexto()).replace(/[\\\/:*?"<>|]/g,'-');
+    var pg=document.createElement('style'); pg.id='r2p-rel-page'; pg.textContent='@page{size:297mm 210mm;margin:0}'; document.body.appendChild(pg);
     document.body.classList.add('r2p-rel-print');
-    setTimeout(function(){ window.print(); setTimeout(function(){ document.body.classList.remove('r2p-rel-print'); document.title=t; },500); },150);
+    setTimeout(function(){ window.print(); setTimeout(function(){ document.body.classList.remove('r2p-rel-print'); var x=document.getElementById('r2p-rel-page'); if(x) x.remove(); document.title=t; },500); },150);
   });
 }
 
