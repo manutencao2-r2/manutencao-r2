@@ -486,7 +486,7 @@ var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-24.2';
+var R2_VERSAO = '2026-11-25.1';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -5158,7 +5158,7 @@ body.r2-portal-mode #r2p{display:block}
 .r2p-lock b{color:#0A2A22;font-size:15px}
 .r2p-lock div div{font-size:13px;color:#6b7770;margin-top:3px}
 .r2p-empty{color:#6b7770;font-size:13px;padding:10px 0}
-.r2p-modal{position:fixed;inset:0;background:rgba(10,42,34,.55);display:flex;align-items:center;justify-content:center;z-index:20}
+.r2p-modal{position:fixed;inset:0;background:rgba(10,42,34,.55);display:flex;align-items:center;justify-content:center;z-index:1000}
 .r2p-modal .box{background:#fff;border-radius:16px;padding:28px;width:100%;max-width:360px;margin:16px}
 .r2p-modal label{display:block;font-size:12px;color:#6b7770;font-weight:500;margin:0 0 4px}
 .r2p-modal input{width:100%;padding:10px;border:1px solid #DDE6DF;border-radius:8px;font:14px 'DM Sans',sans-serif;margin-bottom:14px}
@@ -5203,6 +5203,54 @@ body.r2-portal-mode #r2p{display:block}
 .r2p-filtros select,.r2p-limp select,.r2p-limp input{padding:7px 9px;border:1px solid #DDE6DF;border-radius:8px;font:13px 'DM Sans',sans-serif;background:#fff;color:#1d2b24}
 .r2p-btn-out{background:#fff;color:#1B4332;border:1px solid #1B4332}
 .r2p-btn-out:hover{background:#EEF6EF}
+.r2p-mo,.r2p-bnav,.r2p-hcards{display:none}
+@media(max-width:700px){
+  #r2p-dashv{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+  .r2p-dk,.r2p-abas,.r2p-htbl,.r2p-atual{display:none!important}
+  .r2p-mo{display:inline-block}
+  .r2p-h{margin-bottom:10px}
+  .r2p-h h2{font-size:19px}
+  .r2p-h small{display:none}
+  .r2p-filtros{position:sticky;top:64px;z-index:4;padding:8px 10px;gap:8px;flex-wrap:nowrap;border-radius:12px;box-shadow:0 4px 12px rgba(10,42,34,.06)}
+  .r2p-filtros label{flex:1;min-width:0;gap:4px;background:#EEF6EF;border-radius:20px;padding:0 4px 0 10px;color:#1B4332}
+  .r2p-filtros label i{font-size:16px}
+  .r2p-filtros select{flex:1;min-width:0;border:0;background:transparent;font-weight:600;color:#1B4332;padding:8px 2px;font-size:14px}
+  .r2p-filtros>span[style*="flex:1"]{display:none}
+  .r2p-filtros .r2p-upd{display:none}
+  .r2p-atz{width:38px;height:38px;padding:0;justify-content:center;border-radius:50%;flex:none}
+  .r2p-atz i{margin:0;font-size:17px}
+  .r2p-kpis{gap:10px}
+  .r2p-kpi{padding:12px}
+  .r2p-kpi .v{font-size:26px}
+  .r2p-card{padding:14px;border-radius:12px}
+  .r2p-card h3{font-size:15px}
+  .r2p-hcards{display:grid;gap:10px}
+  .r2p-hcard{border:1px solid #DDE6DF;border-radius:10px;padding:11px 12px;cursor:pointer;background:#fff}
+  .r2p-hcard:active{background:#EEF6EF}
+  .r2p-hcard .hc-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .r2p-hcard .hc-top b{flex:1;font-size:15px;color:#0A2A22}
+  .r2p-hcard .hc-top i{color:#8a958e}
+  .r2p-hcard .hc-num{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center}
+  .r2p-hcard .hc-num b{display:block;font-size:17px;color:#1B4332}
+  .r2p-hcard .hc-num span{font-size:10.5px;color:#6b7770}
+  .r2p-urg{flex-wrap:wrap}
+  .r2p-bnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:900;background:#fff;border-top:1px solid #DDE6DF;padding:6px 6px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 16px rgba(10,42,34,.08)}
+  .r2p-bnav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;color:#6b7770;font:600 11px 'DM Sans',sans-serif;border-radius:10px;cursor:pointer}
+  .r2p-bnav button i{font-size:22px}
+  .r2p-bnav button.on{color:#1B4332;background:#EEF6EF}
+  #r2p-sheet{position:fixed;inset:0;z-index:950}
+  #r2p-sheet .r2p-sh-fundo{position:absolute;inset:0;background:rgba(10,42,34,.45);opacity:0;transition:opacity .2s}
+  #r2p-sheet .r2p-sh{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;padding:8px 10px calc(14px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .22s ease-out;max-height:85vh;overflow:auto}
+  #r2p-sheet.on .r2p-sh-fundo{opacity:1}
+  #r2p-sheet.on .r2p-sh{transform:none}
+  .r2p-sh-alca{width:40px;height:4px;border-radius:2px;background:#DDE6DF;margin:4px auto 10px}
+  .r2p-sh button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:11px 10px;border-radius:10px;text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif}
+  .r2p-sh button.on,.r2p-sh button:active{background:#EEF6EF}
+  .r2p-sh button i{font-size:22px;color:#1B4332;width:26px;text-align:center}
+  .r2p-sh button b{display:block;font-size:15px;color:#0A2A22}
+  .r2p-sh button span{display:block;font-size:12px;color:#6b7770}
+  .r2p-sh-sep{height:1px;background:#EEF2EF;margin:6px 8px}
+}
 .r2p-btn-del{background:#fff;color:#c0392b;border:1px solid #e3b4ae}
 .r2p-btn-del:hover{background:#FDE2E1}
 .r2p-btn-perigo{background:#c0392b}
@@ -5750,27 +5798,70 @@ function r2pTermometro(lista){
 /* ---------- render ---------- */
 function r2pSetFiltro(k,v){ R2P.f[k]=v; if(k==='per'){ R2P.dados=null; r2pRenderDash(); r2pCarregar(); } else r2pRenderDash(); }
 function r2pSetAba(a){ R2P.aba=a; r2pRenderDash(); }
+/* ---------- celular: folha "Mais" e instalação ---------- */
+function r2pMais(){
+  r2pMaisFechar();
+  var it=[
+    ['palavras','ti-temperature','Termômetro de palavras','O que mais aparece nos chamados'],
+    ['banco','ti-database','Banco de dados','Espaço usado e limpeza'],
+    ['relatorio','ti-report','Relatório PDF','Montar relatório da regional']
+  ].map(function(a){return '<button onclick="r2pMaisFechar();r2pSetAba(\''+a[0]+'\');window.scrollTo(0,0)"'+(R2P.aba===a[0]?' class="on"':'')+'><i class="ti '+a[1]+'"></i><div><b>'+a[2]+'</b><span>'+a[3]+'</span></div></button>';}).join('')+
+  '<div class="r2p-sh-sep"></div>'+
+  [['r2pHoteisGerir()','ti-building-plus','Hotéis','Adicionar, editar ou excluir'],
+   ['r2pAcessos()','ti-key','Acessos','Quem entra no Dashboard'],
+   ['r2pPDF()','ti-file-type-pdf','Baixar PDF da tela','Imprime a aba aberta'],
+   ['r2pInstalar()','ti-device-mobile-down','Instalar no celular','Ícone na tela inicial'],
+   ['r2pSair()','ti-logout','Sair','Encerrar a sessão']
+  ].map(function(a){return '<button onclick="r2pMaisFechar();'+a[0]+'"><i class="ti '+a[1]+'"></i><div><b>'+a[2]+'</b><span>'+a[3]+'</span></div></button>';}).join('');
+  var d=document.createElement('div'); d.id='r2p-sheet';
+  d.innerHTML='<div class="r2p-sh-fundo" onclick="r2pMaisFechar()"></div><div class="r2p-sh"><div class="r2p-sh-alca"></div>'+it+'</div>';
+  document.body.appendChild(d);
+  requestAnimationFrame(function(){ d.classList.add('on'); });
+}
+function r2pMaisFechar(){ var d=document.getElementById('r2p-sheet'); if(d) d.remove(); }
+var R2P_INST=null;
+window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); R2P_INST=e; });
+function r2pInstalar(){
+  var pai=null; try{ if(window.parent!==window&&/dashboard\.html/.test(window.parent.location.pathname)) pai=window.parent; }catch(e){}
+  if(pai&&pai.R2P_INST){ pai.R2P_INST.prompt(); pai.R2P_INST=null; return; }
+  var url=new URL('dashboard.html',location.href).href, ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  if(pai){ r2pModal('Instalar o Dashboard no celular','<div style="font-size:14px;line-height:1.55">Você já está no endereço do Dashboard. '+(ios?'No <b>Safari</b>, toque em <b>Compartilhar</b> e escolha <b>Adicionar à Tela de Início</b>.':'No <b>Chrome</b>, toque no menu <b>⋮</b> e escolha <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.')+'</div>'); return; }
+  r2pModal('Instalar o Dashboard no celular',
+    '<div style="font-size:14px;line-height:1.55">'+
+    '<p style="margin:0 0 10px">O Dashboard tem um endereço próprio para virar um ícone na tela inicial, com o nome <b>Dashboard R2</b>:</p>'+
+    '<div style="background:#F4F7F4;border:1px solid #DDE6DF;border-radius:8px;padding:9px 11px;font-size:13px;word-break:break-all;margin-bottom:12px">'+r2pEsc(url)+'</div>'+
+    '<ol style="margin:0 0 14px 18px;padding:0">'+
+    (ios?'<li>Abra o endereço no <b>Safari</b>.</li><li>Toque em <b>Compartilhar</b> (quadrado com seta).</li><li>Escolha <b>Adicionar à Tela de Início</b>.</li>'
+        :'<li>Abra o endereço no <b>Chrome</b>.</li><li>Toque no menu <b>⋮</b> no canto de cima.</li><li>Escolha <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</li>')+
+    '</ol></div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="r2p-btn" href="'+r2pEsc(url)+'" target="_blank" rel="noopener" style="text-decoration:none"><i class="ti ti-external-link"></i> Abrir endereço</a>'+
+    '<button class="r2p-btn r2p-btn-out" onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+url+'\');this.textContent=\'Copiado\'">Copiar endereço</button></div>');
+}
 function r2pRenderDash(){
   var el=document.getElementById('r2p-dash');
   if(!R2P.sessao){ r2pRenderLoginDash(); return; }
   var filtros='<div class="r2p-filtros r2p-noprint">'+
-    '<label>Hotel <select onchange="r2pSetFiltro(\'hotel\',this.value)"><option value="">Todos os hotéis</option>'+R2_HOTEIS.map(function(h){return '<option value="'+h.slug+'"'+(R2P.f.hotel===h.slug?' selected':'')+'>'+r2pEsc(h.nome.replace('Laghetto ',''))+'</option>';}).join('')+'</select></label>'+
-    '<label>Período <select onchange="r2pSetFiltro(\'per\',this.value)">'+R2P_PER.map(function(p){return '<option value="'+p[0]+'"'+(R2P.f.per===p[0]?' selected':'')+'>'+p[1]+'</option>';}).join('')+'</select></label>'+
+    '<label><span class="r2p-dk">Hotel</span><i class="ti ti-building r2p-mo"></i> <select onchange="r2pSetFiltro(\'hotel\',this.value)"><option value="">Todos os hotéis</option>'+R2_HOTEIS.map(function(h){return '<option value="'+h.slug+'"'+(R2P.f.hotel===h.slug?' selected':'')+'>'+r2pEsc(h.nome.replace('Laghetto ',''))+'</option>';}).join('')+'</select></label>'+
+    '<label><span class="r2p-dk">Período</span><i class="ti ti-calendar r2p-mo"></i> <select onchange="r2pSetFiltro(\'per\',this.value)">'+R2P_PER.map(function(p){return '<option value="'+p[0]+'"'+(R2P.f.per===p[0]?' selected':'')+'>'+p[1]+'</option>';}).join('')+'</select></label>'+
     '<span style="flex:1"></span>'+
     (R2P.dados?'<span class="r2p-upd">Atualizado às '+R2P.dados.em.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</span>':'')+
-    '<button class="r2p-btn sm r2p-btn-out" onclick="r2pHoteisGerir()"><i class="ti ti-building-plus"></i> Hotéis</button>'+
-    '<button class="r2p-btn sm r2p-btn-out" onclick="r2pAcessos()"><i class="ti ti-key"></i> Acessos</button>'+
-    '<button class="r2p-btn sm r2p-btn-out" onclick="r2pPDF()"><i class="ti ti-file-type-pdf"></i> Baixar PDF</button>'+
-    '<button class="r2p-btn sm" onclick="r2pCarregar()"><i class="ti ti-refresh"></i> Atualizar</button></div>';
+    '<button class="r2p-btn sm r2p-btn-out r2p-dk" onclick="r2pHoteisGerir()"><i class="ti ti-building-plus"></i> Hotéis</button>'+
+    '<button class="r2p-btn sm r2p-btn-out r2p-dk" onclick="r2pAcessos()"><i class="ti ti-key"></i> Acessos</button>'+
+    '<button class="r2p-btn sm r2p-btn-out r2p-dk" onclick="r2pPDF()"><i class="ti ti-file-type-pdf"></i> Baixar PDF</button>'+
+    '<button class="r2p-btn sm r2p-atz" onclick="r2pCarregar()" title="Atualizar"><i class="ti ti-refresh"></i><span class="r2p-dk"> Atualizar</span></button></div>';
   var abas=[['geral','Visão geral','ti-layout-dashboard'],['ranking','Ranking','ti-trophy'],['palavras','Termômetro de palavras','ti-temperature'],['graficos','Gráficos','ti-chart-bar'],['banco','Banco de dados','ti-database'],['relatorio','Relatório PDF','ti-report']];
   var abasH='<div class="r2p-abas r2p-noprint">'+abas.map(function(a){return '<button class="'+(R2P.aba===a[0]?'on':'')+'" onclick="r2pSetAba(\''+a[0]+'\')"><i class="ti '+a[2]+'"></i> '+a[1]+'</button>';}).join('')+'</div>';
+  var maisAbas={palavras:1,banco:1,relatorio:1};
+  var bnav='<nav class="r2p-bnav r2p-noprint">'+[['geral','Visão geral','ti-layout-dashboard'],['ranking','Ranking','ti-trophy'],['graficos','Gráficos','ti-chart-bar']].map(function(a){
+      return '<button class="'+(R2P.aba===a[0]?'on':'')+'" onclick="r2pSetAba(\''+a[0]+'\');window.scrollTo(0,0)"><i class="ti '+a[2]+'"></i><span>'+a[1]+'</span></button>';}).join('')+
+    '<button class="'+(maisAbas[R2P.aba]?'on':'')+'" onclick="r2pMais()"><i class="ti ti-dots"></i><span>Mais</span></button></nav>';
   var titulo='<div class="r2p-h"><h2><i class="ti ti-layout-dashboard"></i> Dashboard da Regional 2</h2><small>'+r2pEsc((R2P.f.hotel?r2pHotelNome(R2P.f.hotel):'Todos os hotéis')+' · '+r2pPerNome())+'</small></div>';
   var cab='<div class="r2p-printhead">Manutenção · Regional 2 Laghetto — '+r2pEsc((R2P.f.hotel?r2pHotelNome(R2P.f.hotel):'Todos os hotéis')+' · '+r2pPerNome())+' — gerado em '+new Date().toLocaleString('pt-BR')+'</div>';
-  if(R2P.erro){ el.innerHTML=cab+titulo+filtros+'<div class="r2p-card" style="border-color:#c0392b"><h3 style="color:#c0392b"><i class="ti ti-alert-triangle"></i> Não foi possível carregar</h3><div style="font-size:13px;color:#6b7770">'+r2pEsc(R2P.erro)+'</div></div>'; return; }
-  if(!R2P.dados){ el.innerHTML=cab+titulo+filtros+abasH+'<div class="r2p-card"><div class="r2p-empty">Carregando indicadores...</div></div>'; return; }
-  if(R2P.aba==='relatorio'){ el.innerHTML=titulo+filtros+abasH+r2pSecRelatorio(); r2pRelPosRender(); return; }
+  if(R2P.erro){ el.innerHTML=cab+titulo+filtros+'<div class="r2p-card" style="border-color:#c0392b"><h3 style="color:#c0392b"><i class="ti ti-alert-triangle"></i> Não foi possível carregar</h3><div style="font-size:13px;color:#6b7770">'+r2pEsc(R2P.erro)+'</div></div>'+bnav; return; }
+  if(!R2P.dados){ el.innerHTML=cab+titulo+filtros+abasH+'<div class="r2p-card"><div class="r2p-empty">Carregando indicadores...</div></div>'+bnav; return; }
+  if(R2P.aba==='relatorio'){ el.innerHTML=titulo+filtros+abasH+r2pSecRelatorio()+bnav; r2pRelPosRender(); return; }
   var sec={geral:r2pSecGeral(),ranking:r2pSecRanking(),palavras:r2pSecPalavras(),graficos:r2pSecGraficos(),banco:r2pSecBanco()};
-  el.innerHTML=cab+titulo+filtros+abasH+abas.filter(function(a){return a[0]!=='relatorio';}).map(function(a){return '<div class="r2p-sec'+(R2P.aba===a[0]?' on':'')+'" data-titulo="'+r2pEsc(a[1])+'">'+sec[a[0]]+'</div>';}).join('');
+  el.innerHTML=cab+titulo+filtros+abasH+abas.filter(function(a){return a[0]!=='relatorio';}).map(function(a){return '<div class="r2p-sec'+(R2P.aba===a[0]?' on':'')+'" data-titulo="'+r2pEsc(a[1])+'">'+sec[a[0]]+'</div>';}).join('')+bnav;
 }
 
 function r2pSecGeral(){
@@ -5786,7 +5877,14 @@ function r2pSecGeral(){
     kpi('ti-clock','Tempo médio',r2pFmtH(r2pMedia(tot.t)),'da abertura à conclusão')+
     kpi('ti-cash','Gastos',r2pFmtR(tot.g),pctG==null?'sem orçamento lançado':pctG+'% do orçamento',pctG!=null&&pctG>100?'red':'')+
   '</div>';
-  h+='<div class="r2p-card"><h3><i class="ti ti-table"></i> Situação por hotel</h3><div style="overflow-x:auto"><table class="r2p-tbl"><thead><tr>'+
+  h+='<div class="r2p-card"><h3><i class="ti ti-table"></i> Situação por hotel</h3>'+
+    '<div class="r2p-hcards">'+L.map(function(p){
+      return '<div class="r2p-hcard" onclick="r2pAbrirHotel(\''+p.h.slug+'\')"><div class="hc-top"><b>'+r2pEsc(p.h.nome.replace('Laghetto ',''))+'</b>'+
+        (p.urg?'<span class="r2p-pill bad">'+p.urg+' urgente'+(p.urg>1?'s':'')+'</span>':'')+'<i class="ti ti-chevron-right"></i></div>'+
+        '<div class="hc-num"><div><b>'+(p.abertos+p.andamento)+'</b><span>em aberto</span></div><div><b>'+p.criados+'</b><span>abertos</span></div>'+
+        '<div><b>'+p.concMes+'</b><span>concluídos</span></div><div><b>'+r2pFmtH(r2pMedia(p.tempos))+'</b><span>tempo médio</span></div></div></div>';
+    }).join('')+'</div>'+
+    '<div class="r2p-htbl" style="overflow-x:auto"><table class="r2p-tbl"><thead><tr>'+
     '<th>Hotel</th><th class="n">Em aberto</th><th class="n">Urgentes</th><th class="n hm">Programados</th><th class="n">Abertos período</th><th class="n">Concluídos período</th><th class="n hm">Tempo médio</th><th class="n hm">Mais antigo</th><th class="n hm">Atividades</th><th class="n hm">Gasto / Orçamento</th><th class="hm">Implantação</th>'+
     '</tr></thead><tbody>'+
     L.map(function(p){
