@@ -442,6 +442,7 @@ body.r2-portal-mode .app, body.r2-portal-mode #login-screen, body.r2-portal-mode
       <div class="actions">
         <div class="user-pick" id="user-info"><i class="ti ti-user"></i><span id="usel" style="font-size:13px;font-weight:500"></span><span id="perfil-badge" style="font-size:10px;padding:1px 6px;border-radius:6px;margin-left:4px;font-weight:700"></span></div>
         <button class="btn sec sm" onclick="reload()" title="Atualizar dados"><i class="ti ti-refresh"></i></button>
+        <button class="btn sec sm" onclick="r2TrocarSenha()" title="Trocar minha senha"><i class="ti ti-key"></i></button>
         <button class="btn sec sm" onclick="fazerLogout()" title="Sair" style="color:#c0392b"><i class="ti ti-logout"></i></button>
         <div id="stpill" class="status-pill"><span class="dot"></span><span id="stxt">Conectado</span></div>
       </div>
@@ -486,7 +487,7 @@ var R2_NOME = R2_INFO ? R2_INFO.nome : 'Regional 2 Laghetto';
 function R2K(k){ return 'r2_' + R2_HOTEL + '_' + k; }
 /* Versao publicada. A cada publicacao este numero muda; quem estiver com a
    versao antiga em cache recarrega sozinho. */
-var R2_VERSAO = '2026-11-25.1';
+var R2_VERSAO = '2026-11-25.2';
 function r2VerificarVersao(){
   if(location.protocol==='file:') return;
   var url=location.href.split('#')[0];
@@ -520,7 +521,7 @@ var SUPA_URL = 'https://qsswlsycmasiehgscuqd.supabase.co';
 var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFzc3dsc3ljbWFzaWVoZ3NjdXFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU0MzQ2NTMsImV4cCI6MjExMTAxMDY1M30.oTt5_hQ77AN9-8wZJ86RX2oqvqX4JmDvpciF9kYhHkk';
 var supaClient = null;
 
-function iniciarRealtime(){
+function iniciarRealtimeLegado(){
   try {
     supaClient = supabase.createClient(SUPA_URL, SUPA_KEY);
     supaClient
@@ -673,12 +674,13 @@ var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 function uid(){return Math.random().toString(36).slice(2,9)+Math.random().toString(36).slice(2,9);}
 
 async function sbReq(method,path,body){
-  var opts={method:method,headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=representation'}};
+  var opts={method:method,headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=representation','x-r2-sessao':r2Token()||''}};
   if(!R2_HOTEL) throw new Error('Hotel nao selecionado');
   if(body) opts.body=JSON.stringify(method==='POST'?r2Body(body):body);
   path=r2Path(method,path);
   var r=await fetch(SUPA_URL+'/rest/v1/'+path,opts);
   var text=await r.text();
+  if((r.status===401||r.status===403)&&/row-level security|permission denied|42501/.test(text)) r2SessaoCaiu();
   if(!r.ok) throw new Error('Supabase ['+r.status+'] '+path+': '+text.slice(0,200));
   return text?JSON.parse(text):null;
 }
@@ -754,7 +756,7 @@ async function getAll(){
     sbGet('checklist_itens?select=*'),
     sbGet('checklist?select=*'),
     sbGet('config?select=*'),
-    sbGet('usuarios?select=*'),
+    sbGet('usuarios?select=id,hotel,nome,login,perfil'),
     sbGet('registros_atividades?select=*&order=feito_em.desc&limit=200'),
     sbGet('compras?select=*&order=solicitado_em.desc'),
     sbGet('pontos?select=*&order=criado_em.desc&limit=500'),
@@ -981,7 +983,7 @@ async function saveConfig(d){
 }
 
 /* ---- USUARIOS ---- */
-async function saveUsuarios(d){
+async function saveUsuariosLegado(d){
   var existentes=await sbGet('usuarios?select=id');
   for(var i=0;i<existentes.length;i++) await sbDelete('usuarios?id=eq.'+existentes[i].id);
   var lista=d.lista||[];
@@ -1103,7 +1105,7 @@ function setSt(s) {
 function setLdMsg(m) { var e=document.getElementById('ldmsg'); if(e) e.textContent=m; }
 function showErr(m) { var e=document.getElementById('loading'); if(e) e.innerHTML='<div style="max-width:460px;text-align:center;padding:20px"><h2 style="color:#c0392b;margin-bottom:10px">Erro</h2><p style="color:#555;font-size:14px">'+m+'</p></div>'; }
 
-function init() {
+function initLegado() {
   document.title='Manutencao - '+R2_NOME;
   document.querySelectorAll('.r2-hnome').forEach(function(e){e.textContent=R2_NOME;});
   if(window.parent!==window) document.body.classList.add('r2-embed');
@@ -1145,7 +1147,7 @@ window.addEventListener('load',function(){
   });
 });
 
-function fazerLogin(){
+function fazerLoginLegado(){
   var users=ST.data.usuarios||[];
   var uid=document.getElementById('login-user').value;
   var senha=document.getElementById('login-senha').value;
@@ -1178,7 +1180,7 @@ function entrarNoSistema(){
   // Sem autorefresh - usar botao atualizar ou Realtime
 }
 
-function popularLoginSelect(){
+function popularLoginSelectLegado(){
   var users=(ST.data&&ST.data.usuarios)||[];
   var sel=document.getElementById('login-user');
   if(sel){
@@ -1186,7 +1188,7 @@ function popularLoginSelect(){
       users.map(function(u){return '<option value="'+esc(u.id)+'">'+esc(u.nome)+'</option>';}).join('');
   }
 }
-function fazerLogout(){
+function fazerLogoutLegado(){
   if(window.CAMPO&&CAMPO.on) campoSair();
   localStorage.removeItem(R2K('lg_uid'));
   localStorage.removeItem(R2K('lg_user'));
@@ -4279,7 +4281,7 @@ var CAMPO_FN = {
     if(d.pts) await registrarPontos(d.pts);
   },
   foto: async function(d){
-    var r=await fetch(R2_DRIVE_URL,{method:'POST',body:JSON.stringify({chave:R2_DRIVE_CHAVE,hotel:R2_NOME,local:d.local||'Sem local',area:d.area||'',chamadoId:d.chamadoId,ref:d.ref||'',data:d.data||new Date().toISOString(),usuario:ST.user||'',b64:d.b64})});
+    var r=await fetch(R2_DRIVE_URL,{method:'POST',body:JSON.stringify({chave:R2_DRIVE_CHAVE,token:r2Token(),hotel:R2_NOME,local:d.local||'Sem local',area:d.area||'',chamadoId:d.chamadoId,ref:d.ref||'',data:d.data||new Date().toISOString(),usuario:ST.user||'',b64:d.b64})});
     var j=await r.json();
     if(!j||!j.ok||!j.id) throw new Error('Drive: '+((j&&j.erro)||r.status));
     var url='https://drive.google.com/thumbnail?id='+j.id+'&sz=w1600';
@@ -4289,7 +4291,7 @@ var CAMPO_FN = {
     await sbPatch('chamados?id=eq.'+encodeURIComponent(d.chamadoId),{fotos:JSON.stringify(lista)});
   },
   fotoAvulsa: async function(d){
-    var r=await fetch(R2_DRIVE_URL,{method:'POST',body:JSON.stringify({chave:R2_DRIVE_CHAVE,hotel:R2_NOME,local:d.local||'Geral',area:'',chamadoId:'avulsa',ref:d.ref||'',data:d.data||new Date().toISOString(),usuario:ST.user||'',b64:d.b64})});
+    var r=await fetch(R2_DRIVE_URL,{method:'POST',body:JSON.stringify({chave:R2_DRIVE_CHAVE,token:r2Token(),hotel:R2_NOME,local:d.local||'Geral',area:'',chamadoId:'avulsa',ref:d.ref||'',data:d.data||new Date().toISOString(),usuario:ST.user||'',b64:d.b64})});
     var j=await r.json();
     if(!j||!j.ok||!j.id) throw new Error('Drive: '+((j&&j.erro)||r.status));
   },
@@ -4476,6 +4478,7 @@ function campoMais(){
       item('ti-refresh','Atualizar dados','Busca as informações mais recentes','reload()')+
       item('ti-brand-google-drive','Pasta de fotos no Drive','Abre as fotos deste hotel','abrirDriveHotel()')+
       item('ti-layout-dashboard','Abrir sistema completo','Relatórios, configurações e cadastros','campoDesligar()')+
+      item('ti-key','Trocar minha senha','','r2TrocarSenha()')+
       item('ti-logout','Sair','','campoSair();fazerLogout()','sair')+'</div>'+
     '<div class="cp-ver">Laghetto Manutenção R2 · versão '+esc(typeof R2_VERSAO!=='undefined'?R2_VERSAO:'')+'</div>';
 }
@@ -4743,13 +4746,12 @@ async function prevExcluir(id){
 /* ---------- Pasta do hotel no Drive ---------- */
 function abrirDriveHotel(){
   if(!window.R2_DRIVE_URL||R2_DRIVE_URL.indexOf('https://')!==0){ alert('Pasta do Drive ainda não configurada.'); return; }
-  var base=R2_DRIVE_URL+'?pasta='+encodeURIComponent(R2_NOME);
   var w=window.open('about:blank','_blank');
   if(w){ try{ w.document.write('<p style="font-family:Arial,sans-serif;padding:24px">Abrindo a pasta de fotos de '+esc(R2_NOME)+'...</p>'); }catch(e){} }
-  fetch(base+'&json=1').then(function(r){return r.json();}).then(function(j){
-    if(!j||!j.url) throw new Error('sem url');
+  fetch(R2_DRIVE_URL,{method:'POST',body:JSON.stringify({acao:'pasta',token:r2Token(),hotel:R2_NOME})}).then(function(r){return r.json();}).then(function(j){
+    if(!j||!j.url) throw new Error((j&&j.erro)||'sem url');
     if(w&&!w.closed) w.location.href=j.url; else location.href=j.url;
-  }).catch(function(){ if(w&&!w.closed) w.location.href=base; else window.open(base,'_blank'); });
+  }).catch(function(e){ if(w&&!w.closed) w.close(); alert('Não foi possível abrir a pasta do Drive ('+e.message+').'); });
 }
 
 /* ---------- Galeria de fotos do Drive (Gestao) ---------- */
@@ -4757,7 +4759,7 @@ var GAL = {dados:null, mes:'', local:'', carregando:false, erro:''};
 function galCarregar(mes){
   if(!window.R2_DRIVE_URL||R2_DRIVE_URL.indexOf('https://')!==0){ GAL.erro='Pasta do Drive não configurada.'; render(); return; }
   GAL.carregando=true; GAL.erro=''; if(ST.page==='drive') render();
-  fetch(R2_DRIVE_URL+'?galeria='+encodeURIComponent(R2_NOME)+(mes?'&mes='+encodeURIComponent(mes):''))
+  fetch(R2_DRIVE_URL,{method:'POST',body:JSON.stringify({acao:'galeria',token:r2Token(),hotel:R2_NOME,mes:mes||''})})
     .then(function(r){return r.json();})
     .then(function(j){ if(!j||!j.ok) throw new Error((j&&j.erro)||'resposta inválida'); GAL.dados=j; GAL.mes=j.mes||''; if(GAL.local&&!(j.locais||[]).some(function(l){return l.nome===GAL.local;})) GAL.local=''; })
     .catch(function(e){ GAL.erro='Não foi possível carregar as fotos ('+e.message+').'; })
@@ -4806,6 +4808,193 @@ function galVer(loc,id){
       '<a class="btn sec" href="https://drive.google.com/file/d/'+encodeURIComponent(f.id)+'/view" target="_blank" rel="noopener"><i class="ti ti-external-link"></i> Abrir no Drive</a>'+
     '</div>',
     [{l:'Fechar',c:'sec',f:closeModal}]);
+}
+
+/* ===== R2 - login no servidor e sessao (cracha digital) ===== */
+var R2_SESSAO = null;
+function r2TokenHotel(){ try{ return localStorage.getItem(R2K('sessao'))||''; }catch(e){ return ''; } }
+function r2TokenPortal(){
+  try{ var s=JSON.parse(localStorage.getItem('r2_portal_sessao')||'null'); if(s&&s.token&&s.expira>Date.now()) return s.token; }catch(e){}
+  return '';
+}
+function r2Token(){ return (R2_SESSAO&&R2_SESSAO._token)||r2TokenHotel()||r2TokenPortal(); }
+function r2Cab(){ return {apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json','x-r2-sessao':r2Token()||''}; }
+async function r2Rpc(fn,args){
+  var r=await fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:r2Cab(),body:JSON.stringify(args||{})});
+  var t=await r.text(), j=null; try{ j=t?JSON.parse(t):null; }catch(e){}
+  if(!r.ok) throw new Error((j&&j.message)||t.slice(0,160));
+  return j;
+}
+function r2Hora(iso){ try{ return new Date(iso).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } }
+function r2SemRede(e){ return !navigator.onLine||/Failed to fetch|NetworkError|Load failed|network/i.test(String(e&&e.message||e)); }
+
+function init(){
+  document.title='Manutencao - '+R2_NOME;
+  document.querySelectorAll('.r2-hnome').forEach(function(e){e.textContent=R2_NOME;});
+  if(window.parent!==window) document.body.classList.add('r2-embed');
+  if('ontouchstart' in window || navigator.maxTouchPoints > 0) document.body.classList.add('is-mobile');
+  buildNav();
+  var senhaEl=document.getElementById('login-senha');
+  if(senhaEl) senhaEl.onkeydown=function(e){if(e.key==='Enter')fazerLogin();};
+  r2ConferirSessao().then(function(info){ if(info) r2Entrar(info); else r2MostrarLogin(); });
+}
+
+async function r2ConferirSessao(){
+  var cands=[r2TokenHotel(), r2TokenPortal()].filter(Boolean);
+  for(var i=0;i<cands.length;i++){
+    var tk=cands[i];
+    try{
+      var info=await r2Rpc('r2_sessao_info',{p_token:tk});
+      if(info&&(info.tipo==='portal'||info.hotel===R2_HOTEL)){ info._token=tk; return info; }
+      if(tk===r2TokenHotel()){ localStorage.removeItem(R2K('sessao')); localStorage.removeItem(R2K('sessao_info')); }
+    }catch(e){
+      if(r2SemRede(e)){
+        try{ var off=JSON.parse(localStorage.getItem(R2K('sessao_info'))||'null'); if(off&&off._token===tk) return off; }catch(x){}
+      }
+    }
+  }
+  return null;
+}
+
+function r2Entrar(info){
+  R2_SESSAO=info;
+  try{ localStorage.setItem(R2K('sessao_info'),JSON.stringify(info)); }catch(e){}
+  var ls=document.getElementById('login-screen'); if(ls) ls.style.display='none';
+  var ld=document.getElementById('loading'); if(ld) ld.style.display='flex';
+  call('bootstrap',{},function(d){
+    ST.data=d;
+    var us=d.usuarios||[], u=null;
+    if(info.tipo==='portal') u=us.find(function(x){return String(x.login||'').toUpperCase()==='ADM';})||us.find(function(x){return x.perfil==='admin';});
+    else u=us.find(function(x){return x.id===info.usuario_id;});
+    if(!u) u={id:info.usuario_id||'portal',nome:info.nome||'Gerente'};
+    ST.user=u.nome; ST.userId=u.id;
+    try{ localStorage.setItem(R2K('lg_uid'),u.id); localStorage.setItem(R2K('lg_user'),u.nome); }catch(e){}
+    var unEl=document.getElementById('user-name'); if(unEl) unEl.textContent=ST.user;
+    entrarNoSistema();
+  },function(e){
+    showErr('Erro ao conectar ao banco de dados. Verifique sua conexao com a internet.');
+  });
+}
+
+var R2_LOGIN_LISTA=[];
+async function r2MostrarLogin(){
+  R2_SESSAO=null; ST.user=''; ST.userId='';
+  var ld=document.getElementById('loading'); if(ld) ld.style.display='none';
+  var ls=document.getElementById('login-screen'); if(ls) ls.style.display='flex';
+  var sel=document.getElementById('login-user'), er=document.getElementById('login-erro');
+  if(sel) sel.innerHTML='<option value="">Carregando usuarios...</option>';
+  try{
+    R2_LOGIN_LISTA=await r2Rpc('r2_usuarios_lista',{p_hotel:R2_HOTEL})||[];
+    var ult=''; try{ ult=localStorage.getItem(R2K('lg_uid'))||''; }catch(e){}
+    if(sel) sel.innerHTML='<option value="">Selecione seu usuario...</option>'+R2_LOGIN_LISTA.map(function(u){
+      return '<option value="'+esc(u.id)+'"'+(u.id===ult?' selected':'')+'>'+esc(u.nome)+'</option>';}).join('');
+  }catch(e){
+    if(sel) sel.innerHTML='<option value="">Sem conexão</option>';
+    if(er){ er.style.display='block'; er.textContent='Sem conexão com o servidor. Verifique a internet e recarregue a página.'; }
+  }
+}
+function popularLoginSelect(){ r2MostrarLogin(); }
+
+async function fazerLogin(){
+  var uid=document.getElementById('login-user').value, senhaEl=document.getElementById('login-senha'), senha=senhaEl.value;
+  var erro=document.getElementById('login-erro');
+  function msg(t){ erro.style.display='block'; erro.textContent=t; }
+  if(!uid){ msg('Selecione um usuario.'); return; }
+  if(!senha){ msg('Digite a senha.'); return; }
+  msg('Entrando...');
+  try{
+    var r=await r2Rpc('r2_login',{p_hotel:R2_HOTEL,p_usuario:uid,p_senha:senha});
+    if(!r||!r.ok){
+      senhaEl.value='';
+      if(r&&r.erro==='bloqueado') msg('Muitas tentativas erradas. Tente de novo às '+r2Hora(r.ate)+' ou peça ao gerente para desbloquear.');
+      else msg('Usuario ou senha incorretos.'+(r&&r.restantes&&r.restantes<=2?' Restam '+r.restantes+' tentativa(s) antes de bloquear por 15 minutos.':''));
+      return;
+    }
+    try{ localStorage.setItem(R2K('sessao'),r.token); }catch(e){}
+    erro.style.display='none'; senhaEl.value='';
+    r2Entrar({tipo:'hotel',hotel:R2_HOTEL,usuario_id:r.usuario.id,nome:r.usuario.nome,perfil:r.usuario.perfil,_token:r.token});
+  }catch(e){
+    msg(r2SemRede(e)?'Sem conexão com o servidor. Verifique a internet e tente de novo.':'Não foi possível entrar: '+e.message);
+  }
+}
+
+function fazerLogout(){
+  var tk=r2TokenHotel(), eraPortal=R2_SESSAO&&R2_SESSAO.tipo==='portal';
+  if(tk) r2Rpc('r2_logout',{p_token:tk}).catch(function(){});
+  try{ localStorage.removeItem(R2K('sessao')); localStorage.removeItem(R2K('sessao_info')); localStorage.removeItem(R2K('lg_user')); }catch(e){}
+  R2_SESSAO=null;
+  if(window.CAMPO&&CAMPO.on) campoSair();
+  ST.user=''; ST.userId='';
+  var s=document.getElementById('login-senha'); if(s) s.value='';
+  var er=document.getElementById('login-erro'); if(er) er.style.display='none';
+  if(eraPortal&&window.parent!==window){ try{ window.parent.r2pIr('home'); return; }catch(e){} }
+  r2MostrarLogin();
+}
+
+var R2_CAIU=false;
+function r2SessaoCaiu(){
+  if(R2_CAIU||!R2_SESSAO) return;
+  R2_CAIU=true;
+  try{ localStorage.removeItem(R2K('sessao')); localStorage.removeItem(R2K('sessao_info')); }catch(e){}
+  R2_SESSAO=null;
+  if(window.CAMPO&&CAMPO.on) campoSair();
+  alert('Sua sessão terminou (senha trocada ou acesso removido). Entre de novo com sua senha. O que estiver aguardando envio não se perde.');
+  R2_CAIU=false;
+  r2MostrarLogin();
+}
+async function r2ChecarSessao(){
+  if(!R2_SESSAO||!navigator.onLine) return;
+  try{ var info=await r2Rpc('r2_sessao_info',{p_token:R2_SESSAO._token}); if(!info) r2SessaoCaiu(); }catch(e){}
+}
+setInterval(r2ChecarSessao, 10*60000);
+document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') r2ChecarSessao(); });
+
+/* usuarios: salvos no servidor (senha em branco = mantem a atual) */
+async function saveUsuarios(d){
+  await r2Rpc('r2_usuarios_salvar',{p_hotel:R2_HOTEL,p_lista:(d.lista||[]).map(function(u){
+    return {id:u.id||'',nome:u.nome||'',login:u.login||'',perfil:u.perfil||'operador',senha:u.senha||''};})});
+  return {ok:true};
+}
+
+/* aviso de chamado novo em tempo real (sem dados pessoais no canal) */
+function iniciarRealtime(){
+  try{
+    supaClient = supabase.createClient(SUPA_URL, SUPA_KEY, {global:{headers:{'x-r2-sessao':r2Token()}}});
+    supaClient.channel('r2-sinal-'+R2_HOTEL)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'manut_sinal',filter:'hotel=eq.'+R2_HOTEL},function(p){
+        var s=p.new||{};
+        sbGet('chamados?select=*&order=criadoEm.desc').then(function(lista){
+          if(!lista||!ST.data) return;
+          ST.data.chamados=lista; render();
+          if(s.evento==='INSERT'&&s.prioridade==='Urgente'){
+            var c=lista.find(function(x){return x.id===s.chamado_id;}); if(c) notificarUrgente(c);
+          }
+        }).catch(function(){});
+      })
+      .subscribe();
+  }catch(e){ console.log('Realtime nao disponivel:', e.message); }
+}
+
+/* trocar a propria senha */
+function r2TrocarSenha(){
+  if(R2_SESSAO&&R2_SESSAO.tipo==='portal'){ alert('Você entrou pelo Dashboard. Para trocar a sua senha, use Acessos no Dashboard.'); return; }
+  openModal('Trocar minha senha',
+    '<div class="form-grid" style="grid-template-columns:1fr">'+
+      '<div><label>Senha atual</label><input id="ts-a" type="password" autocomplete="current-password"></div>'+
+      '<div><label>Nova senha (mínimo 4 caracteres)</label><input id="ts-n" type="password" autocomplete="new-password"></div>'+
+      '<div><label>Repita a nova senha</label><input id="ts-c" type="password" autocomplete="new-password"></div>'+
+      '<div id="ts-er" style="display:none;color:#c0392b;font-size:13px"></div></div>',
+    [{l:'Cancelar',c:'sec',f:closeModal},{l:'Salvar',c:'',f:async function(){
+      var a=document.getElementById('ts-a').value, n=document.getElementById('ts-n').value, c=document.getElementById('ts-c').value, er=document.getElementById('ts-er');
+      function msg(t){ er.style.display='block'; er.textContent=t; }
+      if(n.length<4) return msg('A nova senha precisa ter pelo menos 4 caracteres.');
+      if(n!==c) return msg('A repetição não confere com a nova senha.');
+      try{
+        var r=await r2Rpc('r2_trocar_senha',{p_atual:a,p_nova:n});
+        if(r&&r.ok){ closeModal(); alert('Senha trocada. Use a nova senha nos outros aparelhos.'); return; }
+        msg(r&&r.erro==='bloqueado'?'Muitas tentativas erradas. Tente de novo em 15 minutos.':r&&r.erro==='senha'?'A senha atual está errada.':'Não foi possível trocar a senha.');
+      }catch(e){ msg('Sem conexão. Tente de novo.'); }
+    }}]);
 }
 
 /* ===== R2 - funcoes adicionais ===== */
@@ -4994,7 +5183,7 @@ async function renderEquipeDP(){
       var dias = diasAteD(addD(c.adm, 45));
       html += '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f5f0">'
         +'<span style="background:#fdf0ee;color:#c0392b;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600">Contrato 45d</span>'
-        +'<span style="font-size:13px;font-weight:600">'+c.nome+'</span>'
+        +'<span style="font-size:13px;font-weight:600">'+esc(c.nome)+'</span>'
         +'<span style="font-size:12px;color:#6b7770">vence em '+dias+' dia(s) — '+fmD(addD(c.adm,45))+'</span>'
         +'</div>';
     });
@@ -5002,7 +5191,7 @@ async function renderEquipeDP(){
       var dias = diasAteD(addD(c.adm, 90));
       html += '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f5f0">'
         +'<span style="background:#fef3e8;color:#d4660a;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600">Contrato 90d</span>'
-        +'<span style="font-size:13px;font-weight:600">'+c.nome+'</span>'
+        +'<span style="font-size:13px;font-weight:600">'+esc(c.nome)+'</span>'
         +'<span style="font-size:12px;color:#6b7770">vence em '+dias+' dia(s) — '+fmD(addD(c.adm,90))+'</span>'
         +'</div>';
     });
@@ -5067,7 +5256,7 @@ async function renderEquipeDP(){
     html += '<div style="padding:12px 14px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6b7770;border-bottom:1px solid #e2e8e2">Pipeline de contratação — '+vagasAbertas.length+' vaga(s)</div>';
     vagasAbertas.forEach(function(v){
       html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid #f0f5f0">'
-        +'<div><div style="font-size:13px;font-weight:600">'+v.nome+'</div>'
+        +'<div><div style="font-size:13px;font-weight:600">'+esc(v.nome)+'</div>'
         +'<div style="font-size:11px;color:#6b7770">'+(v.cargo||'—')+'</div></div>'
         +'<span style="background:'+(ETAPA_COR[v.etapa]||'#f5f7f5')+';color:#1a2e1a;padding:3px 10px;border-radius:8px;font-size:11px;font-weight:600">'+(ETAPA_LBL[v.etapa]||v.etapa)+'</span>'
         +'</div>';
@@ -5465,13 +5654,14 @@ var R2P_ICO = {
 function r2pSvg(k){return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+R2P_ICO[k]+'</svg>';}
 function r2pEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 async function r2pGet(path){
-  var r=await fetch(SUPA_URL+'/rest/v1/'+path,{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,Accept:'application/json'}});
+  var r=await fetch(SUPA_URL+'/rest/v1/'+path,{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,Accept:'application/json','x-r2-sessao':r2pTk()}});
   var t=await r.text();
   if(!r.ok) throw new Error('['+r.status+'] '+t.slice(0,160));
   return t?JSON.parse(t):[];
 }
+function r2pTk(){ return (R2P.sessao&&R2P.sessao.token)||''; }
 function r2pLerSessao(){
-  try{var s=JSON.parse(localStorage.getItem('r2_portal_sessao')||'null');if(s&&s.expira>Date.now())return s;}catch(e){}
+  try{var s=JSON.parse(localStorage.getItem('r2_portal_sessao')||'null');if(s&&s.token&&s.expira>Date.now())return s;}catch(e){}
   localStorage.removeItem('r2_portal_sessao');return null;
 }
 
@@ -5555,12 +5745,17 @@ async function r2pEntrar(){
   if(!lg||!pw){er.style.display='block';er.textContent='Informe login e senha.';return;}
   bt.disabled=true;bt.textContent='Verificando...';
   try{
-    var rr=await fetch(SUPA_URL+'/rest/v1/rpc/r2_portal_login',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_login:lg,p_senha:pw})});
+    var rr=await fetch(SUPA_URL+'/rest/v1/rpc/r2_portal_entrar',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_login:lg,p_senha:pw})});
     var tx=await rr.text();
     if(!rr.ok) throw new Error('['+rr.status+'] '+tx.slice(0,160));
-    var r=tx?JSON.parse(tx):[];
-    if(!r.length){er.style.display='block';er.textContent='Login ou senha incorretos.';bt.disabled=false;bt.textContent='Entrar';return;}
-    R2P.sessao={login:r[0].login,nome:r[0].nome||r[0].login,expira:Date.now()+R2P_SESS_HORAS*3600000};
+    var r=tx?JSON.parse(tx):null;
+    if(!r||!r.ok){
+      er.style.display='block';
+      er.textContent=r&&r.erro==='bloqueado'?'Muitas tentativas erradas. Tente de novo às '+new Date(r.ate).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+' ou peça a outro administrador para desbloquear.':'Login ou senha incorretos.'+(r&&r.restantes&&r.restantes<=2?' Restam '+r.restantes+' tentativa(s) antes de bloquear por 15 minutos.':'');
+      document.getElementById('r2p-pw').value='';
+      bt.disabled=false;bt.textContent='Entrar';return;
+    }
+    R2P.sessao={login:r.login,nome:r.nome||r.login,token:r.token,expira:Date.parse(r.expira)||Date.now()+30*864e5};
     R2P.senhaMem=pw;
     localStorage.setItem('r2_portal_sessao',JSON.stringify(R2P.sessao));
     var dep=R2P.depoisLogin; document.getElementById('r2p-mroot').innerHTML=''; R2P.depoisLogin=null;
@@ -5568,11 +5763,12 @@ async function r2pEntrar(){
     r2pIr(dep||'dashboard');
   }catch(e){
     er.style.display='block';
-    er.textContent=/r2_portal_login|PGRST202|404/.test(e.message)?'Banco ainda não preparado: rode o SQL da R2 no Supabase.':'Erro de conexão: '+e.message;
+    er.textContent=/r2_portal_entrar|PGRST202|404/.test(e.message)?'Banco ainda não preparado: rode o SQL da R2 no Supabase.':'Erro de conexão: '+e.message;
     bt.disabled=false;bt.textContent='Entrar';
   }
 }
 function r2pSair(){
+  if(r2pTk()) r2pRpc('r2_logout',{p_token:r2pTk()}).catch(function(){});
   localStorage.removeItem('r2_portal_sessao');
   R2_HOTEIS.forEach(function(h){localStorage.removeItem('r2_'+h.slug+'_lg_uid');localStorage.removeItem('r2_'+h.slug+'_lg_user');});
   R2P.sessao=null;R2P.dados=null;R2P.senhaMem=null;clearInterval(R2P.timer);
@@ -5605,7 +5801,7 @@ function r2pHoteisSel(){return R2P.f.hotel?R2_HOTEIS.filter(function(h){return h
 async function r2pGetAll(path){
   var out=[], off=0, lote=1000;
   while(true){
-    var r=await fetch(SUPA_URL+'/rest/v1/'+path,{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,Accept:'application/json','Range-Unit':'items',Range:off+'-'+(off+lote-1)}});
+    var r=await fetch(SUPA_URL+'/rest/v1/'+path,{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,Accept:'application/json','Range-Unit':'items',Range:off+'-'+(off+lote-1),'x-r2-sessao':r2pTk()}});
     var t=await r.text();
     if(!r.ok) throw new Error('['+r.status+'] '+t.slice(0,160));
     var arr=t?JSON.parse(t):[];
@@ -6263,7 +6459,7 @@ function r2pRenderLoginDash(){
 
 /* ---------- Gestao de acessos do Dashboard ---------- */
 async function r2pRpc(fn,args){
-  var r=await fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(args)});
+  var r=await fetch(SUPA_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json','x-r2-sessao':r2pTk()},body:JSON.stringify(args)});
   var t=await r.text(); var j=null; try{j=t?JSON.parse(t):null;}catch(e){}
   if(!r.ok) throw new Error((j&&j.message)||t.slice(0,160));
   return j;
@@ -6304,7 +6500,24 @@ async function r2pListarAcessos(msg){
         '<td style="text-align:right;white-space:nowrap"><button class="r2p-btn sm" onclick="r2pFormConta('+i+')">Editar</button>'+
         (eu?'':' <button class="r2p-btn sm" style="background:#c0392b" onclick="r2pExcluirConta('+i+')">Excluir</button>')+'</td></tr>';
     }).join('')+'</tbody></table>'+
-    '<div style="margin-top:14px"><button class="r2p-btn" onclick="r2pFormConta(-1)"><i class="ti ti-user-plus"></i> Novo acesso</button></div>');
+    '<div style="margin-top:14px"><button class="r2p-btn" onclick="r2pFormConta(-1)"><i class="ti ti-user-plus"></i> Novo acesso</button></div>'+
+    '<div id="r2p-bloq" style="margin-top:18px"></div>');
+  r2pBloqueios();
+}
+async function r2pBloqueios(){
+  var el=document.getElementById('r2p-bloq'); if(!el) return;
+  var L=[];
+  try{ L=await r2pRpc('r2_bloqueios',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem})||[]; }catch(e){ return; }
+  R2P.bloqueios=L;
+  el.innerHTML='<div style="font-size:12px;font-weight:700;color:#6b7770;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Bloqueados por senha errada</div>'+
+    (L.length?'<table class="r2p-tbl"><tbody>'+L.map(function(b,i){
+      return '<tr><td><b>'+r2pEsc(b.descricao||b.chave)+'</b><div style="font-size:11px;color:#6b7770">até '+new Date(b.ate).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</div></td>'+
+        '<td style="text-align:right"><button class="r2p-btn sm" onclick="r2pDesbloquear('+i+')"><i class="ti ti-lock-open"></i> Desbloquear</button></td></tr>';
+    }).join('')+'</tbody></table>':'<div style="font-size:13px;color:#6b7770">Ninguém bloqueado agora. Depois de 5 senhas erradas, a pessoa fica 15 minutos bloqueada e aparece aqui.</div>');
+}
+async function r2pDesbloquear(i){
+  try{ await r2pRpc('r2_desbloquear',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem,p_chave:R2P.bloqueios[i].chave}); r2pBloqueios(); }
+  catch(e){ alert('Não foi possível desbloquear: '+e.message); }
 }
 function r2pFormConta(i){
   var c=i>=0?R2P.contas[i]:null;
@@ -6423,7 +6636,7 @@ function r2pHoteisLista(msg){
   }
   r2pModal('Hotéis da Regional 2',
     (msg?'<div class="r2p-ok" style="margin:0 0 12px">'+msg+'</div>':'')+
-    '<div style="font-size:13px;color:#6b7770;margin-bottom:12px">Todos os hotéis usam o mesmo banco. Ao adicionar um hotel, ele ganha na hora o sistema de manutenção limpo, o usuário <b>ADM</b> (senha 123456) e passa a aparecer no menu e no Dashboard.</div>'+
+    '<div style="font-size:13px;color:#6b7770;margin-bottom:12px">Todos os hotéis usam o mesmo banco. Ao adicionar um hotel, ele ganha na hora o sistema de manutenção limpo, o usuário <b>ADM</b> com a senha que você definir e passa a aparecer no menu e no Dashboard.</div>'+
     '<div style="max-height:40vh;overflow:auto"><table class="r2p-tbl"><thead><tr><th>Hotel</th><th>Endereço</th><th>Situação</th><th></th></tr></thead><tbody>'+
     vivos.map(linha).join('')+'</tbody></table></div>'+
     (lix.length?'<div class="r2p-lix"><div class="r2p-lix-t"><i class="ti ti-trash"></i> Lixeira ('+lix.length+')</div>'+
@@ -6567,6 +6780,7 @@ function r2pHotelForm(i){
   r2pModal(h?'Editar hotel':'Adicionar hotel',
     '<label>Nome do hotel</label><input id="r2p-hn" value="'+r2pEsc(h?h.nome:'Laghetto ')+'" placeholder="Ex: Laghetto Viale" '+(h?'':'oninput="var s=document.getElementById(\'r2p-hs\');if(!s.dataset.mexido)s.value=r2pSlug(this.value)"')+'>'+
     '<label>Identificador (usado no endereço e no banco)</label><input id="r2p-hs" value="'+r2pEsc(h?h.slug:'')+'" '+(h?'disabled style="background:#F2F5F2"':'oninput="this.dataset.mexido=1;this.value=r2pSlug(this.value)"')+' placeholder="ex: viale">'+
+    (h?'':'<label>Senha do usuário ADM do hotel (mínimo 6 caracteres)</label><input id="r2p-hadm" type="text" autocomplete="off" placeholder="Anote e entregue ao responsável do hotel">')+
     (h?'<div style="font-size:12px;color:#6b7770;margin:-8px 0 12px">O identificador não pode ser alterado depois de criado.</div>':'<div style="font-size:12px;color:#6b7770;margin:-8px 0 12px">Só letras minúsculas, números e hífen. Não dá para mudar depois.</div>')+
     (h?'<label style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><input id="r2p-ha" type="checkbox" style="width:auto;margin:0" '+(h.ativo!==false?'checked':'')+'> Hotel ativo (desativado some do menu e do Dashboard, mas os dados ficam guardados)</label>':'')+
     '<div class="r2p-err" id="r2p-her"></div>'+
@@ -6582,12 +6796,14 @@ async function r2pHotelSalvar(i){
   if(nome.length<4) return erro('Informe o nome do hotel.');
   if(!/^[a-z0-9][a-z0-9-]{1,39}$/.test(slug)) return erro('Identificador inválido. Use letras minúsculas, números e hífen (mínimo 2 caracteres).');
   if(!h&&R2_HOTEIS_TODOS.some(function(x){return x.slug===slug;})) return erro('Já existe um hotel com esse identificador.');
+  var admS=h?null:(document.getElementById('r2p-hadm').value||'');
+  if(!h&&admS.length<6) return erro('Defina a senha do usuário ADM com pelo menos 6 caracteres.');
   bt.disabled=true; bt.textContent='Salvando...';
   try{
-    await r2pRpc('r2_hotel_salvar',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem,h_slug:slug,h_nome:nome,h_ativo:at,h_novo:!h});
+    await r2pRpc('r2_hotel_salvar',{p_login:R2P.sessao.login,p_senha:R2P.senhaMem,h_slug:slug,h_nome:nome,h_ativo:at,h_novo:!h,p_adm_senha:admS});
     await r2CarregarHoteis();
     r2pRenderHoteis(); if(R2P.view==='dashboard'){ R2P.dados=null; r2pRenderDash(); r2pCarregar(); }
-    r2pHoteisLista(h?'Hotel atualizado.':'Hotel <b>'+r2pEsc(nome)+'</b> criado. Endereço: <a href="'+r2pEsc(new URL(r2EnderecoHotel(slug),location.href).href)+'" target="_blank" style="color:#1B4332">'+r2pEsc(new URL(r2EnderecoHotel(slug),location.href).href.replace(/^https?:\/\//,''))+'</a> · login ADM / 123456');
+    r2pHoteisLista(h?'Hotel atualizado.':'Hotel <b>'+r2pEsc(nome)+'</b> criado. Endereço: <a href="'+r2pEsc(new URL(r2EnderecoHotel(slug),location.href).href)+'" target="_blank" style="color:#1B4332">'+r2pEsc(new URL(r2EnderecoHotel(slug),location.href).href.replace(/^https?:\/\//,''))+'</a> · login ADM com a senha que você definiu.');
   }catch(e){ bt.disabled=false; bt.textContent=h?'Salvar':'Criar hotel'; erro(/negado/.test(e.message)?'Senha não confere. Feche e entre de novo.':/ja existe/.test(e.message)?'Já existe um hotel com esse identificador.':e.message); }
 }
 
